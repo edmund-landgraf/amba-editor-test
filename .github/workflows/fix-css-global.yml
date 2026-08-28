@@ -1,0 +1,52 @@
+name: One-shot fix CSS global
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-css-global.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch index.html
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+
+          replacements = [
+              ("const V='20260828-exhaustive-2',CSS=[", "const V='20260828-exhaustive-3',AMBA_CSS_URLS=["),
+              ("Promise.all(CSS.map(", "Promise.all(AMBA_CSS_URLS.map("),
+              ("content_css:CSS,", "content_css:AMBA_CSS_URLS,"),
+          ]
+
+          for old, new in replacements:
+              if old not in s:
+                  raise SystemExit(f"Expected text not found: {old}")
+              s = s.replace(old, new, 1)
+
+          p.write_text(s, encoding="utf-8")
+          PY
+
+          rm .github/workflows/fix-css-global.yml
+
+      - name: Commit and push fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/fix-css-global.yml
+          git commit -m "Fix CSS global shadowing in TinyMCE playground"
+          git push
