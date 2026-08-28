@@ -1,0 +1,306 @@
+/*
+  AMBA default two-column layout — class-first authoring.
+
+  Load after help-docs/master-preview.css (Module Settings → Preview CSS, or fixture page).
+
+  Targets:
+  - .amba-flow          authored two-column narrative blocks
+  - .outline-column-*   Module Outline two-column mode (app-generated)
+  - .two-column         legacy/master grid helper (single element, 2-col children)
+*/
+
+/* ------------------------------------------------------------------ */
+/* Authoring: .amba-flow (fragment-safe — no document shell)           */
+/* ------------------------------------------------------------------ */
+
+.amba-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: min(920px, 100%);
+  margin: 1.25rem auto;
+  padding: 1.25rem 1.45rem;
+  border: 1px solid var(--amba-line, #c9b99b);
+  border-radius: var(--amba-radius, 8px);
+  background: var(--amba-page, #f7f2e8);
+  box-shadow: var(--amba-shadow, 0 18px 42px rgba(0, 0, 0, 0.24));
+  box-sizing: border-box;
+}
+
+.amba-flow__lead {
+  width: 100%;
+}
+
+.amba-flow__lead .kicker,
+.amba-flow__lead .eyebrow {
+  margin-bottom: 0.35rem;
+}
+
+.amba-flow__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Authoring: flat body — one-col outline uses internal grid; two-col outline flattens children */
+.module-block__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.module-block__body--with-sidebar {
+  grid-template-columns: 1fr 1fr minmax(11rem, 26%);
+}
+
+.module-block__body > .read-aloud,
+.module-block__body > .readaloud,
+.module-block__body > .boxed-text,
+.module-block__body > .gm-note,
+.module-block__body > .designer-note,
+.module-block__body > .sidebar,
+.module-block__body > .sidebar-note,
+.module-block__body > .player-handout,
+.module-block__body > .handout,
+.module-block__body > .trap-card,
+.module-block__body > .hazard-card,
+.module-block__body > .affliction-card,
+.module-block__body > .treasure-card,
+.module-block__body > .map-note,
+.module-block__body > .map,
+.module-block__body > .ascii-map,
+.module-block__body > pre.ascii-map,
+.module-block__body > table,
+.module-block__body > .rules-note,
+.module-block__body > .warning-note,
+.module-block__body > .aside,
+.module-block__body > aside {
+  grid-column: 1 / -1;
+}
+
+.module-block__body--with-sidebar > .sidebar,
+.module-block__body--with-sidebar > aside.sidebar {
+  grid-column: 3;
+  margin: 0;
+}
+
+/* Two-column outline: app splits paragraphs; suppress inner grid */
+.module-outline--two-column .module-block__body {
+  display: contents;
+}
+
+.module-outline--two-column .outline-column-row--flow.amba-flow {
+  width: 100%;
+  max-width: 100%;
+  margin: 1rem 0;
+  box-sizing: border-box;
+}
+
+.module-outline--two-column .outline-column-full {
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.amba-flow__col {
+  min-width: 0;
+}
+
+/* Full-width breakouts inside a flow block */
+.amba-flow .read-aloud,
+.amba-flow .readaloud,
+.amba-flow .gm-note,
+.amba-flow .designer-note,
+.amba-flow .sidebar,
+.amba-flow .sidebar-note,
+.amba-flow .player-handout,
+.amba-flow .handout,
+.amba-flow .trap-card,
+.amba-flow .treasure-card,
+.amba-flow .map-note,
+.amba-flow .map,
+.amba-flow .ascii-map,
+.amba-flow pre.ascii-map,
+.amba-flow .rules-note,
+.amba-flow .artifact,
+.amba-flow table,
+.amba-flow .aon-encounter-sheet,
+.amba-flow .aon-treasure-sheet {
+  grid-column: 1 / -1;
+}
+
+/* Sidebar / GM note — third-column lane when inside .amba-flow__columns */
+.amba-flow__columns .sidebar,
+.amba-flow__columns .gm-note,
+.amba-flow__columns .designer-note,
+.amba-flow__columns .sidebar-note {
+  grid-column: 3;
+  max-width: none;
+  margin: 0;
+}
+
+.amba-flow__columns.amba-flow__columns--with-sidebar {
+  grid-template-columns: 1fr 1fr minmax(11rem, 26%);
+}
+
+/* Container type accent — top border color from master-preview.css */
+.amba-flow.module-section--overview {
+  border-top: 5px solid var(--amba-gold, #b9892f);
+}
+
+.amba-flow.module-section--act {
+  border-top: 5px solid var(--amba-blue, #244d72);
+}
+
+.amba-flow.module-section--scene {
+  border-top: 5px solid var(--amba-green, #2d6148);
+}
+
+.amba-flow.module-section--subscene {
+  border-top: 5px solid #8a6f2e;
+}
+
+.amba-flow.module-section--encounter,
+.amba-flow.encounter-brief {
+  border-top: 5px solid var(--amba-red, #8d382f);
+  gap: 0.45rem;
+  margin: 0.85rem auto;
+  padding: 0.85rem 1.05rem;
+}
+
+/* Encounter tag accents (optional in HTML — metadata tags on containers) */
+.encounter-brief--combat,
+.module-section--encounter.encounter-brief--combat {
+  border-top-color: var(--amba-red, #8d382f);
+}
+
+.encounter-brief--social {
+  border-top-color: var(--amba-green, #2d6148);
+}
+
+.encounter-brief--puzzle {
+  border-top-color: var(--amba-purple, #5c4778);
+}
+
+.encounter-brief--treasure {
+  border-top-color: var(--amba-gold, #b8922a);
+}
+
+.encounter-brief--story {
+  border-top-color: var(--amba-blue, #4a6a8a);
+}
+
+/* Artifact type wrapper inside flow — inherits master .artifact--* badges */
+.amba-flow .artifact {
+  margin: 0.5rem 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Outline mode parity (app splits HTML; preview CSS can tune spacing)  */
+/* ------------------------------------------------------------------ */
+
+.module-outline--two-column .outline-column-lead {
+  margin-bottom: 0.1rem;
+}
+
+.module-outline--two-column .outline-column-body {
+  gap: 1rem;
+}
+
+.module-outline--two-column .outline-column-row--flow.module-section--encounter,
+.module-outline--two-column .outline-column-row--flow.encounter-brief {
+  gap: 0.4rem;
+  margin: 0.65rem 0;
+  padding: 0.85rem 1.05rem;
+}
+
+.module-outline--two-column .outline-column-row--flow.module-section--encounter .outline-column-full,
+.module-outline--two-column .outline-column-row--flow.encounter-brief .outline-column-full {
+  margin: 0.25rem 0;
+}
+
+.module-outline--two-column .outline-column-row--flow.module-section--encounter .outline-column-body,
+.module-outline--two-column .outline-column-row--flow.encounter-brief .outline-column-body {
+  gap: 0.85rem;
+}
+
+.module-outline--two-column .outline-column-lead h1,
+.module-outline--two-column .outline-column-lead h2 {
+  margin-top: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Keep like things together (Word-style keep on same page)           */
+/* ------------------------------------------------------------------ */
+
+/*
+  Atomic units: purpose cards, coalesced heading+list groups, and the
+  title band. Prose paragraphs still flow across pages/columns freely.
+*/
+.outline-subsection,
+.outline-keep-together,
+.skill-challenge,
+.clue-list,
+.key-list,
+.treasure-list,
+.dc-table,
+.treasure-card,
+.trap-card,
+.hazard-card,
+.affliction-card,
+.rules-note,
+.warning-note,
+.danger-note,
+.danger-box,
+.boxed-text,
+.map-note,
+.amba-flow .read-aloud,
+.amba-flow .gm-note,
+.amba-flow .player-handout,
+.outline-column-row--callout,
+.outline-column-row--hard,
+.outline-column-row--image {
+  break-inside: avoid-page;
+  page-break-inside: avoid;
+}
+
+/* Keep title band with the first body/callout that follows it. */
+.amba-flow__lead,
+.outline-column-lead {
+  break-after: avoid-page;
+  page-break-after: avoid;
+}
+
+.outline-subsection h3,
+.outline-subsection h4,
+.outline-keep-together h3,
+.outline-keep-together h4,
+.outline-subsection > :first-child,
+.outline-keep-together > :first-child {
+  break-after: avoid-page;
+  page-break-after: avoid;
+}
+
+/* ------------------------------------------------------------------ */
+/* Responsive                                                         */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 760px) {
+  .amba-flow__columns,
+  .amba-flow__columns.amba-flow__columns--with-sidebar,
+  .module-block__body,
+  .module-block__body--with-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .amba-flow__columns .sidebar,
+  .amba-flow__columns .gm-note,
+  .amba-flow__columns .designer-note,
+  .amba-flow__columns .sidebar-note,
+  .module-block__body--with-sidebar > .sidebar,
+  .module-block__body--with-sidebar > aside.sidebar {
+    grid-column: 1;
+  }
+}

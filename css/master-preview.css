@@ -1,0 +1,1451 @@
+/*
+  AdventureMakerByAct master Preview CSS sample.
+
+  Use this as a starting stylesheet in Module Settings > Preview CSS.
+  It targets stable app wrappers, artifact-type classes, and semantic
+  authoring classes. It intentionally avoids per-instance selectors.
+*/
+
+:root {
+  --amba-bg: #151820;
+  --amba-page: #f7f2e8;
+  --amba-ink: #211914;
+  --amba-chrome: #e8e0d4;
+  --amba-muted: #665d53;
+  --amba-line: #c9b99b;
+  --amba-gold: #b9892f;
+  --amba-blue: #244d72;
+  --amba-green: #2d6148;
+  --amba-red: #8d382f;
+  --amba-purple: #5c4778;
+  --amba-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+  --amba-radius: 8px;
+  --amba-serif: Georgia, "Times New Roman", serif;
+  --amba-sans: "Segoe UI", system-ui, sans-serif;
+  --amba-mono: "Cascadia Code", "Consolas", monospace;
+}
+
+.preview-root {
+  color: var(--amba-chrome);
+  font-family: var(--amba-serif);
+  line-height: 1.58;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.preview-root *,
+.preview-root *::before,
+.preview-root *::after {
+  box-sizing: border-box;
+}
+
+.preview,
+.artifact-detail-html.preview,
+.preview-narrative,
+.syndication-artifact,
+.character-page-block {
+  width: 100%;
+  max-width: min(920px, 100%);
+  margin: 1.25rem auto;
+  box-sizing: border-box;
+}
+
+.preview,
+.artifact-detail-html.preview {
+  background: var(--amba-page);
+  color: var(--amba-ink);
+  border: 1px solid var(--amba-line);
+  border-radius: var(--amba-radius);
+  box-shadow: var(--amba-shadow);
+}
+
+.preview-root h1,
+.preview-root h2,
+.preview-root h3,
+.preview-root h4 {
+  color: var(--amba-blue);
+  line-height: 1.18;
+}
+
+.preview-root h1 {
+  margin: 0 0 0.75rem;
+  font-size: 2.1rem;
+}
+
+.preview-root h2 {
+  margin: 1.35rem 0 0.55rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid rgba(185, 137, 47, 0.45);
+  font-size: 1.45rem;
+}
+
+.preview-root h3 {
+  margin: 1.1rem 0 0.4rem;
+  font-size: 1.12rem;
+}
+
+.preview-root p,
+.preview-root li {
+  color: var(--amba-ink);
+}
+
+.preview-root a {
+  color: #1d5f8f;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.preview-root table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-family: var(--amba-sans);
+  font-size: 0.95rem;
+  overflow-x: auto;
+}
+
+.preview-root pre,
+.preview-root .artifact-detail-text {
+  font-family: var(--amba-mono);
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.preview-root pre,
+.preview-root .layout-image-zoom {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.preview-root th,
+.preview-root td {
+  border: 1px solid var(--amba-line);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.preview-root th {
+  background: #eadfca;
+  color: #31261d;
+}
+
+/* Schema-level structural wrappers authors can use in narratives. */
+
+.module-section,
+.module-section--overview,
+.module-section--act,
+.module-section--scene,
+.module-section--subscene,
+.module-section--encounter,
+.scene-brief,
+.encounter-brief,
+.trap-card,
+.hazard-card,
+.affliction-card,
+.treasure-card,
+.npc-card,
+.pc-card,
+.character-page:not(.sf2e-sheet):not(.pf2e-sheet):not(.pf1e-sheet) {
+  width: 100%;
+  max-width: min(920px, 100%);
+  margin: 1.25rem auto;
+  padding: 1.25rem 1.45rem;
+  border: 1px solid var(--amba-line);
+  border-radius: var(--amba-radius);
+  background: var(--amba-page);
+  color: var(--amba-ink);
+  box-shadow: var(--amba-shadow);
+  box-sizing: border-box;
+}
+
+/*
+ * Author ruleset pages (`character-page sf2e-sheet`) inherit the module document
+ * theme. Master parchment must not wipe dark (or custom) module sheet palettes.
+ */
+.character-page.sf2e-sheet,
+.character-page.pf2e-sheet,
+.character-page.pf1e-sheet {
+  width: 100%;
+  max-width: min(920px, 100%);
+  margin: 1.25rem auto;
+  padding: 1.25rem 1.45rem;
+  border: 1px solid var(--amba-line);
+  border-radius: var(--amba-radius);
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.module-section--overview {
+  border-top: 5px solid var(--amba-gold);
+}
+
+/*
+ * Front-matter overview card — richer than generic section shells.
+ * Works with full sample markup (kicker, h1, read-aloud, adventure-facts)
+ * or a lone opening paragraph.
+ */
+.module-overview {
+  width: 100%;
+  max-width: min(920px, 100%);
+  margin: 1.35rem auto;
+  padding: 1.5rem 1.7rem 1.45rem;
+  border: 1px solid var(--amba-line);
+  border-top: 5px solid var(--amba-gold);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #fffdf8 0%, var(--amba-page) 52%, #f3ead8 100%);
+  color: var(--amba-ink);
+  box-shadow:
+    var(--amba-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-sizing: border-box;
+}
+
+.module-overview::before {
+  content: "Overview";
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid rgba(185, 137, 47, 0.35);
+  border-radius: 999px;
+  background: rgba(185, 137, 47, 0.14);
+  color: #765414;
+  font-family: var(--amba-sans);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.module-overview > .kicker,
+.module-overview > p.kicker,
+.module-overview > .eyebrow,
+.module-overview > .section-kicker {
+  margin: 0 0 0.45rem;
+  color: var(--amba-muted);
+}
+
+.module-overview h1 {
+  margin: 0 0 0.6rem;
+  font-size: 2.05rem;
+  line-height: 1.12;
+  color: var(--amba-blue);
+}
+
+.module-overview h2 {
+  margin: 1.3rem 0 0.55rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid rgba(185, 137, 47, 0.42);
+  font-size: 1.38rem;
+  color: var(--amba-blue);
+}
+
+.module-overview h3 {
+  margin: 1rem 0 0.4rem;
+  font-size: 1.08rem;
+  color: #3a5f48;
+}
+
+.module-overview p,
+.module-overview li {
+  margin: 0.65rem 0;
+  line-height: 1.58;
+}
+
+.module-overview > p:first-child:not(.kicker):not(.read-aloud):not(.readaloud):not(.boxed-text),
+.module-overview > .deck:first-child,
+.module-overview > .subtitle:first-child,
+.module-overview > .tagline:first-child {
+  margin-top: 0;
+  padding: 1rem 1.1rem;
+  border-left: 5px solid var(--amba-gold);
+  border-radius: 0 6px 6px 0;
+  background: rgba(185, 137, 47, 0.1);
+  font-size: 1.05rem;
+  line-height: 1.62;
+}
+
+.module-overview > h1 + p:not(.read-aloud):not(.readaloud):not(.boxed-text),
+.module-overview > .kicker + h1 + p:not(.read-aloud):not(.readaloud):not(.boxed-text),
+.module-overview > p.kicker + h1 + p:not(.read-aloud):not(.readaloud):not(.boxed-text) {
+  padding: 0.95rem 1.05rem;
+  border-left: 5px solid var(--amba-blue);
+  border-radius: 0 6px 6px 0;
+  background: rgba(36, 77, 114, 0.08);
+  font-size: 1.03rem;
+  line-height: 1.6;
+}
+
+.module-overview .read-aloud,
+.module-overview .readaloud,
+.module-overview .boxed-text {
+  margin: 0.9rem 0;
+}
+
+.module-overview .adventure-facts,
+.module-overview .key-list {
+  margin: 1.05rem 0 0.85rem;
+}
+
+.module-overview .adventure-facts li,
+.module-overview .key-list li {
+  border-radius: 4px;
+}
+
+/*
+ * Preview/outline wrappers add their own parchment frame. When authors wrap
+ * overview copy in .module-overview, let that shell be the visible card.
+ */
+.preview:has(> .module-overview),
+.outline-narrative-body.preview:has(> .module-overview) {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.module-section--act {
+  border-top: 5px solid var(--amba-blue);
+}
+
+.module-section--scene,
+.scene-brief {
+  border-top: 5px solid var(--amba-green);
+}
+
+.module-section--subscene {
+  border-top: 5px solid #8a6f2e;
+}
+
+.module-section--encounter,
+.encounter-brief {
+  border-top: 5px solid var(--amba-red);
+}
+
+/*
+ * Container type badges — same pill pattern as artifact ::before labels
+ * (.artifact--handout, etc.). Authors add module-section--{type} on narratives.
+ */
+.module-section[class*="module-section--"]::before,
+.scene-brief::before,
+.encounter-brief::before {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-family: var(--amba-sans);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.module-section--overview::before {
+  content: "Overview";
+  background: rgba(185, 137, 47, 0.14);
+  color: #765414;
+}
+
+.module-section--act::before {
+  content: "Act";
+  background: rgba(36, 77, 114, 0.12);
+  color: var(--amba-blue);
+}
+
+.module-section--scene::before,
+.scene-brief::before {
+  content: "Scene";
+  background: rgba(45, 97, 72, 0.13);
+  color: var(--amba-green);
+}
+
+.module-section--subscene::before {
+  content: "Subscene";
+  background: rgba(185, 137, 47, 0.14);
+  color: #765414;
+}
+
+.module-section--encounter::before,
+.encounter-brief::before {
+  content: "Encounter";
+  background: rgba(141, 56, 47, 0.12);
+  color: var(--amba-red);
+}
+
+.encounter-brief--combat::before,
+.module-section--encounter.encounter-brief--combat::before {
+  content: "Encounter — Combat";
+}
+
+.encounter-brief--social::before,
+.module-section--encounter.encounter-brief--social::before {
+  content: "Encounter — Social";
+}
+
+.encounter-brief--puzzle::before,
+.module-section--encounter.encounter-brief--puzzle::before {
+  content: "Encounter — Puzzle";
+}
+
+.encounter-brief--trap::before,
+.module-section--encounter.encounter-brief--trap::before {
+  content: "Encounter — Trap";
+}
+
+.encounter-brief--haunt::before,
+.module-section--encounter.encounter-brief--haunt::before {
+  content: "Encounter — Haunt";
+}
+
+.encounter-brief--treasure::before,
+.module-section--encounter.encounter-brief--treasure::before {
+  content: "Encounter — Treasure";
+}
+
+.encounter-brief--story::before,
+.module-section--encounter.encounter-brief--story::before {
+  content: "Encounter — Story";
+}
+
+.trap-card,
+.hazard-card,
+.affliction-card {
+  border-top: 5px solid var(--amba-red);
+}
+
+.treasure-card {
+  border-top: 5px solid var(--amba-gold);
+}
+
+.kicker,
+.eyebrow,
+.section-kicker,
+.module-meta,
+.muted {
+  color: var(--amba-muted);
+  font-family: var(--amba-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.deck,
+.subtitle,
+.tagline {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.body-text,
+.clue-line,
+.handout-body,
+.stat-line,
+.map-caption {
+  margin: 0.65rem 0;
+  line-height: 1.55;
+}
+
+.adventure-facts,
+.key-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clue-list,
+.objective-list {
+  display: grid;
+  gap: 0;
+  margin: 0.45rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.adventure-facts li,
+.key-list li {
+  padding: 0.55rem 0.7rem;
+  border-left: 4px solid var(--amba-gold);
+  background: rgba(185, 137, 47, 0.11);
+}
+
+.clue-list li,
+.objective-list li {
+  margin: 0;
+  padding: var(--list-row-y, 0.2rem) var(--list-x, 0.8rem);
+  border: none;
+  border-top: 1px solid var(--list-line, rgba(185, 137, 47, 0.28));
+  border-right: 1px solid var(--list-line, rgba(185, 137, 47, 0.28));
+  border-left: 5px solid var(--list-accent, var(--amba-gold));
+  background: var(--list-bg, rgba(185, 137, 47, 0.11));
+}
+
+.clue-list li:first-child,
+.objective-list li:first-child {
+  padding-top: var(--list-edge-y, 0.65rem);
+  border-top: 1px solid var(--list-line, rgba(185, 137, 47, 0.28));
+  border-right: 1px solid var(--list-line, rgba(185, 137, 47, 0.28));
+  border-left: 5px solid var(--list-accent, var(--amba-gold));
+  border-radius: 6px 6px 0 0;
+}
+
+.clue-list li:last-child,
+.objective-list li:last-child {
+  padding-bottom: var(--list-edge-y, 0.65rem);
+  border-bottom: 1px solid var(--list-line, rgba(185, 137, 47, 0.28));
+  border-right: 1px solid var(--list-line, rgba(185, 137, 47, 0.28));
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.clue-list li:first-child:last-child,
+.objective-list li:first-child:last-child {
+  border-radius: 6px;
+}
+
+.clue-list li + li,
+.objective-list li + li {
+  margin-top: 0;
+  padding-top: var(--list-row-y, 0.2rem);
+  border-top: 1px solid var(--list-divider, rgba(185, 137, 47, 0.22));
+}
+
+/* Encounter briefs: compact rhythm — shared keyed-block spacing. */
+.encounter-brief,
+.module-section--encounter {
+  margin: 0.85rem auto;
+  padding: 0.85rem 1.05rem;
+  --enc-block-row-y: 0.2rem;
+  --enc-block-edge-y: 0.65rem;
+  --enc-block-x: 0.8rem;
+  --enc-block-after-heading: 0.15rem;
+  --enc-block-between: 0.45rem;
+  --list-row-y: var(--enc-block-row-y);
+  --list-edge-y: var(--enc-block-edge-y);
+  --list-x: var(--enc-block-x);
+  --list-line: rgba(185, 137, 47, 0.28);
+  --list-divider: rgba(185, 137, 47, 0.22);
+  --list-accent: var(--amba-gold);
+  --list-bg: rgba(185, 137, 47, 0.11);
+}
+
+.encounter-brief > .kicker,
+.encounter-brief > p.kicker,
+.module-section--encounter > .kicker,
+.module-section--encounter > p.kicker {
+  margin: 0 0 0.1rem;
+}
+
+.encounter-brief h2,
+.module-section--encounter h2 {
+  margin: 0.15rem 0 0.35rem;
+  padding-bottom: 0.15rem;
+}
+
+.encounter-brief h3,
+.encounter-brief h4,
+.module-section--encounter h3,
+.module-section--encounter h4,
+.outline-subsection h3,
+.outline-subsection h4 {
+  margin: 0.45rem 0 0.15rem;
+}
+
+.encounter-brief p,
+.module-section--encounter p,
+.outline-subsection p {
+  margin: 0.35rem 0;
+}
+
+.encounter-brief .read-aloud,
+.encounter-brief .boxed-text,
+.encounter-brief .danger-box,
+.encounter-brief .danger-note,
+.encounter-brief .warning-note,
+.encounter-brief .rules-note,
+.module-section--encounter .read-aloud,
+.module-section--encounter .boxed-text,
+.module-section--encounter .danger-box,
+.module-section--encounter .danger-note,
+.module-section--encounter .warning-note,
+.module-section--encounter .rules-note {
+  margin: var(--enc-block-between) 0;
+  padding: var(--enc-block-edge-y) var(--enc-block-x);
+}
+
+.encounter-brief .skill-challenge,
+.module-section--encounter .skill-challenge {
+  margin: var(--enc-block-between) 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.encounter-brief h3 + .clue-list,
+.encounter-brief h4 + .clue-list,
+.outline-subsection .clue-list {
+  margin-top: var(--enc-block-after-heading);
+}
+
+.encounter-brief .clue-list,
+.outline-subsection .clue-list {
+  margin: 0 0 var(--enc-block-between);
+}
+
+.encounter-brief .skill-challenge h3,
+.encounter-brief .dc-table h3,
+.module-section--encounter .skill-challenge h3 {
+  margin: var(--enc-block-between) 0 var(--enc-block-after-heading);
+}
+
+.encounter-brief .skill-challenge > .check-result,
+.module-section--encounter .skill-challenge > .check-result {
+  gap: 0.35rem;
+  margin: 0;
+  padding: var(--enc-block-row-y) var(--enc-block-x);
+  border: none;
+  border-top: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  background: #f4f0fa;
+}
+
+.encounter-brief .skill-challenge > .check-result:first-of-type,
+.module-section--encounter .skill-challenge > .check-result:first-of-type {
+  margin-top: var(--enc-block-after-heading);
+  padding-top: var(--enc-block-edge-y);
+  border-top: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  border-radius: 6px 6px 0 0;
+}
+
+.encounter-brief .skill-challenge > .check-result:last-of-type,
+.module-section--encounter .skill-challenge > .check-result:last-of-type {
+  padding-bottom: var(--enc-block-edge-y);
+  border-bottom: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.encounter-brief .skill-challenge > .check-result:first-of-type:last-of-type,
+.module-section--encounter .skill-challenge > .check-result:first-of-type:last-of-type {
+  border-radius: 6px;
+}
+
+.encounter-brief .check-result,
+.module-section--encounter .check-result {
+  gap: 0.35rem;
+}
+
+/* Trap / hazard / affliction / NPC cards — keyed stat rows match skill-challenge spacing. */
+.trap-card,
+.hazard-card,
+.affliction-card,
+.npc-card,
+.pc-card {
+  margin: 0.85rem auto;
+  padding: 0.85rem 1.05rem;
+  --keyed-row-y: 0.2rem;
+  --keyed-edge-y: 0.65rem;
+  --keyed-x: 0.8rem;
+  --keyed-after-heading: 0.15rem;
+  --keyed-between: 0.45rem;
+}
+
+.trap-card,
+.hazard-card,
+.affliction-card {
+  --keyed-line: rgba(141, 56, 47, 0.28);
+  --keyed-accent: var(--amba-red, #8d382f);
+  --keyed-bg: #fff0ec;
+}
+
+.npc-card,
+.pc-card {
+  --keyed-line: #d9e2ec;
+  --keyed-accent: var(--amba-blue, #244d72);
+  --keyed-bg: #edf4fa;
+}
+
+.trap-card > .kicker,
+.trap-card > p.kicker,
+.hazard-card > .kicker,
+.hazard-card > p.kicker,
+.affliction-card > .kicker,
+.affliction-card > p.kicker,
+.npc-card > .kicker,
+.npc-card > p.kicker,
+.pc-card > .kicker,
+.pc-card > p.kicker {
+  margin: 0 0 0.1rem;
+}
+
+.trap-card h2,
+.hazard-card h2,
+.affliction-card h2,
+.npc-card h2,
+.pc-card h2 {
+  margin: 0.15rem 0 0.35rem;
+  padding-bottom: 0.15rem;
+}
+
+.trap-card h3,
+.hazard-card h3,
+.affliction-card h3,
+.npc-card h3,
+.pc-card h3 {
+  margin: var(--keyed-between) 0 var(--keyed-after-heading);
+}
+
+.trap-card > p,
+.hazard-card > p,
+.affliction-card > p,
+.npc-card > p,
+.pc-card > p {
+  margin: 0.35rem 0;
+}
+
+.trap-card > .stat-row,
+.hazard-card > .stat-row,
+.affliction-card > .stat-row,
+.npc-card > .stat-row,
+.pc-card > .stat-row {
+  margin: 0;
+  padding: var(--keyed-row-y) var(--keyed-x);
+  border: none;
+  border-top: 1px solid var(--keyed-line);
+  border-right: 1px solid var(--keyed-line);
+  border-left: 5px solid var(--keyed-accent);
+  background: var(--keyed-bg);
+}
+
+.trap-card > .stat-row:first-of-type,
+.hazard-card > .stat-row:first-of-type,
+.affliction-card > .stat-row:first-of-type,
+.npc-card > .stat-row:first-of-type,
+.pc-card > .stat-row:first-of-type {
+  margin-top: var(--keyed-after-heading);
+  padding-top: var(--keyed-edge-y);
+  border-top: 1px solid var(--keyed-line);
+  border-right: 1px solid var(--keyed-line);
+  border-left: 5px solid var(--keyed-accent);
+  border-radius: 6px 6px 0 0;
+}
+
+.trap-card > .stat-row:last-of-type,
+.hazard-card > .stat-row:last-of-type,
+.affliction-card > .stat-row:last-of-type,
+.npc-card > .stat-row:last-of-type,
+.pc-card > .stat-row:last-of-type {
+  padding-bottom: var(--keyed-edge-y);
+  border-bottom: 1px solid var(--keyed-line);
+  border-right: 1px solid var(--keyed-line);
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.trap-card > .stat-row:first-of-type:last-of-type,
+.hazard-card > .stat-row:first-of-type:last-of-type,
+.affliction-card > .stat-row:first-of-type:last-of-type,
+.npc-card > .stat-row:first-of-type:last-of-type,
+.pc-card > .stat-row:first-of-type:last-of-type {
+  border-top: 1px solid var(--keyed-line);
+  border-radius: 6px;
+}
+
+.trap-card > .stat-row strong,
+.hazard-card > .stat-row strong,
+.affliction-card > .stat-row strong {
+  color: var(--keyed-accent);
+}
+
+.npc-card > .stat-row strong,
+.pc-card > .stat-row strong {
+  color: var(--keyed-accent);
+}
+
+.trap-card .skill-challenge,
+.hazard-card .skill-challenge,
+.affliction-card .skill-challenge,
+.npc-card .skill-challenge,
+.pc-card .skill-challenge {
+  margin: var(--keyed-between) 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.trap-card .skill-challenge h3,
+.hazard-card .skill-challenge h3,
+.affliction-card .skill-challenge h3,
+.npc-card .skill-challenge h3,
+.pc-card .skill-challenge h3 {
+  margin: var(--keyed-between) 0 var(--keyed-after-heading);
+}
+
+.trap-card .skill-challenge > .check-result,
+.hazard-card .skill-challenge > .check-result,
+.affliction-card .skill-challenge > .check-result,
+.npc-card .skill-challenge > .check-result,
+.pc-card .skill-challenge > .check-result {
+  margin: 0;
+  padding: var(--keyed-row-y) var(--keyed-x);
+  border: none;
+  border-top: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  background: #f4f0fa;
+}
+
+.trap-card .skill-challenge > .check-result:first-of-type,
+.hazard-card .skill-challenge > .check-result:first-of-type,
+.affliction-card .skill-challenge > .check-result:first-of-type,
+.npc-card .skill-challenge > .check-result:first-of-type,
+.pc-card .skill-challenge > .check-result:first-of-type {
+  margin-top: var(--keyed-after-heading);
+  padding-top: var(--keyed-edge-y);
+  border-top: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  border-radius: 6px 6px 0 0;
+}
+
+.trap-card .skill-challenge > .check-result:last-of-type,
+.hazard-card .skill-challenge > .check-result:last-of-type,
+.affliction-card .skill-challenge > .check-result:last-of-type,
+.npc-card .skill-challenge > .check-result:last-of-type,
+.pc-card .skill-challenge > .check-result:last-of-type {
+  padding-bottom: var(--keyed-edge-y);
+  border-bottom: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.trap-card .skill-challenge > .check-result:first-of-type:last-of-type,
+.hazard-card .skill-challenge > .check-result:first-of-type:last-of-type,
+.affliction-card .skill-challenge > .check-result:first-of-type:last-of-type,
+.npc-card .skill-challenge > .check-result:first-of-type:last-of-type,
+.pc-card .skill-challenge > .check-result:first-of-type:last-of-type {
+  border-radius: 6px;
+}
+
+/* Treasure cards — compact shell; clue-list uses global stacked list tokens. */
+.treasure-card {
+  margin: 0.85rem auto;
+  padding: 0.85rem 1.05rem;
+  --list-row-y: 0.2rem;
+  --list-edge-y: 0.65rem;
+  --list-x: 0.8rem;
+  --list-line: rgba(185, 137, 47, 0.28);
+  --list-divider: rgba(185, 137, 47, 0.22);
+  --list-accent: var(--amba-gold);
+  --list-bg: rgba(185, 137, 47, 0.11);
+}
+
+.treasure-card > .kicker,
+.treasure-card > p.kicker {
+  margin: 0 0 0.1rem;
+}
+
+.treasure-card h2 {
+  margin: 0.15rem 0 0.35rem;
+  padding-bottom: 0.15rem;
+}
+
+.treasure-card > p {
+  margin: 0.35rem 0;
+}
+
+.treasure-card .clue-list {
+  margin: 0.45rem 0;
+}
+
+/* Purpose classes: use these inside any narrative or artifact body. */
+
+.read-aloud,
+.readaloud,
+.boxed-text {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border-left: 5px solid var(--amba-blue);
+  background: #e8f1f8;
+  color: #14263a;
+  font-style: italic;
+}
+
+.gm-note,
+.designer-note,
+.sidebar,
+.sidebar-note {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d8c59b;
+  border-left: 5px solid var(--amba-gold);
+  border-radius: 6px;
+  background: #fff6df;
+  color: var(--amba-ink);
+}
+
+.player-handout,
+.handout,
+.handout-note {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #b7d3c5;
+  border-left: 5px solid var(--amba-green);
+  border-radius: 6px;
+  background: #eef8f2;
+}
+
+.warning-note,
+.danger-note,
+.danger-box {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e0b8ad;
+  border-left: 5px solid var(--amba-red);
+  border-radius: 6px;
+  background: #fff0ec;
+}
+
+.treasure,
+.reward-card {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #dec98b;
+  border-left: 5px solid var(--amba-gold);
+  border-radius: 6px;
+  background: #fff8df;
+}
+
+.map-note,
+.location-note {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #b7c7d6;
+  border-left: 5px solid var(--amba-blue);
+  border-radius: 6px;
+  background: #edf4fa;
+}
+
+.rules-note,
+.stat-ref,
+.dc-table {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  border-radius: 6px;
+  background: #f4f0fa;
+}
+
+/* Title sits above the box; check rows form the purple card. */
+.skill-challenge {
+  margin: 1rem 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.skill-challenge h3 {
+  margin: 1.1rem 0 0.4rem;
+}
+
+.skill-challenge > .check-result {
+  margin: 0;
+  padding: var(--list-row-y, 0.2rem) var(--list-x, 0.8rem);
+  border: none;
+  border-top: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  background: #f4f0fa;
+}
+
+.skill-challenge > .check-result:first-of-type {
+  margin-top: 0.25rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-left: 5px solid var(--amba-purple);
+  border-radius: 6px 6px 0 0;
+}
+
+.skill-challenge > .check-result:last-of-type {
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #d5c9e3;
+  border-right: 1px solid #d5c9e3;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.skill-challenge > .check-result:first-of-type:last-of-type {
+  border-radius: 6px;
+}
+
+.dc-table h3 {
+  margin-top: 0;
+}
+
+.stat-row,
+.check-result {
+  display: grid;
+  grid-template-columns: 6.75rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.stat-row {
+  margin: 0;
+  border-bottom: none;
+}
+
+.stat-row strong {
+  color: var(--amba-blue);
+}
+
+.stat-row span {
+  display: block;
+}
+
+.check-result {
+  padding: 0.35rem 0;
+  border-top: 1px solid #d5c9e3;
+}
+
+.check-result strong {
+  color: var(--amba-purple);
+}
+
+.check-result span {
+  display: block;
+}
+
+.check-result--critical-success strong {
+  color: #1b7f3a;
+}
+.check-result--success strong {
+  color: #3d7a4a;
+}
+.check-result--failure strong {
+  color: #9a4a3a;
+}
+.check-result--critical-failure strong {
+  color: var(--amba-red);
+}
+
+.check-result--critical-success strong,
+.stat-row:has(strong) {
+  /* degree colors applied on dedicated modifiers only */
+}
+
+.check-result--critical-success strong {
+  color: #1b7f3a;
+}
+.check-result--success strong {
+  color: #3d7a4a;
+}
+.check-result--failure strong {
+  color: #9a4a3a;
+}
+.check-result--critical-failure strong {
+  color: var(--amba-red);
+}
+
+.secret,
+.spoiler,
+.gm-only {
+  border-style: dashed;
+}
+
+.callout-grid,
+.two-column,
+.npc-grid,
+.encounter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* App and syndication artifact wrappers. */
+
+.syndication-artifact,
+.artifact,
+.artifact-detail {
+  position: relative;
+}
+
+.syndication-artifact,
+.artifact {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--amba-line);
+  border-radius: var(--amba-radius);
+  background: rgba(247, 242, 232, 0.92);
+}
+
+/*
+ * Layout/syndication always wraps artifacts in .syndication-artifact--*.
+ * Authored HTML often also includes .artifact.artifact--* (TinyMCE / samples).
+ * Collapse the inner type shell so badges and frames are not doubled.
+ */
+.syndication-artifact .artifact {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.syndication-artifact .artifact::before {
+  display: none;
+}
+
+.syndication-artifact::before,
+.artifact::before {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(36, 77, 114, 0.12);
+  color: var(--amba-blue);
+  font-family: var(--amba-sans);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.syndication-artifact--article::before,
+.artifact--article::before {
+  content: "Article";
+}
+
+.syndication-artifact--handout::before,
+.artifact--handout::before {
+  content: "Handout";
+  background: rgba(45, 97, 72, 0.13);
+  color: var(--amba-green);
+}
+
+.syndication-artifact--map::before,
+.artifact--map::before {
+  content: "Map";
+}
+
+.syndication-artifact--monster_block::before,
+.artifact--monster-block::before,
+.artifact--monster_block::before {
+  content: "Monster Block";
+  background: rgba(141, 56, 47, 0.12);
+  color: var(--amba-red);
+}
+
+.syndication-artifact--trap::before,
+.artifact--trap::before {
+  content: "Trap";
+  background: rgba(141, 56, 47, 0.12);
+  color: var(--amba-red);
+}
+
+.syndication-artifact--treasure::before,
+.artifact--treasure::before {
+  content: "Treasure";
+  background: rgba(185, 137, 47, 0.15);
+  color: #765414;
+}
+
+.syndication-artifact--random_table::before,
+.artifact--random-table::before,
+.artifact--random_table::before {
+  content: "Random Table";
+  background: rgba(92, 71, 120, 0.13);
+  color: var(--amba-purple);
+}
+
+.syndication-artifact--sidebar::before,
+.artifact--sidebar::before {
+  content: "Sidebar";
+  background: rgba(185, 137, 47, 0.15);
+  color: #765414;
+}
+
+.syndication-artifact--page::before,
+.artifact--page::before {
+  content: "Page";
+}
+
+.syndication-artifact--image::before,
+.artifact--image::before {
+  content: "Image";
+}
+
+.syndication-artifact--narrative::before,
+.artifact--narrative::before {
+  content: "Narrative";
+}
+
+/* Preview/syndication headers and type pills. */
+
+.page-header,
+.preview-child-header,
+.character-sheet-header {
+  width: min(920px, calc(100% - 2rem));
+  margin: 1rem auto 0.75rem;
+}
+
+.page-title,
+.preview-child-title,
+.character-sheet-name {
+  color: var(--amba-blue);
+}
+
+/* Shell chrome outside parchment .preview panels (artifact toggles, outline lists). */
+.collapsible-block-toggle,
+.collapsible-title,
+.collapsible-meta,
+.collapsible-caret,
+.outline-artifacts li {
+  color: var(--amba-chrome);
+}
+
+.collapsible-meta,
+.collapsible-caret {
+  opacity: 0.78;
+}
+
+.preview-pill {
+  font-family: var(--amba-sans);
+}
+
+.preview-pill--act {
+  background: rgba(36, 77, 114, 0.15);
+  color: var(--amba-blue);
+}
+
+.preview-pill--scene {
+  background: rgba(45, 97, 72, 0.15);
+  color: var(--amba-green);
+}
+
+.preview-pill--subscene {
+  background: rgba(185, 137, 47, 0.18);
+  color: #765414;
+}
+
+.preview-pill--encounter,
+.preview-pill--combat,
+.preview-pill--trap,
+.preview-pill--haunt {
+  background: rgba(141, 56, 47, 0.14);
+  color: var(--amba-red);
+}
+
+.preview-pill--social,
+.preview-pill--puzzle {
+  background: rgba(92, 71, 120, 0.14);
+  color: var(--amba-purple);
+}
+
+/* Media and map handling. */
+
+/* ASCII/text maps — preserve spacing and line breaks (div.map or pre.ascii-map). */
+.map,
+.ascii-map,
+pre.ascii-map {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #b7c7d6;
+  border-radius: 6px;
+  background: #f7f9fb;
+  color: var(--amba-ink);
+  max-width: 100%;
+  overflow-x: auto;
+  font-family: var(--amba-mono);
+  font-size: 0.82rem;
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  line-height: 1.35;
+  tab-size: 4;
+  white-space: pre;
+}
+
+pre.ascii-map code {
+  color: inherit;
+  font-family: inherit;
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  line-height: inherit;
+  white-space: pre;
+}
+
+.artifact-detail-figure,
+.module-cover,
+.map-frame,
+.image-frame {
+  margin: 1rem auto;
+  max-width: 100%;
+}
+
+.artifact-detail-figure > img,
+.module-cover > img,
+.map-frame > img,
+.image-frame > img,
+.preview-root img:not(.character-sheet-portrait):not(.zoomable-image-img):not(.layout-image-zoom-stage img) {
+  display: block;
+  max-width: 100%;
+  max-height: 560px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.preview-root .zoomable-image-stage img,
+.preview-root .zoomable-image-img,
+.preview-root .layout-image-zoom-stage img {
+  max-width: none !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.artifact-detail-caption,
+.image-caption,
+.map-caption {
+  margin-top: 0.35rem;
+  color: var(--amba-muted);
+  font-family: var(--amba-sans);
+  font-size: 0.82rem;
+}
+
+/* Generated content theme overrides. */
+
+.aon-encounter-sheet,
+.aon-treasure-sheet,
+.donjon-encounter-table,
+.pf2e-sheet {
+  margin: 1rem 0;
+}
+
+.aon-stat-block,
+.donjon-encounter-table .stat-block,
+.dd35-stat-block,
+.pf1e-beast-stat-block {
+  border-color: var(--amba-red);
+}
+
+.aon-trait {
+  background: rgba(141, 56, 47, 0.08);
+}
+
+.monster-block-image img,
+.monster-block-image .zoomable-image-img {
+  border: 1px solid var(--amba-line);
+  border-radius: 6px;
+}
+
+.pf2e-sheet {
+  max-width: 100%;
+}
+
+/* Optional custom classes for richer adventure pages. */
+
+.timeline,
+.rumor-table,
+.faction-card,
+.quest-card,
+.location-card,
+.villain-card,
+.downtime-card {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--amba-line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.timeline {
+  border-left: 5px solid var(--amba-blue);
+}
+
+.rumor-table {
+  border-left: 5px solid var(--amba-purple);
+}
+
+.faction-card,
+.quest-card {
+  border-left: 5px solid var(--amba-green);
+}
+
+.villain-card {
+  border-left: 5px solid var(--amba-red);
+}
+
+.downtime-card {
+  border-left: 5px solid var(--amba-gold);
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid rgba(102, 93, 83, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--amba-muted);
+  font-family: var(--amba-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .callout-grid,
+  .two-column,
+  .npc-grid,
+  .encounter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview,
+  .artifact-detail-html.preview,
+  .preview-narrative,
+  .syndication-artifact,
+  .character-page-block,
+  .module-overview,
+  .module-section,
+  .scene-brief,
+  .encounter-brief,
+  .npc-card,
+  .pc-card,
+  .character-page {
+    width: min(100%, calc(100% - 1rem));
+    margin: 0.75rem auto;
+    padding: 0.9rem 1rem;
+  }
+
+  .preview-root h1 {
+    font-size: 1.55rem;
+  }
+
+  .preview-root h2 {
+    font-size: 1.2rem;
+  }
+}
