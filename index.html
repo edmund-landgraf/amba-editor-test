@@ -6,22 +6,18 @@
   <title>AMBA Editor CSS Playground</title>
   <script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"></script>
   <style>
-    :root {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #20242a;
-      background: #eef0f3;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; }
-    .shell { max-width: 1380px; margin: 24px auto; padding: 0 20px 48px; }
+    :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:#20242a; background:#eef0f3; }
+    * { box-sizing:border-box; }
+    body { margin:0; }
+    .shell { max-width:1380px; margin:24px auto; padding:0 20px 48px; }
     .app-head { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; margin-bottom:16px; }
     h1 { margin:0 0 5px; font-size:1.8rem; }
     .lede { margin:0; color:#626a73; }
     .badges { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
     .badge { background:#fff; border:1px solid #cfd4da; border-radius:999px; padding:5px 9px; font-size:.78rem; font-weight:700; }
-    .note { border-left:4px solid #6b7280; padding:10px 12px; background:white; color:#4b5563; margin:14px 0 16px; }
+    .note { border-left:4px solid #6b7280; padding:10px 12px; background:#fff; color:#4b5563; margin:14px 0 16px; }
     .toolbar-row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
-    button { border:1px solid #b9bec5; border-radius:6px; background:white; padding:8px 12px; cursor:pointer; font-weight:650; }
+    button { border:1px solid #b9bec5; border-radius:6px; background:#fff; padding:8px 12px; cursor:pointer; font-weight:650; }
     button:hover { background:#f8f9fa; }
     .output-title { margin-top:22px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .output-title h2 { margin:0; }
@@ -39,24 +35,21 @@
   <div class="app-head">
     <div>
       <h1>AMBA Editor CSS Playground</h1>
-      <p class="lede">TinyMCE outside AMBA, using the copied AMBA master preview and two-column CSS.</p>
+      <p class="lede">TinyMCE outside AMBA, emitting AMBA-classed HTML with copied AMBA preview CSS.</p>
     </div>
     <div class="badges">
       <span class="badge">master-preview.css</span>
       <span class="badge">amba-two-column-layout.css</span>
-      <span class="badge">AMBA classed HTML</span>
+      <span class="badge">editor contrast patch</span>
     </div>
   </div>
 
   <div class="note">
-    <strong>AMBA Insert</strong> creates semantic structures. <strong>AMBA Style</strong> wraps or styles selected content.
-    <strong>AMBA Layout</strong> adds flow/layout controls. Use <strong>Load Component Gallery</strong> to visually inspect the real AMBA CSS.
+    <strong>AMBA Insert</strong> creates semantic structures. <strong>AMBA Style</strong> wraps selected content.
+    <strong>Load Adventure Sample</strong> now loads a condensed version of the AMBA help-doc worked example, <em>The Lantern Under Greyford</em>.
   </div>
 
-  <textarea id="editor">
-    <h2>The Broken Chapel</h2>
-    <p>The stone door stands half open. Something is moving beyond it.</p>
-  </textarea>
+  <textarea id="editor"><h2>The Broken Chapel</h2><p>The stone door stands half open. Something is moving beyond it.</p></textarea>
 
   <div class="toolbar-row">
     <button type="button" id="galleryBtn">Load Component Gallery</button>
@@ -81,16 +74,12 @@
 </div>
 
 <script>
-const cssVersion = '20260828-2';
+const cssVersion = '20260828-4';
 
-function insert(editor, html) {
-  editor.insertContent(html);
-  editor.focus();
-}
+function insert(editor, html) { editor.insertContent(html); editor.focus(); }
 
 function challengeTemplate() {
-  return `<section class="skill-challenge skill-challenge--pf2e">
-    <h3>Challenge Name</h3>
+  return `<section class="skill-challenge skill-challenge--pf2e"><h3>Challenge Name</h3>
     <div class="stat-row"><strong>Primary Check</strong><span>Skill DC 20</span></div>
     <div class="check-result check-result--critical-success"><strong>Critical Success</strong><div>Describe the best possible result.</div></div>
     <div class="check-result check-result--success"><strong>Success</strong><div>Describe the successful result.</div></div>
@@ -100,261 +89,264 @@ function challengeTemplate() {
 }
 
 function dcTableTemplate() {
-  return `<section class="dc-table">
-    <h3>Difficulty Classes</h3>
-    <table><thead><tr><th>Task</th><th>DC</th><th>Notes</th></tr></thead>
-    <tbody><tr><td>Notice the clue</td><td>18</td><td>Perception</td></tr><tr><td>Understand it</td><td>20</td><td>Relevant Lore</td></tr></tbody></table>
-  </section><p></p>`;
+  return `<section class="dc-table"><h3>Difficulty Classes</h3><table><thead><tr><th>Task</th><th>DC</th><th>Notes</th></tr></thead><tbody><tr><td>Notice the clue</td><td>18</td><td>Perception</td></tr><tr><td>Understand it</td><td>20</td><td>Relevant Lore</td></tr></tbody></table></section><p></p>`;
 }
 
 function keyedCard(className, title, rows, body='') {
   return `<section class="${className}"><h3>${title}</h3>${rows.map(([k,v]) => `<div class="stat-row"><strong>${k}</strong><span>${v}</span></div>`).join('')}${body}</section><p></p>`;
 }
 
-function trapTemplate() {
-  return keyedCard('trap-card', 'Trap Name', [['Stealth','DC 20'],['Disable','Thievery DC 20']], '<p><strong>Trigger</strong> Describe the trigger.</p><p><strong>Effect</strong> Describe the effect.</p>');
-}
-
-function hazardTemplate() {
-  return keyedCard('hazard-card', 'Hazard Name', [['Stealth','DC 21'],['Disable','Relevant skill DC 21']], '<p><strong>Routine</strong> Describe how the hazard operates.</p>');
-}
-
-function afflictionTemplate() {
-  return keyedCard('affliction-card', 'Affliction Name', [['Saving Throw','Fortitude DC 20'],['Onset','Immediate']], '<p><strong>Stage 1</strong> Describe the effect.</p>');
-}
-
-function treasureTemplate() {
-  return `<section class="treasure-card"><h3>Treasure</h3><ul class="treasure-list"><li>Item or reward</li><li>Coins or valuables</li></ul></section><p></p>`;
-}
-
-function npcTemplate() {
-  return keyedCard('npc-card', 'NPC Name', [['Role','Ally / Rival / Contact'],['Level','3']], '<p><strong>Motivation</strong> What this NPC wants.</p><p><strong>Roleplay</strong> Voice, mannerisms, or tactics.</p>');
-}
-
-function handoutTemplate() {
-  return `<section class="artifact artifact--handout player-handout"><p class="kicker">Player Handout</p><h3 class="handout-title">Handout Title</h3><div class="handout-body"><p>Player-facing handout text.</p></div></section><p></p>`;
-}
+function trapTemplate() { return keyedCard('trap-card','Trap Name',[['Stealth','DC 20'],['Disable','Thievery DC 20']],'<p><strong>Trigger</strong> Describe the trigger.</p><p><strong>Effect</strong> Describe the effect.</p>'); }
+function hazardTemplate() { return keyedCard('hazard-card','Hazard Name',[['Stealth','DC 21'],['Disable','Relevant skill DC 21']],'<p><strong>Routine</strong> Describe how the hazard operates.</p>'); }
+function afflictionTemplate() { return keyedCard('affliction-card','Affliction Name',[['Saving Throw','Fortitude DC 20'],['Onset','Immediate']],'<p><strong>Stage 1</strong> Describe the effect.</p>'); }
+function treasureTemplate() { return `<section class="treasure-card"><h3>Treasure</h3><ul class="treasure-list"><li>Item or reward</li><li>Coins or valuables</li></ul></section><p></p>`; }
+function npcTemplate() { return keyedCard('npc-card','NPC Name',[['Role','Ally / Rival / Contact'],['Level','3']],'<p><strong>Motivation</strong> What this NPC wants.</p><p><strong>Roleplay</strong> Voice, mannerisms, or tactics.</p>'); }
+function handoutTemplate() { return `<section class="artifact artifact--handout player-handout"><p class="kicker">Player Handout</p><h3 class="handout-title">Handout Title</h3><div class="handout-body"><p>Player-facing handout text.</p></div></section><p></p>`; }
 
 function encounterTemplate(flavor) {
-  const label = flavor.charAt(0).toUpperCase() + flavor.slice(1);
+  const label = flavor.charAt(0).toUpperCase()+flavor.slice(1);
   return `<section class="module-section module-section--encounter encounter-brief encounter-brief--${flavor}"><h3>${label} Encounter</h3><p>Describe the encounter situation, stakes, and resolution.</p></section><p></p>`;
 }
 
 function structureTemplate(type) {
-  const labels = {overview:'Overview', act:'Act', scene:'Scene', subscene:'Subscene'};
-  const label = labels[type];
-  if (type === 'overview') return `<section class="module-overview"><p class="kicker">Adventure Overview</p><h1>Module Title</h1><p>Opening overview text.</p></section><p></p>`;
-  const extra = type === 'scene' ? ' scene-brief' : '';
+  const labels={overview:'Overview',act:'Act',scene:'Scene',subscene:'Subscene'};
+  const label=labels[type];
+  if(type==='overview') return `<section class="module-overview"><p class="kicker">Adventure Overview</p><h1>Module Title</h1><p>Opening overview text.</p></section><p></p>`;
+  const extra=type==='scene'?' scene-brief':'';
   return `<section class="module-section module-section--${type}${extra}"><p class="kicker">${label}</p><h2>${label} Title</h2><p>Describe this ${type}.</p></section><p></p>`;
 }
 
-function storyCardTemplate(className, title) {
-  return `<section class="${className}"><h3>${title}</h3><p>Describe ${title.toLowerCase()} information here.</p></section><p></p>`;
-}
-
-function listTemplate(className, title) {
-  return `<section><h3>${title}</h3><ul class="${className}"><li>First entry</li><li>Second entry</li><li>Third entry</li></ul></section><p></p>`;
-}
+function storyCardTemplate(className,title) { return `<section class="${className}"><h3>${title}</h3><p>Describe ${title.toLowerCase()} information here.</p></section><p></p>`; }
+function listTemplate(className,title) { return `<section><h3>${title}</h3><ul class="${className}"><li>First entry</li><li>Second entry</li><li>Third entry</li></ul></section><p></p>`; }
 
 function twoColumnTemplate() {
-  return `<section class="amba-flow module-section--scene">
-    <div class="amba-flow__lead"><p class="kicker">Two-column flow</p><h2>Section Title</h2></div>
-    <div class="amba-flow__columns">
-      <div class="amba-flow__col"><p>Left column content.</p><p>Add additional prose here.</p></div>
-      <div class="amba-flow__col"><p>Right column content.</p><p>Add additional prose here.</p></div>
-    </div>
-  </section><p></p>`;
+  return `<section class="amba-flow module-section--scene"><div class="amba-flow__lead"><p class="kicker">Two-column flow</p><h2>Section Title</h2></div><div class="amba-flow__columns"><div class="amba-flow__col"><p>Left column content.</p><p>Add additional prose here.</p></div><div class="amba-flow__col"><p>Right column content.</p><p>Add additional prose here.</p></div></div></section><p></p>`;
 }
 
 function galleryTemplate() {
-  return `
-  <section class="module-overview">
-    <p class="kicker">AMBA CSS Gallery</p><h1>Master Preview Components</h1>
-    <p>This page intentionally exercises semantic AMBA classes using the copied production CSS.</p>
-    <ul class="adventure-facts"><li><strong>System</strong> Pathfinder 2e</li><li><strong>Purpose</strong> Editor CSS test</li></ul>
-  </section>
-
-  <section class="module-section module-section--act"><p class="kicker">Act</p><h2>Act Shell</h2><p>Act-level narrative container.</p></section>
-  <section class="module-section module-section--scene scene-brief"><p class="kicker">Scene</p><h2>Scene Shell</h2><p>Scene-level narrative container.</p></section>
-  <section class="module-section module-section--subscene"><p class="kicker">Subscene</p><h2>Subscene Shell</h2><p>Subscene-level narrative container.</p></section>
-
+  return `<section class="module-overview"><p class="kicker">AMBA CSS Gallery</p><h1>Master Preview Components</h1><p>This page exercises semantic AMBA classes using the copied AMBA CSS.</p><ul class="adventure-facts"><li><strong>System</strong> Pathfinder 2e</li><li><strong>Purpose</strong> Editor CSS test</li></ul></section>
   <div class="read-aloud"><strong>Read Aloud.</strong> The old stones drink the last light of evening.</div>
-  <div class="boxed-text">Boxed descriptive text can be visually distinct from ordinary prose.</div>
   <div class="gm-note"><strong>GM Note.</strong> This information is intended for the GM.</div>
-  <div class="designer-note"><strong>Designer Note.</strong> Development or author-facing guidance.</div>
-  <aside class="sidebar"><strong>Sidebar.</strong> Supplemental material that can break out from the main prose.</aside>
-  <div class="rules-note"><strong>Rules.</strong> Put a concise rules reference here.</div>
+  <aside class="sidebar"><strong>Sidebar.</strong> Supplemental material.</aside>
+  <div class="rules-note"><strong>Rules.</strong> A concise rules reference.</div>
   <div class="warning-note"><strong>Warning.</strong> Important cautionary information.</div>
-  <div class="danger-note"><strong>Danger.</strong> High-risk or especially important information.</div>
-  <div class="secret gm-only"><strong>Secret / GM Only.</strong> Hidden information for the GM.</div>
-  <div class="map-note"><strong>Map Note.</strong> Describe a keyed map detail.</div>
-  <div class="location-note"><strong>Location Note.</strong> Describe a place-specific detail.</div>
-
-  ${challengeTemplate()}
-  ${dcTableTemplate()}
-  ${trapTemplate()}
-  ${hazardTemplate()}
-  ${afflictionTemplate()}
-  ${treasureTemplate()}
-  ${npcTemplate()}
-
-  <section class="timeline"><h3>Timeline</h3><p>Event sequence or chronology.</p></section>
-  <section class="rumor-table"><h3>Rumor Table</h3><table><tbody><tr><td>1</td><td>A useful rumor.</td></tr><tr><td>2</td><td>A misleading rumor.</td></tr></tbody></table></section>
-  <section class="faction-card"><h3>Faction Card</h3><p>Faction goals, resources, and relationships.</p></section>
-  <section class="quest-card"><h3>Quest Card</h3><p>Objective, stakes, and reward.</p></section>
-  <section class="location-card"><h3>Location Card</h3><p>Key features and notable details.</p></section>
-  <section class="villain-card"><h3>Villain Card</h3><p>Agenda, methods, and pressure.</p></section>
-  <section class="downtime-card"><h3>Downtime Card</h3><p>Downtime opportunity or activity.</p></section>
-
-  <h3>Clues</h3><ul class="clue-list"><li>First clue</li><li>Second clue</li><li>Third clue</li></ul>
-  <h3>Objectives</h3><ul class="objective-list"><li>Primary objective</li><li>Optional objective</li></ul>
-  <h3>Key Facts</h3><ul class="key-list"><li><strong>Location</strong> The Broken Chapel</li><li><strong>Threat</strong> Echoes</li></ul>
-
-  ${handoutTemplate()}
-  ${encounterTemplate('combat')}
-  ${encounterTemplate('social')}
-  ${encounterTemplate('puzzle')}
-  ${encounterTemplate('trap')}
-  ${encounterTemplate('haunt')}
-  ${encounterTemplate('treasure')}
-  ${encounterTemplate('story')}
-  ${twoColumnTemplate()}`;
+  <div class="danger-note"><strong>Danger.</strong> High-risk information.</div>
+  <div class="secret gm-only"><strong>Secret / GM Only.</strong> Hidden GM information.</div>
+  <div class="map-note"><strong>Map Note.</strong> A keyed map detail.</div>
+  ${challengeTemplate()}${dcTableTemplate()}${trapTemplate()}${hazardTemplate()}${afflictionTemplate()}${treasureTemplate()}${npcTemplate()}${handoutTemplate()}${twoColumnTemplate()}`;
 }
 
 function sampleTemplate() {
-  return `<p class="kicker">Scene 3</p><h2>The Broken Chapel</h2>
-    <div class="read-aloud">Rain hisses against the broken saints carved above the chapel doors. Somewhere inside, a bell rings once.</div>
-    <div class="gm-note"><strong>GM Note.</strong> The bell is not physical. Characters who investigate it can attempt the challenge below.</div>
-    ${challengeTemplate()}
-    ${treasureTemplate()}`;
+  return `
+<section class="module-overview">
+  <p class="kicker">Short urban dungeon for levels 2-3</p>
+  <h1>The Lantern Under Greyford</h1>
+  <p class="read-aloud">Lord Aldren Greymark's summons arrives at dusk, sealed in blue wax and carried by an exhausted rider. Something is moving again beneath the old dungeon outside Greyford, and the lord wants quiet investigators before fear reaches the market.</p>
+  <h2>Adventure Premise</h2>
+  <p>The PCs meet Lord Greymark, learn that new lights and tracks have appeared around a sealed dungeon, and follow the trail from city rumor to the old entrance. The activity is tied to a neglected warding lantern beneath the ruin.</p>
+  <ul class="adventure-facts">
+    <li><strong>Theme:</strong> civic mystery, wet stone, failing infrastructure, old promises.</li>
+    <li><strong>Primary location:</strong> Greyford, Lord Greymark's hall, and the old dungeon below the city.</li>
+    <li><strong>Expected length:</strong> one long session or two short sessions.</li>
+    <li><strong>Best party fit:</strong> investigators, protectors, troubleshooters, or hired problem-solvers.</li>
+  </ul>
+  <h2>GM Summary</h2>
+  <p>Lord Greymark hires the PCs after scouts find fresh footprints, green lamp-glow, and broken masonry at the sealed dungeon entrance. The first scene is a non-combat briefing. The second scene is the dungeon investigation.</p>
+</section>
+
+<section class="artifact artifact--handout player-handout">
+  <p class="kicker">Player hook · No spoilers</p>
+  <h2>The Lantern Under Greyford</h2>
+  <p class="read-aloud">Every night, Greyford's lamplighters kindle three hundred flames along the river walls. Now one lamp burns green beneath streets where no lamp should remain, and something in the dark has begun answering it.</p>
+  <h3>A Lord's Plea</h3>
+  <p class="handout-body"><strong>Lord Aldren Greymark:</strong> “I ask you to defend the people who live beneath my name. Find my scouts. Learn what woke below Greyford.”</p>
+  <h3>Bring a Hero Who...</h3>
+  <ul class="clue-list">
+    <li>has a reason to protect Greyford, even if they distrust its rulers;</li>
+    <li>knows a missing scout, watch member, ferryman, engineer, or lamplighter;</li>
+    <li>wants to investigate, negotiate, improvise, and stand beside the party if the lanterns fail.</li>
+  </ul>
+</section>
+
+<section class="module-section module-section--act">
+  <p class="kicker">Act 1</p>
+  <h1>The Dark Lantern</h1>
+  <p class="read-aloud">A sealed message reaches the party at dusk: Lord Aldren Greymark requests discreet help. Old stones below Greyford have begun to glow, scouts have vanished from the dungeon road, and the city is not ready to hear that the old ruin is awake.</p>
+  <h2>Act Beats</h2>
+  <ol class="clue-list">
+    <li><strong>Summons:</strong> the PCs are called to Greymark Castle.</li>
+    <li><strong>Briefing:</strong> Greymark explains the old dungeon activity and offers support.</li>
+    <li><strong>Approach:</strong> the party follows the old road to the dungeon entrance.</li>
+    <li><strong>Threshold:</strong> trouble at the gatehouse proves something is active inside.</li>
+    <li><strong>Descent:</strong> clues point toward the cistern lantern and pressure valves.</li>
+  </ol>
+  <div class="gm-note"><strong>Tone:</strong> keep the act grounded and investigative. The party should feel useful before they feel trapped.</div>
+</section>
+
+<div class="map-note">
+  <p class="kicker">Act map</p>
+  <h2>Greyford City Map</h2>
+  <p>Use the city map to orient Greymark Castle, the river bridge, market district, watch house, and the sealed road toward the old dungeon.</p>
+</div>
+
+<section class="module-section module-section--scene scene-brief">
+  <p class="kicker">Scene 1</p>
+  <h1>Greymark Castle</h1>
+  <p class="read-aloud">Lord Greymark's hall smells of wet wool, lamp oil, and old stone. A city map lies open on the table, pinned at the bridge, the market, and a sealed road leading toward the abandoned dungeon.</p>
+  <h2>Scene Goals</h2>
+  <ul class="clue-list"><li>Introduce Lord Greymark as patron, pressure source, and information gate.</li><li>Give the party a reason to investigate quietly before panic spreads.</li><li>Let the players negotiate payment, authority, supplies, and access to records.</li></ul>
+  <div class="skill-challenge skill-challenge--pf2e">
+    <h3>Reading the Room</h3>
+    <div class="check-result"><strong>Check</strong><span>Perception, Society, Diplomacy, or a relevant Lore.</span></div>
+    <div class="check-result"><strong>Success</strong><span>Greymark fears public panic more than personal danger and will pay extra for discretion.</span></div>
+    <div class="check-result"><strong>Critical Success</strong><span>The worker's key is recently polished; Greymark is withholding old family records.</span></div>
+    <div class="check-result"><strong>Failure</strong><span>The party still gets the job, map, writ, and supplies, but no leverage over Greymark's hidden guilt.</span></div>
+  </div>
+  <div class="gm-note"><strong>GM Note:</strong> do not start combat here. If the players push for action, end with a messenger reporting fresh movement at the dungeon entrance.</div>
+</section>
+
+<section class="npc-card">
+  <p class="kicker">NPC</p>
+  <h2>Lord Aldren Greymark</h2>
+  <div class="stat-row"><strong>Role</strong><span>Patron, civic authority, reluctant keeper of old records.</span></div>
+  <div class="stat-row"><strong>Wants</strong><span>The threat contained before Greyford panics.</span></div>
+  <div class="stat-row"><strong>Hides</strong><span>His family knew the old lantern system required maintenance and let the practice lapse.</span></div>
+  <p>Greymark is direct, tired, and more afraid of civic collapse than scandal.</p>
+</section>
+
+<section class="module-section module-section--scene scene-brief">
+  <p class="kicker">Scene 2</p>
+  <h1>Investigating the Dungeon</h1>
+  <p class="read-aloud">The old dungeon road descends through rain-black stone. Green light flashes behind the gatehouse slit, then disappears. Water runs from beneath the sealed door although the hill above you is dry.</p>
+  <h2>Exploration Goals</h2>
+  <ul class="clue-list"><li>Confirm the old entrance has been disturbed from below.</li><li>Find signs of the missing scouts.</li><li>Discover that the dungeon and Greyford's bridge lanterns were once part of one maintenance system.</li></ul>
+</section>
+
+<div class="map-note">
+  <p class="kicker">Scene map</p>
+  <h2>Old Cistern Map</h2>
+  <ul class="key-list"><li><strong>Gatehouse</strong> Entrance and first combat.</li><li><strong>Sluice Hall</strong> Pressure trap and side drain.</li><li><strong>Valve Chamber</strong> Cache and maintenance diagram.</li><li><strong>Lantern Well</strong> Final confrontation.</li></ul>
+</div>
+
+<section class="module-section module-section--encounter encounter-brief encounter-brief--combat">
+  <p class="kicker">Encounter 1</p>
+  <h2>Old Gatehouse Entrance</h2>
+  <p class="read-aloud">Something pale moves beneath the broken portcullis. Then another shape rolls through the water, followed by the scrape of wet bodies over stone.</p>
+  <h3>Setup</h3>
+  <p>Scavengers have gathered where the damaged ward is leaking heat and magic. The party can fight, withdraw, or use the gate mechanism to control the threshold.</p>
+  <div class="gm-note"><strong>PF2e:</strong> replace this prose placeholder with the generated AoN monster block when preparing the final module.</div>
+</section>
+
+<section class="trap-card">
+  <p class="kicker">Trap</p>
+  <h2>Pressure Sluice</h2>
+  <p>A brass plate in the sluice hall triggers when weight crosses the central channel without first turning the maintenance wheel.</p>
+  <div class="stat-row"><strong>Hazard</strong><span>Level 1 simple mechanical trap.</span></div>
+  <div class="stat-row"><strong>Stealth</strong><span>DC 17 to notice the pressure plate and scrape marks.</span></div>
+  <div class="stat-row"><strong>Disable</strong><span>Thievery DC 17, Crafting DC 16, or Athletics DC 18.</span></div>
+  <div class="stat-row"><strong>Trigger</strong><span>A Small or larger creature steps on the central plate.</span></div>
+  <div class="stat-row"><strong>Effect</strong><span>A sluice burst pushes creatures toward the lower channel and extinguishes exposed flames.</span></div>
+  <div class="skill-challenge skill-challenge--pf2e"><h3>PF2e Play Notes</h3><div class="check-result"><strong>Investigate</strong><span>Perception DC 17 reveals the safe scrape-marked route.</span></div><div class="check-result"><strong>Reward</strong><span>Opening the side drain reduces water pressure in the final encounter.</span></div></div>
+</section>
+
+<section class="treasure-card">
+  <p class="kicker">Treasure</p>
+  <h2>Lamplighter's Cache</h2>
+  <p>The cache is hidden behind a loose brick in the valve chamber. It belonged to generations of lamplighters who treated the cistern as a civic shrine.</p>
+  <ul class="treasure-list"><li>A polished brass key stamped with Greyford's bridge mark.</li><li>A waterproof pouch of coins.</li><li>A useful light-themed consumable.</li><li>A folded maintenance diagram connecting the lamp house and lantern well.</li></ul>
+</section>
+
+<section class="artifact artifact--handout player-handout">
+  <p class="kicker">Player handout</p>
+  <h2>Bridge Lantern Maintenance Diagram</h2>
+  <p class="handout-body">The drawing is water-stained but readable. Three ink lines connect the lamp house, the market drain, and a round chamber marked <em>lower lantern — do not open during flood tide</em>.</p>
+  <ul class="key-list"><li><strong>Lamp house</strong> shares the same flame path as the lantern well below.</li><li><strong>Side drain</strong> reduces pressure before the lower mechanism is opened.</li><li><strong>Brass key</strong> seats into the lower flame socket.</li></ul>
+</section>
+
+<section class="module-section module-section--encounter encounter-brief encounter-brief--story">
+  <p class="kicker">Encounter 2</p>
+  <h2>The Cistern Lantern</h2>
+  <p class="read-aloud">The final chamber opens into a round well of black water. A lantern the size of a wagon wheel hangs from three chains above it. Its glass is cracked, its flame is green, and the missing brass key turns slowly inside the light.</p>
+  <h3>Ways to Resolve</h3>
+  <ul class="clue-list"><li><strong>Repair:</strong> recover the key, calm the pressure valves, and relight the flame.</li><li><strong>Combat:</strong> defeat or drive off the guardian spirit, then stabilize the lantern.</li><li><strong>Bargain:</strong> promise renewed maintenance, public remembrance, or a restored river rite.</li></ul>
+  <div class="skill-challenge skill-challenge--pf2e">
+    <h3>Stabilize the Lantern</h3>
+    <div class="check-result"><strong>Goal</strong><span>3 successes before 3 failures.</span></div>
+    <div class="check-result"><strong>Repair DC 15</strong><span>Crafting resets a bent gear or seats the brass key.</span></div>
+    <div class="check-result"><strong>Ward DC 15</strong><span>Arcana or Religion calms the warding flame.</span></div>
+    <div class="check-result"><strong>Bargain DC 16</strong><span>Diplomacy or Performance convinces the guardian to pause the surge.</span></div>
+    <div class="check-result"><strong>Brace DC 14</strong><span>Athletics or Acrobatics steadies the chains or reaches the key.</span></div>
+  </div>
+  <div class="danger-note"><strong>Escalation:</strong> if the PCs ignore the lantern and only fight, the water rises each round. Eventually the escape route begins flooding.</div>
+</section>
+
+<section class="quest-card">
+  <p class="kicker">Mira Vell sidequest</p>
+  <h2>Finding Tomas</h2>
+  <p class="read-aloud">Tomas Rill taught Mira that every locked door leaves a record: a bent hinge, a changed duty roster, a name somebody stops saying. He vanished on the old dungeon road carrying his watch whistle and a survey book.</p>
+  <h3>Objectives</h3>
+  <ol class="objective-list"><li>Follow Tomas's actual route.</li><li>Recover signs of the missing scout.</li><li>Learn who altered the watch ledger.</li><li>Bring him home — or bring home the truth.</li></ol>
+  <div class="gm-note"><strong>Continuity Note:</strong> never hide the adventure's only path behind this sidequest. Its clues should deepen Mira's story or provide an advantage, not gate the main investigation.</div>
+</section>`;
 }
 
-function updateOutput(editor) {
-  document.getElementById('htmlOutput').textContent = editor.getContent({ format:'html' });
-}
+function updateOutput(editor) { document.getElementById('htmlOutput').textContent=editor.getContent({format:'html'}); }
 
-const formatDefs = {
-  amba_read_aloud: { block:'div', classes:'read-aloud', wrapper:true },
-  amba_boxed: { block:'div', classes:'boxed-text', wrapper:true },
-  amba_gm_note: { block:'div', classes:'gm-note', wrapper:true },
-  amba_designer_note: { block:'div', classes:'designer-note', wrapper:true },
-  amba_sidebar: { block:'aside', classes:'sidebar', wrapper:true },
-  amba_rules: { block:'div', classes:'rules-note', wrapper:true },
-  amba_warning: { block:'div', classes:'warning-note', wrapper:true },
-  amba_danger: { block:'div', classes:'danger-note', wrapper:true },
-  amba_secret: { block:'div', classes:'secret gm-only', wrapper:true },
-  amba_map_note: { block:'div', classes:'map-note', wrapper:true },
-  amba_location_note: { block:'div', classes:'location-note', wrapper:true },
-  amba_stat_ref: { block:'div', classes:'stat-ref', wrapper:true },
-  amba_kicker: { block:'p', classes:'kicker' },
-  amba_eyebrow: { block:'p', classes:'eyebrow' },
-  amba_subtitle: { block:'p', classes:'subtitle' },
-  amba_muted: { inline:'span', classes:'muted' },
-  amba_wide: { block:'div', classes:'wide', wrapper:true }
+const formatDefs={
+  amba_read_aloud:{block:'div',classes:'read-aloud',wrapper:true},
+  amba_boxed:{block:'div',classes:'boxed-text',wrapper:true},
+  amba_gm_note:{block:'div',classes:'gm-note',wrapper:true},
+  amba_designer_note:{block:'div',classes:'designer-note',wrapper:true},
+  amba_sidebar:{block:'aside',classes:'sidebar',wrapper:true},
+  amba_rules:{block:'div',classes:'rules-note',wrapper:true},
+  amba_warning:{block:'div',classes:'warning-note',wrapper:true},
+  amba_danger:{block:'div',classes:'danger-note',wrapper:true},
+  amba_secret:{block:'div',classes:'secret gm-only',wrapper:true},
+  amba_map_note:{block:'div',classes:'map-note',wrapper:true},
+  amba_location_note:{block:'div',classes:'location-note',wrapper:true},
+  amba_stat_ref:{block:'div',classes:'stat-ref',wrapper:true},
+  amba_kicker:{block:'p',classes:'kicker'},
+  amba_eyebrow:{block:'p',classes:'eyebrow'},
+  amba_subtitle:{block:'p',classes:'subtitle'},
+  amba_muted:{inline:'span',classes:'muted'},
+  amba_wide:{block:'div',classes:'wide',wrapper:true}
 };
 
-const styleMenu = [
-  ['Read Aloud','amba_read_aloud'], ['Boxed Text','amba_boxed'], ['GM Note','amba_gm_note'],
-  ['Designer Note','amba_designer_note'], ['Sidebar','amba_sidebar'], ['Rules Note','amba_rules'],
-  ['Warning','amba_warning'], ['Danger','amba_danger'], ['Secret / GM Only','amba_secret'],
-  ['Map Note','amba_map_note'], ['Location Note','amba_location_note'], ['Stat Reference','amba_stat_ref'],
-  ['Kicker','amba_kicker'], ['Eyebrow','amba_eyebrow'], ['Subtitle','amba_subtitle'], ['Muted','amba_muted']
-];
-
-function nested(text, items) {
-  return { type:'nestedmenuitem', text, getSubmenuItems:() => items };
-}
-
-function item(text, onAction) {
-  return { type:'menuitem', text, onAction };
-}
+const styleMenu=[['Read Aloud','amba_read_aloud'],['Boxed Text','amba_boxed'],['GM Note','amba_gm_note'],['Designer Note','amba_designer_note'],['Sidebar','amba_sidebar'],['Rules Note','amba_rules'],['Warning','amba_warning'],['Danger','amba_danger'],['Secret / GM Only','amba_secret'],['Map Note','amba_map_note'],['Location Note','amba_location_note'],['Stat Reference','amba_stat_ref'],['Kicker','amba_kicker'],['Eyebrow','amba_eyebrow'],['Subtitle','amba_subtitle'],['Muted','amba_muted']];
+function nested(text,items){return{type:'nestedmenuitem',text,getSubmenuItems:()=>items};}
+function item(text,onAction){return{type:'menuitem',text,onAction};}
 
 tinymce.init({
   selector:'#editor',
   height:720,
   menubar:'edit view insert format table tools',
   plugins:'lists table code link autoresize',
-  content_css:[`/css/master-preview.css?v=${cssVersion}`, `/css/amba-two-column-layout.css?v=${cssVersion}`],
+  content_css:[`/css/master-preview.css?v=${cssVersion}`,`/css/amba-two-column-layout.css?v=${cssVersion}`,`/css/editor-contrast-patch.css?v=${cssVersion}`],
   body_class:'preview-root',
   content_style:'body.preview-root{max-width:920px;margin:0 auto;padding:24px;background:#fffdf8;min-height:100%;} body.preview-root>*:first-child{margin-top:0;}',
   extended_valid_elements:'*[*]',
   custom_elements:'section,aside',
   toolbar:'undo redo | blocks | bold italic | ambaInsert ambaStyle ambaLayout | bullist numlist | table link | code',
   formats:formatDefs,
-  setup(editor) {
-    editor.ui.registry.addMenuButton('ambaInsert', {
-      text:'AMBA Insert',
-      fetch(callback) {
-        callback([
-          nested('Structure', [
-            item('Module Overview', () => insert(editor, structureTemplate('overview'))),
-            item('Act', () => insert(editor, structureTemplate('act'))),
-            item('Scene', () => insert(editor, structureTemplate('scene'))),
-            item('Subscene', () => insert(editor, structureTemplate('subscene')))
-          ]),
-          nested('Encounter', ['combat','social','puzzle','trap','haunt','treasure','story'].map(f => item(f.charAt(0).toUpperCase()+f.slice(1), () => insert(editor, encounterTemplate(f))))),
-          nested('Rules & Game Blocks', [
-            item('PF2e Challenge', () => insert(editor, challengeTemplate())),
-            item('DC Table', () => insert(editor, dcTableTemplate())),
-            item('Trap', () => insert(editor, trapTemplate())),
-            item('Hazard', () => insert(editor, hazardTemplate())),
-            item('Affliction', () => insert(editor, afflictionTemplate())),
-            item('Treasure', () => insert(editor, treasureTemplate())),
-            item('NPC Card', () => insert(editor, npcTemplate()))
-          ]),
-          nested('Story & Reference Cards', [
-            item('Timeline', () => insert(editor, storyCardTemplate('timeline','Timeline'))),
-            item('Rumor Table', () => insert(editor, `<section class="rumor-table"><h3>Rumor Table</h3><table><tbody><tr><td>1</td><td>First rumor</td></tr><tr><td>2</td><td>Second rumor</td></tr></tbody></table></section><p></p>`)),
-            item('Faction Card', () => insert(editor, storyCardTemplate('faction-card','Faction'))),
-            item('Quest Card', () => insert(editor, storyCardTemplate('quest-card','Quest'))),
-            item('Location Card', () => insert(editor, storyCardTemplate('location-card','Location'))),
-            item('Villain Card', () => insert(editor, storyCardTemplate('villain-card','Villain'))),
-            item('Downtime Card', () => insert(editor, storyCardTemplate('downtime-card','Downtime')))
-          ]),
-          nested('Lists', [
-            item('Adventure Facts', () => insert(editor, listTemplate('adventure-facts','Adventure Facts'))),
-            item('Key List', () => insert(editor, listTemplate('key-list','Key Facts'))),
-            item('Clue List', () => insert(editor, listTemplate('clue-list','Clues'))),
-            item('Objective List', () => insert(editor, listTemplate('objective-list','Objectives'))),
-            item('Treasure List', () => insert(editor, listTemplate('treasure-list','Treasure')))
-          ]),
-          item('Player Handout', () => insert(editor, handoutTemplate()))
-        ]);
-      }
-    });
-
-    editor.ui.registry.addMenuButton('ambaStyle', {
-      text:'AMBA Style',
-      fetch(callback) { callback(styleMenu.map(([label,format]) => item(label, () => editor.formatter.toggle(format)))); }
-    });
-
-    editor.ui.registry.addMenuButton('ambaLayout', {
-      text:'AMBA Layout',
-      fetch(callback) {
-        callback([
-          item('Two-column Flow', () => insert(editor, twoColumnTemplate())),
-          item('Wide / Full Width', () => editor.formatter.toggle('amba_wide')),
-          item('Page Break', () => insert(editor, '<div class="page-break"></div><p></p>')),
-          item('Column Break', () => insert(editor, '<div class="column-break"></div><p></p>'))
-        ]);
-      }
-    });
-
-    editor.on('init change input undo redo SetContent', () => updateOutput(editor));
+  setup(editor){
+    editor.ui.registry.addMenuButton('ambaInsert',{text:'AMBA Insert',fetch(callback){callback([
+      nested('Structure',[item('Module Overview',()=>insert(editor,structureTemplate('overview'))),item('Act',()=>insert(editor,structureTemplate('act'))),item('Scene',()=>insert(editor,structureTemplate('scene'))),item('Subscene',()=>insert(editor,structureTemplate('subscene')))]),
+      nested('Encounter',['combat','social','puzzle','trap','haunt','treasure','story'].map(f=>item(f.charAt(0).toUpperCase()+f.slice(1),()=>insert(editor,encounterTemplate(f))))),
+      nested('Rules & Game Blocks',[item('PF2e Challenge',()=>insert(editor,challengeTemplate())),item('DC Table',()=>insert(editor,dcTableTemplate())),item('Trap',()=>insert(editor,trapTemplate())),item('Hazard',()=>insert(editor,hazardTemplate())),item('Affliction',()=>insert(editor,afflictionTemplate())),item('Treasure',()=>insert(editor,treasureTemplate())),item('NPC Card',()=>insert(editor,npcTemplate()))]),
+      nested('Story & Reference Cards',[item('Timeline',()=>insert(editor,storyCardTemplate('timeline','Timeline'))),item('Faction Card',()=>insert(editor,storyCardTemplate('faction-card','Faction'))),item('Quest Card',()=>insert(editor,storyCardTemplate('quest-card','Quest'))),item('Location Card',()=>insert(editor,storyCardTemplate('location-card','Location'))),item('Villain Card',()=>insert(editor,storyCardTemplate('villain-card','Villain'))),item('Downtime Card',()=>insert(editor,storyCardTemplate('downtime-card','Downtime')))]),
+      nested('Lists',[item('Adventure Facts',()=>insert(editor,listTemplate('adventure-facts','Adventure Facts'))),item('Key List',()=>insert(editor,listTemplate('key-list','Key Facts'))),item('Clue List',()=>insert(editor,listTemplate('clue-list','Clues'))),item('Objective List',()=>insert(editor,listTemplate('objective-list','Objectives'))),item('Treasure List',()=>insert(editor,listTemplate('treasure-list','Treasure')))]),
+      item('Player Handout',()=>insert(editor,handoutTemplate()))
+    ]);}});
+    editor.ui.registry.addMenuButton('ambaStyle',{text:'AMBA Style',fetch(callback){callback(styleMenu.map(([label,format])=>item(label,()=>editor.formatter.toggle(format))));}});
+    editor.ui.registry.addMenuButton('ambaLayout',{text:'AMBA Layout',fetch(callback){callback([item('Two-column Flow',()=>insert(editor,twoColumnTemplate())),item('Wide / Full Width',()=>editor.formatter.toggle('amba_wide')),item('Page Break',()=>insert(editor,'<div class="page-break"></div><p></p>')),item('Column Break',()=>insert(editor,'<div class="column-break"></div><p></p>'))]);}});
+    editor.on('init change input undo redo SetContent',()=>updateOutput(editor));
   }
-}).then(editors => {
-  const editor = editors[0];
-  document.getElementById('galleryBtn').addEventListener('click', () => editor.setContent(galleryTemplate()));
-  document.getElementById('sampleBtn').addEventListener('click', () => editor.setContent(sampleTemplate()));
-  document.getElementById('clearBtn').addEventListener('click', () => editor.setContent('<p></p>'));
-  document.getElementById('copyBtn').addEventListener('click', async () => {
-    const text = editor.getContent({ format:'html' });
-    await navigator.clipboard.writeText(text);
-    const btn = document.getElementById('copyBtn');
-    const old = btn.textContent;
-    btn.textContent = 'Copied';
-    setTimeout(() => btn.textContent = old, 900);
-  });
+}).then(editors=>{
+  const editor=editors[0];
+  document.getElementById('galleryBtn').addEventListener('click',()=>editor.setContent(galleryTemplate()));
+  document.getElementById('sampleBtn').addEventListener('click',()=>editor.setContent(sampleTemplate()));
+  document.getElementById('clearBtn').addEventListener('click',()=>editor.setContent('<p></p>'));
+  document.getElementById('copyBtn').addEventListener('click',async()=>{const text=editor.getContent({format:'html'});await navigator.clipboard.writeText(text);const btn=document.getElementById('copyBtn');const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,900);});
 });
 </script>
 </body>
