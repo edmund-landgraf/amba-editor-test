@@ -1,0 +1,104 @@
+/*
+ * AMBA editor-test contrast overrides.
+ *
+ * This file intentionally lives only in amba-editor-test. It is loaded after
+ * the copied AMBA master-preview.css and amba-two-column-layout.css so we can
+ * experiment with readability without changing AdventureMakerByAct yet.
+ */
+
+/* TinyMCE uses .preview-root directly on the editable <body>. In AMBA proper,
+ * .preview-root also serves as outer chrome, where --amba-chrome makes sense.
+ * On the parchment editor body we want inherited text to start at ink color.
+ */
+body.preview-root {
+  color: var(--amba-ink, #211914);
+}
+
+/* Callouts: preserve semantic hue while keeping body text comfortably dark. */
+body.preview-root .sidebar,
+body.preview-root .sidebar-note,
+body.preview-root .sidebar-callout {
+  color: #3c3123;
+  background: #f3ead9;
+  border-color: #d5bf97;
+}
+
+body.preview-root .rules-note {
+  color: #352a44;
+  background: #eee8f5;
+  border-color: #b8a8cf;
+}
+
+body.preview-root .warning-note {
+  color: #593422;
+  background: #f8ece6;
+  border-color: #d9a995;
+}
+
+body.preview-root .danger-note,
+body.preview-root .danger-box {
+  color: #56231f;
+  background: #f7e7e5;
+  border-color: #cf9a94;
+}
+
+body.preview-root .secret,
+body.preview-root .gm-only,
+body.preview-root .spoiler {
+  color: #473c30;
+  background: #f8f2e8;
+  border-color: #c9b9a3;
+}
+
+body.preview-root .map-note,
+body.preview-root .location-note {
+  color: #24384a;
+  background: #eaf1f7;
+  border-color: #9cb8d2;
+}
+
+/* Some AMBA components use div/span rows rather than p/li. Those elements used
+ * to inherit --amba-chrome from .preview-root in the standalone editor.
+ */
+body.preview-root .skill-challenge,
+body.preview-root .dc-table,
+body.preview-root .trap-card,
+body.preview-root .hazard-card,
+body.preview-root .affliction-card,
+body.preview-root .treasure-card,
+body.preview-root .npc-card,
+body.preview-root .pc-card,
+body.preview-root .player-handout,
+body.preview-root .handout {
+  color: var(--amba-ink, #211914);
+}
+
+body.preview-root .stat-row,
+body.preview-root .stat-row span,
+body.preview-root .skill-challenge > .check-result,
+body.preview-root .skill-challenge > .check-result > div,
+body.preview-root .dc-table .check-result,
+body.preview-root .dc-table .check-result > div {
+  color: #2d2925;
+}
+
+/* Keep semantic degree labels from the master CSS, but ensure their explanatory
+ * text remains dark enough on the pale challenge rows.
+ */
+body.preview-root .check-result--critical-success > div,
+body.preview-root .check-result--success > div,
+body.preview-root .check-result--failure > div,
+body.preview-root .check-result--critical-failure > div {
+  color: #2d2925;
+}
+
+/* Generic authored cards can also contain bare div/span text. */
+body.preview-root .timeline,
+body.preview-root .rumor-table,
+body.preview-root .faction-card,
+body.preview-root .quest-card,
+body.preview-root .location-card,
+body.preview-root .villain-card,
+body.preview-root .downtime-card {
+  color: var(--amba-ink, #211914);
+}
