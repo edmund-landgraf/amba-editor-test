@@ -3,106 +3,358 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AMBA TinyMCE Standalone Editor Test</title>
+  <title>AMBA Editor CSS Playground</title>
   <script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"></script>
   <style>
-    :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:#222; background:#f3f4f6; }
-    body { margin:0; }
-    .shell { max-width:1200px; margin:28px auto; padding:0 20px 40px; }
-    h1 { margin-bottom:4px; }
-    .lede { margin-top:0; color:#666; }
+    :root {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #20242a;
+      background: #eef0f3;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    .shell { max-width: 1380px; margin: 24px auto; padding: 0 20px 48px; }
+    .app-head { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; margin-bottom:16px; }
+    h1 { margin:0 0 5px; font-size:1.8rem; }
+    .lede { margin:0; color:#626a73; }
+    .badges { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+    .badge { background:#fff; border:1px solid #cfd4da; border-radius:999px; padding:5px 9px; font-size:.78rem; font-weight:700; }
+    .note { border-left:4px solid #6b7280; padding:10px 12px; background:white; color:#4b5563; margin:14px 0 16px; }
     .toolbar-row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
-    button { border:1px solid #bbb; border-radius:6px; background:white; padding:8px 12px; cursor:pointer; font-weight:600; }
-    button:hover { background:#f6f6f6; }
+    button { border:1px solid #b9bec5; border-radius:6px; background:white; padding:8px 12px; cursor:pointer; font-weight:650; }
+    button:hover { background:#f8f9fa; }
     .output-title { margin-top:22px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    pre { min-height:180px; max-height:420px; overflow:auto; white-space:pre-wrap; word-break:break-word; background:#111827; color:#e5e7eb; padding:16px; border-radius:8px; border:1px solid #333; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.45; }
-    .note { border-left:4px solid #999; padding:10px 12px; background:white; color:#555; margin:14px 0 18px; }
+    .output-title h2 { margin:0; }
+    pre { min-height:180px; max-height:440px; overflow:auto; white-space:pre-wrap; word-break:break-word; background:#111827; color:#e5e7eb; padding:16px; border-radius:8px; border:1px solid #333; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.45; }
+    details { margin-top:16px; background:#fff; border:1px solid #d5d9de; border-radius:8px; padding:10px 12px; }
+    summary { cursor:pointer; font-weight:750; }
+    .class-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; margin-top:12px; }
+    .class-group h3 { margin:0 0 6px; font-size:.92rem; }
+    .class-group code { display:inline-block; margin:2px 2px 2px 0; padding:2px 5px; background:#f2f4f6; border-radius:4px; font-size:.76rem; }
+    @media (max-width:760px) { .app-head { flex-direction:column; } .badges { justify-content:flex-start; } }
   </style>
 </head>
 <body>
 <div class="shell">
-  <h1>AMBA Editor Proof of Concept</h1>
-  <p class="lede">TinyMCE running outside AMBA, but emitting AMBA classed HTML.</p>
-  <div class="note">Use <strong>AMBA Insert</strong> for structured blocks and <strong>AMBA Style</strong> for semantic styling. The HTML panel below shows exactly what TinyMCE preserves.</div>
+  <div class="app-head">
+    <div>
+      <h1>AMBA Editor CSS Playground</h1>
+      <p class="lede">TinyMCE outside AMBA, using the copied AMBA master preview and two-column CSS.</p>
+    </div>
+    <div class="badges">
+      <span class="badge">master-preview.css</span>
+      <span class="badge">amba-two-column-layout.css</span>
+      <span class="badge">AMBA classed HTML</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>AMBA Insert</strong> creates semantic structures. <strong>AMBA Style</strong> wraps or styles selected content.
+    <strong>AMBA Layout</strong> adds flow/layout controls. Use <strong>Load Component Gallery</strong> to visually inspect the real AMBA CSS.
+  </div>
+
   <textarea id="editor">
     <h2>The Broken Chapel</h2>
     <p>The stone door stands half open. Something is moving beyond it.</p>
   </textarea>
+
   <div class="toolbar-row">
-    <button type="button" id="sampleBtn">Load Sample Adventure Content</button>
+    <button type="button" id="galleryBtn">Load Component Gallery</button>
+    <button type="button" id="sampleBtn">Load Adventure Sample</button>
     <button type="button" id="clearBtn">Clear</button>
   </div>
+
+  <details>
+    <summary>AMBA classes exposed in this test</summary>
+    <div class="class-grid">
+      <div class="class-group"><h3>Structure</h3><code>module-overview</code><code>module-section--act</code><code>module-section--scene</code><code>module-section--subscene</code><code>module-section--encounter</code><code>encounter-brief--*</code></div>
+      <div class="class-group"><h3>Callouts</h3><code>read-aloud</code><code>boxed-text</code><code>gm-note</code><code>designer-note</code><code>sidebar</code><code>rules-note</code><code>warning-note</code><code>danger-note</code><code>secret</code></div>
+      <div class="class-group"><h3>Game blocks</h3><code>skill-challenge</code><code>skill-challenge--pf2e</code><code>dc-table</code><code>trap-card</code><code>hazard-card</code><code>affliction-card</code><code>treasure-card</code><code>npc-card</code></div>
+      <div class="class-group"><h3>Story/reference</h3><code>timeline</code><code>rumor-table</code><code>faction-card</code><code>quest-card</code><code>location-card</code><code>villain-card</code><code>downtime-card</code></div>
+      <div class="class-group"><h3>Lists</h3><code>adventure-facts</code><code>key-list</code><code>clue-list</code><code>objective-list</code><code>treasure-list</code></div>
+      <div class="class-group"><h3>Layout</h3><code>amba-flow</code><code>amba-flow__lead</code><code>amba-flow__columns</code><code>two-column</code><code>wide</code><code>page-break</code><code>column-break</code></div>
+    </div>
+  </details>
+
   <div class="output-title"><h2>Generated HTML</h2><button type="button" id="copyBtn">Copy HTML</button></div>
   <pre id="htmlOutput"></pre>
 </div>
+
 <script>
-const AMBA_CONTENT_CSS = `
-body { font-family: Georgia, "Times New Roman", serif; max-width:820px; margin:24px auto; padding:0 24px 80px; color:#272727; line-height:1.55; background:#fffdf8; }
-h1,h2,h3,h4 { font-family:Arial,Helvetica,sans-serif; line-height:1.2; }
-.read-aloud { margin:1em 0; padding:14px 16px; border:1px solid #a98655; border-left:5px solid #a98655; background:#fff8e8; font-style:italic; }
-.gm-note { margin:1em 0; padding:12px 14px; border-left:5px solid #405a78; background:#eef5fb; }
-.designer-note { margin:1em 0; padding:12px 14px; border-left:5px solid #777; background:#f4f4f4; }
-.warning-note,.danger-note { margin:1em 0; padding:12px 14px; border-left:5px solid #9f2f2f; background:#fff0f0; }
-.sidebar,.rules-note,.map-note { margin:1em 0; padding:12px 14px; border:1px solid #bbb; background:#f8f8f8; }
-.skill-challenge { margin:1.25em 0; padding:16px; border:2px solid #5b3d66; border-radius:6px; background:#fbf8fc; }
-.skill-challenge > h3 { margin-top:0; color:#4b3155; }
-.stat-row { display:flex; gap:12px; margin:6px 0; }
-.stat-row > strong { min-width:110px; }
-.check-result { margin:7px 0; padding:8px 10px; border-left:4px solid #aaa; background:#fff; }
-.check-result--critical-success { border-left-color:#2f7c4a; }
-.check-result--success { border-left-color:#5b8d45; }
-.check-result--failure { border-left-color:#b8792d; }
-.check-result--critical-failure { border-left-color:#a13d3d; }
-.trap-card,.hazard-card { margin:1.25em 0; padding:14px 16px; border:2px solid #8b3535; background:#fff7f7; }
-.treasure-card,.reward-card { margin:1.25em 0; padding:14px 16px; border:2px solid #a67c20; background:#fffbea; }
-.player-handout,.artifact--handout { margin:1.25em 0; padding:16px; border:1px solid #777; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-.kicker { text-transform:uppercase; letter-spacing:.08em; font-family:Arial,Helvetica,sans-serif; font-size:.72rem; font-weight:700; }
-.secret,.gm-only { border:1px dashed #7e497e; background:#faf3fa; padding:10px 12px; }
-.page-break { border-top:2px dashed #bbb; margin:24px 0; height:0; }
-`;
-function insert(editor, html) { editor.insertContent(html); editor.focus(); }
-function challengeTemplate() { return `<section class="skill-challenge skill-challenge--pf2e"><h3>Challenge Name</h3><div class="stat-row"><strong>Primary Check</strong><span>Skill +0 vs DC 20</span></div><div class="check-result check-result--critical-success"><strong>Critical Success</strong><div>Describe the best possible result.</div></div><div class="check-result check-result--success"><strong>Success</strong><div>Describe the successful result.</div></div><div class="check-result check-result--failure"><strong>Failure</strong><div>Describe the failed result.</div></div><div class="check-result check-result--critical-failure"><strong>Critical Failure</strong><div>Describe the worst result.</div></div></section><p></p>`; }
-function trapTemplate() { return `<section class="trap-card"><h3>Trap Name</h3><div class="stat-row"><strong>Stealth</strong><span>DC 20</span></div><div class="stat-row"><strong>Disable</strong><span>Thievery DC 20</span></div><p><strong>Trigger</strong> Describe the trigger.</p><p><strong>Effect</strong> Describe the effect.</p></section><p></p>`; }
-function treasureTemplate() { return `<section class="treasure-card"><h3>Treasure</h3><p>Describe the treasure here.</p></section><p></p>`; }
-function handoutTemplate() { return `<section class="artifact artifact--handout player-handout"><p class="kicker">Player Handout</p><h3>Handout Title</h3><div class="handout-body"><p>Player-facing handout text.</p></div></section><p></p>`; }
-function updateOutput(editor) { document.getElementById('htmlOutput').textContent = editor.getContent({format:'html'}); }
+const cssVersion = '20260828-2';
+
+function insert(editor, html) {
+  editor.insertContent(html);
+  editor.focus();
+}
+
+function challengeTemplate() {
+  return `<section class="skill-challenge skill-challenge--pf2e">
+    <h3>Challenge Name</h3>
+    <div class="stat-row"><strong>Primary Check</strong><span>Skill DC 20</span></div>
+    <div class="check-result check-result--critical-success"><strong>Critical Success</strong><div>Describe the best possible result.</div></div>
+    <div class="check-result check-result--success"><strong>Success</strong><div>Describe the successful result.</div></div>
+    <div class="check-result check-result--failure"><strong>Failure</strong><div>Describe the failed result.</div></div>
+    <div class="check-result check-result--critical-failure"><strong>Critical Failure</strong><div>Describe the worst result.</div></div>
+  </section><p></p>`;
+}
+
+function dcTableTemplate() {
+  return `<section class="dc-table">
+    <h3>Difficulty Classes</h3>
+    <table><thead><tr><th>Task</th><th>DC</th><th>Notes</th></tr></thead>
+    <tbody><tr><td>Notice the clue</td><td>18</td><td>Perception</td></tr><tr><td>Understand it</td><td>20</td><td>Relevant Lore</td></tr></tbody></table>
+  </section><p></p>`;
+}
+
+function keyedCard(className, title, rows, body='') {
+  return `<section class="${className}"><h3>${title}</h3>${rows.map(([k,v]) => `<div class="stat-row"><strong>${k}</strong><span>${v}</span></div>`).join('')}${body}</section><p></p>`;
+}
+
+function trapTemplate() {
+  return keyedCard('trap-card', 'Trap Name', [['Stealth','DC 20'],['Disable','Thievery DC 20']], '<p><strong>Trigger</strong> Describe the trigger.</p><p><strong>Effect</strong> Describe the effect.</p>');
+}
+
+function hazardTemplate() {
+  return keyedCard('hazard-card', 'Hazard Name', [['Stealth','DC 21'],['Disable','Relevant skill DC 21']], '<p><strong>Routine</strong> Describe how the hazard operates.</p>');
+}
+
+function afflictionTemplate() {
+  return keyedCard('affliction-card', 'Affliction Name', [['Saving Throw','Fortitude DC 20'],['Onset','Immediate']], '<p><strong>Stage 1</strong> Describe the effect.</p>');
+}
+
+function treasureTemplate() {
+  return `<section class="treasure-card"><h3>Treasure</h3><ul class="treasure-list"><li>Item or reward</li><li>Coins or valuables</li></ul></section><p></p>`;
+}
+
+function npcTemplate() {
+  return keyedCard('npc-card', 'NPC Name', [['Role','Ally / Rival / Contact'],['Level','3']], '<p><strong>Motivation</strong> What this NPC wants.</p><p><strong>Roleplay</strong> Voice, mannerisms, or tactics.</p>');
+}
+
+function handoutTemplate() {
+  return `<section class="artifact artifact--handout player-handout"><p class="kicker">Player Handout</p><h3 class="handout-title">Handout Title</h3><div class="handout-body"><p>Player-facing handout text.</p></div></section><p></p>`;
+}
+
+function encounterTemplate(flavor) {
+  const label = flavor.charAt(0).toUpperCase() + flavor.slice(1);
+  return `<section class="module-section module-section--encounter encounter-brief encounter-brief--${flavor}"><h3>${label} Encounter</h3><p>Describe the encounter situation, stakes, and resolution.</p></section><p></p>`;
+}
+
+function structureTemplate(type) {
+  const labels = {overview:'Overview', act:'Act', scene:'Scene', subscene:'Subscene'};
+  const label = labels[type];
+  if (type === 'overview') return `<section class="module-overview"><p class="kicker">Adventure Overview</p><h1>Module Title</h1><p>Opening overview text.</p></section><p></p>`;
+  const extra = type === 'scene' ? ' scene-brief' : '';
+  return `<section class="module-section module-section--${type}${extra}"><p class="kicker">${label}</p><h2>${label} Title</h2><p>Describe this ${type}.</p></section><p></p>`;
+}
+
+function storyCardTemplate(className, title) {
+  return `<section class="${className}"><h3>${title}</h3><p>Describe ${title.toLowerCase()} information here.</p></section><p></p>`;
+}
+
+function listTemplate(className, title) {
+  return `<section><h3>${title}</h3><ul class="${className}"><li>First entry</li><li>Second entry</li><li>Third entry</li></ul></section><p></p>`;
+}
+
+function twoColumnTemplate() {
+  return `<section class="amba-flow module-section--scene">
+    <div class="amba-flow__lead"><p class="kicker">Two-column flow</p><h2>Section Title</h2></div>
+    <div class="amba-flow__columns">
+      <div class="amba-flow__col"><p>Left column content.</p><p>Add additional prose here.</p></div>
+      <div class="amba-flow__col"><p>Right column content.</p><p>Add additional prose here.</p></div>
+    </div>
+  </section><p></p>`;
+}
+
+function galleryTemplate() {
+  return `
+  <section class="module-overview">
+    <p class="kicker">AMBA CSS Gallery</p><h1>Master Preview Components</h1>
+    <p>This page intentionally exercises semantic AMBA classes using the copied production CSS.</p>
+    <ul class="adventure-facts"><li><strong>System</strong> Pathfinder 2e</li><li><strong>Purpose</strong> Editor CSS test</li></ul>
+  </section>
+
+  <section class="module-section module-section--act"><p class="kicker">Act</p><h2>Act Shell</h2><p>Act-level narrative container.</p></section>
+  <section class="module-section module-section--scene scene-brief"><p class="kicker">Scene</p><h2>Scene Shell</h2><p>Scene-level narrative container.</p></section>
+  <section class="module-section module-section--subscene"><p class="kicker">Subscene</p><h2>Subscene Shell</h2><p>Subscene-level narrative container.</p></section>
+
+  <div class="read-aloud"><strong>Read Aloud.</strong> The old stones drink the last light of evening.</div>
+  <div class="boxed-text">Boxed descriptive text can be visually distinct from ordinary prose.</div>
+  <div class="gm-note"><strong>GM Note.</strong> This information is intended for the GM.</div>
+  <div class="designer-note"><strong>Designer Note.</strong> Development or author-facing guidance.</div>
+  <aside class="sidebar"><strong>Sidebar.</strong> Supplemental material that can break out from the main prose.</aside>
+  <div class="rules-note"><strong>Rules.</strong> Put a concise rules reference here.</div>
+  <div class="warning-note"><strong>Warning.</strong> Important cautionary information.</div>
+  <div class="danger-note"><strong>Danger.</strong> High-risk or especially important information.</div>
+  <div class="secret gm-only"><strong>Secret / GM Only.</strong> Hidden information for the GM.</div>
+  <div class="map-note"><strong>Map Note.</strong> Describe a keyed map detail.</div>
+  <div class="location-note"><strong>Location Note.</strong> Describe a place-specific detail.</div>
+
+  ${challengeTemplate()}
+  ${dcTableTemplate()}
+  ${trapTemplate()}
+  ${hazardTemplate()}
+  ${afflictionTemplate()}
+  ${treasureTemplate()}
+  ${npcTemplate()}
+
+  <section class="timeline"><h3>Timeline</h3><p>Event sequence or chronology.</p></section>
+  <section class="rumor-table"><h3>Rumor Table</h3><table><tbody><tr><td>1</td><td>A useful rumor.</td></tr><tr><td>2</td><td>A misleading rumor.</td></tr></tbody></table></section>
+  <section class="faction-card"><h3>Faction Card</h3><p>Faction goals, resources, and relationships.</p></section>
+  <section class="quest-card"><h3>Quest Card</h3><p>Objective, stakes, and reward.</p></section>
+  <section class="location-card"><h3>Location Card</h3><p>Key features and notable details.</p></section>
+  <section class="villain-card"><h3>Villain Card</h3><p>Agenda, methods, and pressure.</p></section>
+  <section class="downtime-card"><h3>Downtime Card</h3><p>Downtime opportunity or activity.</p></section>
+
+  <h3>Clues</h3><ul class="clue-list"><li>First clue</li><li>Second clue</li><li>Third clue</li></ul>
+  <h3>Objectives</h3><ul class="objective-list"><li>Primary objective</li><li>Optional objective</li></ul>
+  <h3>Key Facts</h3><ul class="key-list"><li><strong>Location</strong> The Broken Chapel</li><li><strong>Threat</strong> Echoes</li></ul>
+
+  ${handoutTemplate()}
+  ${encounterTemplate('combat')}
+  ${encounterTemplate('social')}
+  ${encounterTemplate('puzzle')}
+  ${encounterTemplate('trap')}
+  ${encounterTemplate('haunt')}
+  ${encounterTemplate('treasure')}
+  ${encounterTemplate('story')}
+  ${twoColumnTemplate()}`;
+}
+
+function sampleTemplate() {
+  return `<p class="kicker">Scene 3</p><h2>The Broken Chapel</h2>
+    <div class="read-aloud">Rain hisses against the broken saints carved above the chapel doors. Somewhere inside, a bell rings once.</div>
+    <div class="gm-note"><strong>GM Note.</strong> The bell is not physical. Characters who investigate it can attempt the challenge below.</div>
+    ${challengeTemplate()}
+    ${treasureTemplate()}`;
+}
+
+function updateOutput(editor) {
+  document.getElementById('htmlOutput').textContent = editor.getContent({ format:'html' });
+}
+
+const formatDefs = {
+  amba_read_aloud: { block:'div', classes:'read-aloud', wrapper:true },
+  amba_boxed: { block:'div', classes:'boxed-text', wrapper:true },
+  amba_gm_note: { block:'div', classes:'gm-note', wrapper:true },
+  amba_designer_note: { block:'div', classes:'designer-note', wrapper:true },
+  amba_sidebar: { block:'aside', classes:'sidebar', wrapper:true },
+  amba_rules: { block:'div', classes:'rules-note', wrapper:true },
+  amba_warning: { block:'div', classes:'warning-note', wrapper:true },
+  amba_danger: { block:'div', classes:'danger-note', wrapper:true },
+  amba_secret: { block:'div', classes:'secret gm-only', wrapper:true },
+  amba_map_note: { block:'div', classes:'map-note', wrapper:true },
+  amba_location_note: { block:'div', classes:'location-note', wrapper:true },
+  amba_stat_ref: { block:'div', classes:'stat-ref', wrapper:true },
+  amba_kicker: { block:'p', classes:'kicker' },
+  amba_eyebrow: { block:'p', classes:'eyebrow' },
+  amba_subtitle: { block:'p', classes:'subtitle' },
+  amba_muted: { inline:'span', classes:'muted' },
+  amba_wide: { block:'div', classes:'wide', wrapper:true }
+};
+
+const styleMenu = [
+  ['Read Aloud','amba_read_aloud'], ['Boxed Text','amba_boxed'], ['GM Note','amba_gm_note'],
+  ['Designer Note','amba_designer_note'], ['Sidebar','amba_sidebar'], ['Rules Note','amba_rules'],
+  ['Warning','amba_warning'], ['Danger','amba_danger'], ['Secret / GM Only','amba_secret'],
+  ['Map Note','amba_map_note'], ['Location Note','amba_location_note'], ['Stat Reference','amba_stat_ref'],
+  ['Kicker','amba_kicker'], ['Eyebrow','amba_eyebrow'], ['Subtitle','amba_subtitle'], ['Muted','amba_muted']
+];
+
+function nested(text, items) {
+  return { type:'nestedmenuitem', text, getSubmenuItems:() => items };
+}
+
+function item(text, onAction) {
+  return { type:'menuitem', text, onAction };
+}
+
 tinymce.init({
-  selector:'#editor', height:650, menubar:'edit view insert format table tools', plugins:'lists table code link autoresize', content_style:AMBA_CONTENT_CSS,
-  extended_valid_elements:'*[*]', custom_elements:'section',
-  toolbar:'undo redo | blocks | bold italic | ambaInsert ambaStyle | bullist numlist | table link | code',
-  formats:{
-    amba_read_aloud:{block:'div',classes:'read-aloud',wrapper:true}, amba_gm_note:{block:'div',classes:'gm-note',wrapper:true},
-    amba_designer_note:{block:'div',classes:'designer-note',wrapper:true}, amba_warning:{block:'div',classes:'warning-note',wrapper:true},
-    amba_sidebar:{block:'aside',classes:'sidebar',wrapper:true}, amba_rules:{block:'div',classes:'rules-note',wrapper:true},
-    amba_map_note:{block:'div',classes:'map-note',wrapper:true}, amba_secret:{block:'div',classes:'secret gm-only',wrapper:true},
-    amba_kicker:{inline:'span',classes:'kicker'}
-  },
-  setup(editor){
-    editor.ui.registry.addMenuButton('ambaInsert',{text:'AMBA Insert',fetch(callback){callback([
-      {type:'menuitem',text:'PF2e Challenge',onAction:()=>insert(editor,challengeTemplate())},
-      {type:'menuitem',text:'Trap',onAction:()=>insert(editor,trapTemplate())},
-      {type:'menuitem',text:'Treasure',onAction:()=>insert(editor,treasureTemplate())},
-      {type:'menuitem',text:'Player Handout',onAction:()=>insert(editor,handoutTemplate())},
-      {type:'menuitem',text:'Page Break',onAction:()=>insert(editor,'<div class="page-break"></div><p></p>')}
-    ]);}});
-    editor.ui.registry.addMenuButton('ambaStyle',{text:'AMBA Style',fetch(callback){callback([
-      {type:'menuitem',text:'Read Aloud',onAction:()=>editor.formatter.toggle('amba_read_aloud')},
-      {type:'menuitem',text:'GM Note',onAction:()=>editor.formatter.toggle('amba_gm_note')},
-      {type:'menuitem',text:'Designer Note',onAction:()=>editor.formatter.toggle('amba_designer_note')},
-      {type:'menuitem',text:'Warning',onAction:()=>editor.formatter.toggle('amba_warning')},
-      {type:'menuitem',text:'Sidebar',onAction:()=>editor.formatter.toggle('amba_sidebar')},
-      {type:'menuitem',text:'Rules Note',onAction:()=>editor.formatter.toggle('amba_rules')},
-      {type:'menuitem',text:'Map Note',onAction:()=>editor.formatter.toggle('amba_map_note')},
-      {type:'menuitem',text:'Secret / GM Only',onAction:()=>editor.formatter.toggle('amba_secret')},
-      {type:'menuitem',text:'Kicker',onAction:()=>editor.formatter.toggle('amba_kicker')}
-    ]);}});
-    editor.on('init change input undo redo SetContent',()=>updateOutput(editor));
+  selector:'#editor',
+  height:720,
+  menubar:'edit view insert format table tools',
+  plugins:'lists table code link autoresize',
+  content_css:[`/css/master-preview.css?v=${cssVersion}`, `/css/amba-two-column-layout.css?v=${cssVersion}`],
+  body_class:'preview-root',
+  content_style:'body.preview-root{max-width:920px;margin:0 auto;padding:24px;background:#fffdf8;min-height:100%;} body.preview-root>*:first-child{margin-top:0;}',
+  extended_valid_elements:'*[*]',
+  custom_elements:'section,aside',
+  toolbar:'undo redo | blocks | bold italic | ambaInsert ambaStyle ambaLayout | bullist numlist | table link | code',
+  formats:formatDefs,
+  setup(editor) {
+    editor.ui.registry.addMenuButton('ambaInsert', {
+      text:'AMBA Insert',
+      fetch(callback) {
+        callback([
+          nested('Structure', [
+            item('Module Overview', () => insert(editor, structureTemplate('overview'))),
+            item('Act', () => insert(editor, structureTemplate('act'))),
+            item('Scene', () => insert(editor, structureTemplate('scene'))),
+            item('Subscene', () => insert(editor, structureTemplate('subscene')))
+          ]),
+          nested('Encounter', ['combat','social','puzzle','trap','haunt','treasure','story'].map(f => item(f.charAt(0).toUpperCase()+f.slice(1), () => insert(editor, encounterTemplate(f))))),
+          nested('Rules & Game Blocks', [
+            item('PF2e Challenge', () => insert(editor, challengeTemplate())),
+            item('DC Table', () => insert(editor, dcTableTemplate())),
+            item('Trap', () => insert(editor, trapTemplate())),
+            item('Hazard', () => insert(editor, hazardTemplate())),
+            item('Affliction', () => insert(editor, afflictionTemplate())),
+            item('Treasure', () => insert(editor, treasureTemplate())),
+            item('NPC Card', () => insert(editor, npcTemplate()))
+          ]),
+          nested('Story & Reference Cards', [
+            item('Timeline', () => insert(editor, storyCardTemplate('timeline','Timeline'))),
+            item('Rumor Table', () => insert(editor, `<section class="rumor-table"><h3>Rumor Table</h3><table><tbody><tr><td>1</td><td>First rumor</td></tr><tr><td>2</td><td>Second rumor</td></tr></tbody></table></section><p></p>`)),
+            item('Faction Card', () => insert(editor, storyCardTemplate('faction-card','Faction'))),
+            item('Quest Card', () => insert(editor, storyCardTemplate('quest-card','Quest'))),
+            item('Location Card', () => insert(editor, storyCardTemplate('location-card','Location'))),
+            item('Villain Card', () => insert(editor, storyCardTemplate('villain-card','Villain'))),
+            item('Downtime Card', () => insert(editor, storyCardTemplate('downtime-card','Downtime')))
+          ]),
+          nested('Lists', [
+            item('Adventure Facts', () => insert(editor, listTemplate('adventure-facts','Adventure Facts'))),
+            item('Key List', () => insert(editor, listTemplate('key-list','Key Facts'))),
+            item('Clue List', () => insert(editor, listTemplate('clue-list','Clues'))),
+            item('Objective List', () => insert(editor, listTemplate('objective-list','Objectives'))),
+            item('Treasure List', () => insert(editor, listTemplate('treasure-list','Treasure')))
+          ]),
+          item('Player Handout', () => insert(editor, handoutTemplate()))
+        ]);
+      }
+    });
+
+    editor.ui.registry.addMenuButton('ambaStyle', {
+      text:'AMBA Style',
+      fetch(callback) { callback(styleMenu.map(([label,format]) => item(label, () => editor.formatter.toggle(format)))); }
+    });
+
+    editor.ui.registry.addMenuButton('ambaLayout', {
+      text:'AMBA Layout',
+      fetch(callback) {
+        callback([
+          item('Two-column Flow', () => insert(editor, twoColumnTemplate())),
+          item('Wide / Full Width', () => editor.formatter.toggle('amba_wide')),
+          item('Page Break', () => insert(editor, '<div class="page-break"></div><p></p>')),
+          item('Column Break', () => insert(editor, '<div class="column-break"></div><p></p>'))
+        ]);
+      }
+    });
+
+    editor.on('init change input undo redo SetContent', () => updateOutput(editor));
   }
-}).then(editors=>{
-  const editor=editors[0];
-  document.getElementById('sampleBtn').addEventListener('click',()=>editor.setContent(`<p class="kicker">Scene 3</p><h2>The Broken Chapel</h2><div class="read-aloud">Rain hisses against the broken saints carved above the chapel doors. Somewhere inside, a bell rings once.</div><div class="gm-note"><strong>GM Note.</strong> The bell is not physical. Characters who investigate it can attempt the challenge below.</div>${challengeTemplate()}${treasureTemplate()}`));
-  document.getElementById('clearBtn').addEventListener('click',()=>editor.setContent('<p></p>'));
-  document.getElementById('copyBtn').addEventListener('click',async()=>{const text=editor.getContent({format:'html'});await navigator.clipboard.writeText(text);const btn=document.getElementById('copyBtn');const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,900);});
+}).then(editors => {
+  const editor = editors[0];
+  document.getElementById('galleryBtn').addEventListener('click', () => editor.setContent(galleryTemplate()));
+  document.getElementById('sampleBtn').addEventListener('click', () => editor.setContent(sampleTemplate()));
+  document.getElementById('clearBtn').addEventListener('click', () => editor.setContent('<p></p>'));
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    const text = editor.getContent({ format:'html' });
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('copyBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = old, 900);
+  });
 });
 </script>
 </body>
