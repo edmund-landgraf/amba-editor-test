@@ -1,0 +1,50 @@
+name: Wire full Lantern sample
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wire-full-sample.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Patch sample loader
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text()
+
+          sample_script = '<script src="/samples/lantern-under-greyford.js?v=20260828-full-1"></script>'
+          if sample_script not in s:
+              marker = '<script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"></script>'
+              if marker not in s:
+                  raise SystemExit('TinyMCE script marker not found')
+              s = s.replace(marker, marker + sample_script, 1)
+
+          pattern = r"const sample=\(\)=>`.*?`;"
+          replacement = 'const sample=()=>window.ambaLanternSample(st,sp);'
+          s, count = re.subn(pattern, replacement, s, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit(f'Expected one sample function, replaced {count}')
+
+          p.write_text(s)
+          PY
+      - name: Commit patch and remove one-shot workflow
+        run: |
+          rm .github/workflows/wire-full-sample.yml
+          git config user.name "edmund-landgraf"
+          git config user.email "114525624+edmund-landgraf@users.noreply.github.com"
+          git add index.html .github/workflows/wire-full-sample.yml
+          git commit -m "Restore full Lantern Under Greyford editor sample"
+          git push
