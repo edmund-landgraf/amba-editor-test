@@ -1,0 +1,56 @@
+name: Wire Getting Started
+on:
+  push:
+    paths:
+      - '.github/workflows/wire-getting-started.yml'
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch editor
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+
+          old = '<script src="/samples/lantern-under-greyford.js?v=20260828-full-1"></script>'
+          new = old + '<script src="/samples/getting-started.js?v=20260828-start-1"></script>'
+          if '/samples/getting-started.js' not in s:
+              if old not in s:
+                  raise SystemExit('Could not find Lantern sample script tag')
+              s = s.replace(old, new, 1)
+
+          old = '<button id="sa">Load Adventure Sample</button><button id="au">Audit Current HTML</button>'
+          new = '<button id="sa">Load Adventure Sample</button><button id="gs">Getting Started</button><button id="au">Audit Current HTML</button>'
+          if 'id="gs"' not in s:
+              if old not in s:
+                  raise SystemExit('Could not find sample/audit button sequence')
+              s = s.replace(old, new, 1)
+
+          old = 'const sample=()=>window.ambaLanternSample(st,sp);'
+          new = old + 'const gettingStarted=()=>window.ambaGettingStarted();'
+          if 'const gettingStarted=' not in s:
+              if old not in s:
+                  raise SystemExit('Could not find sample function')
+              s = s.replace(old, new, 1)
+
+          old = "sa.onclick=async()=>{ed().setContent(sample());await sync()};au.onclick=sync;"
+          new = "sa.onclick=async()=>{ed().setContent(sample());await sync()};gs.onclick=async()=>{ed().setContent(gettingStarted());await sync()};au.onclick=sync;"
+          if 'gs.onclick=' not in s:
+              if old not in s:
+                  raise SystemExit('Could not find sample click handler')
+              s = s.replace(old, new, 1)
+
+          p.write_text(s)
+      - name: Commit patch and remove workflow
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git rm .github/workflows/wire-getting-started.yml
+          git add index.html
+          git commit -m "Add Getting Started editor tutorial"
+          git push
