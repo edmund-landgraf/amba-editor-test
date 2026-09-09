@@ -1,154 +1,110 @@
 /*
  * AMBA editor-test contrast overrides.
  *
- * This file intentionally lives only in amba-editor-test. It is loaded after
- * the copied AMBA master-preview.css and amba-two-column-layout.css so we can
- * experiment with readability without changing AdventureMakerByAct yet.
- *
- * Root cause: master .preview-root uses --amba-chrome (#e8e0d4) for dark app
- * chrome. In this editor the same class sits on parchment, so anything that is
- * not a p/li (span, div, td) inherits almost invisible text.
+ * Loaded last in TinyMCE content_css. Master .preview-root uses --amba-chrome
+ * for the dark app shell. Here the same class is the parchment iframe body, so
+ * unboxed span/div/td copy (no card color) renders near-white. Boxed classes
+ * that set color: ink already look fine.
  */
 
-html .preview-root,
 body.preview-root,
+html .preview-root,
 .preview-root.mce-content-body {
   color: var(--amba-ink, #211914);
 }
 
-/* Callouts: preserve semantic hue while keeping body text comfortably dark. */
-html .preview-root .sidebar,
-html .preview-root .sidebar-note,
-html .preview-root .sidebar-callout {
+/* Unboxed rows: skill-challenge itself is transparent; only child rows paint. */
+body.preview-root .stat-row,
+body.preview-root .stat-row span,
+body.preview-root .check-result,
+body.preview-root .check-result span,
+body.preview-root .check-result div,
+body.preview-root .skill-challenge,
+body.preview-root .dc-table,
+body.preview-root td,
+body.preview-root .rumor-table,
+body.preview-root table {
+  color: var(--amba-ink, #211914);
+}
+
+body.preview-root th {
+  color: #31261d;
+}
+
+body.preview-root .kicker,
+body.preview-root .eyebrow,
+body.preview-root .section-kicker,
+body.preview-root .tag,
+body.preview-root .muted,
+body.preview-root .module-meta {
+  color: #4a433c;
+}
+
+body.preview-root .sidebar,
+body.preview-root .sidebar-note,
+body.preview-root .sidebar-callout {
   color: #3c3123;
   background: #f3ead9;
   border-color: #d5bf97;
 }
 
-html .preview-root .rules-note {
+body.preview-root .rules-note {
   color: #352a44;
   background: #eee8f5;
   border-color: #b8a8cf;
 }
 
-html .preview-root .warning-note {
+body.preview-root .warning-note {
   color: #593422;
   background: #f8ece6;
   border-color: #d9a995;
 }
 
-html .preview-root .danger-note,
-html .preview-root .danger-box {
+body.preview-root .danger-note,
+body.preview-root .danger-box {
   color: #56231f;
   background: #f7e7e5;
   border-color: #cf9a94;
 }
 
-html .preview-root .secret,
-html .preview-root .gm-only,
-html .preview-root .spoiler {
+body.preview-root .secret,
+body.preview-root .gm-only,
+body.preview-root .spoiler {
   color: #473c30;
   background: #f8f2e8;
   border-color: #c9b9a3;
 }
 
-html .preview-root .map-note,
-html .preview-root .location-note {
+body.preview-root .map-note,
+body.preview-root .location-note {
   color: #24384a;
   background: #eaf1f7;
   border-color: #9cb8d2;
 }
 
-html .preview-root .read-aloud,
-html .preview-root .readaloud,
-html .preview-root .boxed-text,
-html .preview-root .gm-note,
-html .preview-root .designer-note {
-  color: var(--amba-ink, #211914);
-}
-
-/* Kickers / tags: darken --amba-muted for AA on parchment. */
-html .preview-root .kicker,
-html .preview-root .eyebrow,
-html .preview-root .section-kicker,
-html .preview-root .tag {
-  color: #4a433c;
-}
-
-/*
- * Authoring blocks that store copy in span/div/td instead of p/li.
- * Audit vs screenshot + samples: skill-challenge, dc-table, rumor-table,
- * villain/faction/quest/location/timeline/downtime, cards, lists.
- */
-html .preview-root .stat-row,
-html .preview-root .stat-row span,
-html .preview-root .check-result,
-html .preview-root .check-result span,
-html .preview-root .check-result div,
-html .preview-root .skill-challenge,
-html .preview-root .dc-table,
-html .preview-root table,
-html .preview-root td,
-html .preview-root .rumor-table,
-html .preview-root .rumor-table td,
-html .preview-root .rumor-table th,
-html .preview-root .trap-card,
-html .preview-root .hazard-card,
-html .preview-root .affliction-card,
-html .preview-root .treasure-card,
-html .preview-root .npc-card,
-html .preview-root .pc-card,
-html .preview-root .player-handout,
-html .preview-root .handout,
-html .preview-root .timeline,
-html .preview-root .faction-card,
-html .preview-root .quest-card,
-html .preview-root .location-card,
-html .preview-root .villain-card,
-html .preview-root .downtime-card,
-html .preview-root .clue-list,
-html .preview-root .objective-list,
-html .preview-root .key-list,
-html .preview-root .adventure-facts {
-  color: var(--amba-ink, #211914);
-}
-
-html .preview-root th {
-  color: #31261d;
-}
-
-/*
- * Degree labels on #f7f2e8 parchment (approx contrast):
- *   #1b7f3a Critical Success — too light
- *   #3d7a4a Success — fails vs body
- *   #9a4a3a Failure — borderline
- *   #8d382f Critical Failure — ok, slightly darkened for evenness
- */
-html .preview-root .check-result strong {
+body.preview-root .check-result strong {
   color: #3d2f54;
 }
 
-html .preview-root .check-result--critical-success strong {
+body.preview-root .check-result--critical-success strong {
   color: #14532d;
 }
 
-html .preview-root .check-result--success strong {
+body.preview-root .check-result--success strong {
   color: #1a4730;
 }
 
-html .preview-root .check-result--failure strong {
+body.preview-root .check-result--failure strong {
   color: #7a3228;
 }
 
-html .preview-root .check-result--critical-failure strong {
+body.preview-root .check-result--critical-failure strong {
   color: #6f2c26;
 }
 
-/* Master paints these chrome for the dark shell; on parchment they vanish. */
-html .preview-root .collapsible-block-toggle,
-html .preview-root .collapsible-title,
-html .preview-root .collapsible-meta,
-html .preview-root .collapsible-caret,
-html .preview-root .outline-artifacts li {
+body.preview-root .collapsible-block-toggle,
+body.preview-root .collapsible-title,
+body.preview-root .collapsible-meta,
+body.preview-root .collapsible-caret {
   color: var(--amba-ink, #211914);
 }
