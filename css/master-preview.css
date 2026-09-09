@@ -949,14 +949,18 @@
   border-left: 5px solid var(--amba-purple);
   border-radius: 6px;
   background: #f4f0fa;
+  color: var(--amba-ink);
 }
 
-/* Title sits above the box; check rows form the purple card. */
+/* Title sits above the box; check rows form the purple card.
+ * Transparent shell still needs ink: otherwise span/div copy inherits
+ * .preview-root chrome (pale) unless a parent card set color. */
 .skill-challenge {
   margin: 1rem 0;
   padding: 0;
   border: none;
   background: transparent;
+  color: var(--amba-ink);
 }
 
 .skill-challenge h3 {
@@ -1004,6 +1008,7 @@
   grid-template-columns: 6.75rem 1fr;
   gap: 0.5rem;
   align-items: start;
+  color: var(--amba-ink);
 }
 
 .stat-row {
@@ -1372,6 +1377,7 @@ pre.ascii-map code {
   border: 1px solid var(--amba-line);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.56);
+  color: var(--amba-ink);
 }
 
 .timeline {
