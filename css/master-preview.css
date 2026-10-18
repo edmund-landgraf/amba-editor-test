@@ -6,6 +6,78 @@
   authoring classes. It intentionally avoids per-instance selectors.
 */
 
+@font-face {
+  font-family: "Homemade Apple";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/homemadeapple/v24/Qw3EZQFXECDrI2q789EKQZJob0x6XHg.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Patrick Hand";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/patrickhand/v23/LDI1apSQOAYtSuYWp8ZhfYeMWcjKm7sp8g.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Dancing Script";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/dancingscript/v25/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BM1g.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cedarville Cursive";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/cedarvillecursive/v18/yYL00g_a2veiudhUmxjo5VKkoqA-B_nuIrpw.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Pacifico";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/pacifico/v23/FwZY7-Qmy14u9lezJ-6H6Mk.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Satisfy";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/satisfy/v22/rP2Hp2yn6lkG50LoCZOIHQ.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Courgette";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/courgette/v19/wEO_EBrAnc9BLjLQAUk1VvoK.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Indie Flower";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/indieflower/v24/m8JVjfNVeKWVnh3QMuKkFcZVaUuH.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Gloria Hallelujah";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/gloriahallelujah/v24/LYjYdHv3kUk9BMV96EIswT9DIbW-MIS11zM.woff2") format("woff2");
+}
+
 :root {
   --amba-bg: #151820;
   --amba-page: #f7f2e8;
@@ -23,6 +95,8 @@
   --amba-serif: Georgia, "Times New Roman", serif;
   --amba-sans: "Segoe UI", system-ui, sans-serif;
   --amba-mono: "Cascadia Code", "Consolas", monospace;
+  --amba-script: "Homemade Apple", "Segoe Script", "Apple Chancery", "Lucida Handwriting", cursive;
+  --amba-script-formal: "Tangerine", "Segoe Script", "Snell Roundhand", "Apple Chancery", cursive;
 }
 
 .preview-root {
@@ -949,18 +1023,14 @@
   border-left: 5px solid var(--amba-purple);
   border-radius: 6px;
   background: #f4f0fa;
-  color: var(--amba-ink);
 }
 
-/* Title sits above the box; check rows form the purple card.
- * Transparent shell still needs ink: otherwise span/div copy inherits
- * .preview-root chrome (pale) unless a parent card set color. */
+/* Title sits above the box; check rows form the purple card. */
 .skill-challenge {
   margin: 1rem 0;
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--amba-ink);
 }
 
 .skill-challenge h3 {
@@ -1002,13 +1072,211 @@
   margin-top: 0;
 }
 
+/* Interactive GM checklists. Variants: generic, subsystem, takeaways, preparation. */
+.amba-checklist {
+  --checklist-accent: #64748b;
+  --checklist-border: #cbd5e1;
+  --checklist-section-bg: #ffffff;
+  --checklist-ink: #1e293b;
+  --checklist-muted: #475569;
+  --checklist-note-bg: #f8fafc;
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--checklist-border);
+  border-left: 5px solid var(--checklist-accent);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--checklist-muted);
+}
+
+.amba-checklist--generic {
+  --checklist-accent: #64748b;
+  --checklist-border: #cbd5e1;
+  --checklist-section-bg: #ffffff;
+  --checklist-ink: #1e293b;
+  --checklist-muted: #475569;
+  --checklist-note-bg: #f1f5f9;
+  background: #f8fafc;
+}
+
+.amba-checklist--subsystem {
+  --checklist-accent: var(--amba-purple);
+  --checklist-border: #d5c9e3;
+  --checklist-section-bg: #fbf8ff;
+  --checklist-ink: #3b2a52;
+  --checklist-muted: #5c4778;
+  --checklist-note-bg: #f4f0fa;
+  background: #f7f2fc;
+}
+
+.amba-checklist--takeaways {
+  --checklist-accent: var(--amba-green);
+  --checklist-border: #b7d3c5;
+  --checklist-section-bg: #f7fbf8;
+  --checklist-ink: #1d3d2e;
+  --checklist-muted: #2d6148;
+  --checklist-note-bg: #eef8f2;
+  background: #f2faf5;
+}
+
+.amba-checklist--preparation {
+  --checklist-accent: var(--amba-gold);
+  --checklist-border: #d8c59b;
+  --checklist-section-bg: #fffdf6;
+  --checklist-ink: var(--amba-ink);
+  --checklist-muted: #665d53;
+  --checklist-note-bg: #fff6df;
+  background: #fffaf0;
+}
+
+.prep-checklist {
+  --checklist-accent: var(--amba-gold);
+  --checklist-border: #d8c59b;
+  --checklist-section-bg: #fffdf6;
+  --checklist-ink: var(--amba-ink);
+  --checklist-muted: #665d53;
+  --checklist-note-bg: #fff6df;
+}
+
+.amba-checklist > .sidebar-title,
+.amba-checklist > h3,
+.amba-checklist > h4:first-child {
+  margin: 0 0 0.55rem;
+  color: var(--checklist-ink);
+}
+
+.amba-checklist > p {
+  margin: 0 0 0.75rem;
+}
+
+.amba-checklist__grid,
+.prep-checklist {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.amba-checklist .amba-checklist__grid {
+  margin-top: 4px;
+}
+
+.amba-checklist__section,
+.prep-section {
+  background: var(--checklist-section-bg, #ffffff);
+  border: 1px solid var(--checklist-border, #cbd5e1);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.amba-checklist__section h4,
+.prep-section h4 {
+  margin: 0 0 10px 0;
+  color: var(--checklist-ink, #1e293b);
+  font-size: 1.05em;
+}
+
+.amba-checklist__section p,
+.prep-section p {
+  margin: 7px 0;
+  color: var(--checklist-muted, #475569);
+  line-height: 1.5;
+}
+
+.contract-terms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 8px 0 12px 0;
+}
+
+.contract-term {
+  background: var(--checklist-note-bg, #f8fafc);
+  border: 1px solid var(--checklist-border, #e2e8f0);
+  border-radius: 7px;
+  padding: 11px 13px;
+  color: var(--checklist-muted, #475569);
+  line-height: 1.45;
+}
+
+.contract-term-label {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--checklist-muted, #64748b);
+  font-size: 0.78em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.contract-term-value {
+  color: var(--checklist-ink, #334155);
+}
+
+.contract-term--pay {
+  background: var(--checklist-section-bg, #fffbeb);
+  border-color: var(--checklist-accent, #fde68a);
+}
+
+.contract-term--pay .contract-term-value {
+  color: var(--checklist-ink, #92400e);
+  font-size: 1.08em;
+  font-weight: 700;
+}
+
+.contract-accept {
+  border-top: 1px solid var(--checklist-border, #e2e8f0);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .contract-terms {
+    grid-template-columns: 1fr;
+  }
+}
+
+.amba-checklist__item,
+.prep-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 7px 0;
+  color: var(--checklist-muted, #475569);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.amba-checklist__item input,
+.prep-check input {
+  margin-top: 4px;
+  flex: 0 0 auto;
+  accent-color: var(--checklist-accent, #64748b);
+}
+
+.amba-checklist__note,
+.prep-note {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--checklist-note-bg, #f8fafc);
+  border-left: 4px solid var(--checklist-accent, #64748b);
+  color: var(--checklist-muted, #475569);
+  font-style: italic;
+}
+
+.gm-note > .amba-checklist,
+.sidebar > .amba-checklist {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 .stat-row,
 .check-result {
   display: grid;
-  grid-template-columns: 6.75rem 1fr;
+  grid-template-columns: minmax(0, 6.75rem) minmax(0, 1fr);
   gap: 0.5rem;
   align-items: start;
-  color: var(--amba-ink);
 }
 
 .stat-row {
@@ -1018,6 +1286,8 @@
 
 .stat-row strong {
   color: var(--amba-blue);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .stat-row span {
@@ -1031,6 +1301,8 @@
 
 .check-result strong {
   color: var(--amba-purple);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .check-result span {
@@ -1116,7 +1388,8 @@
 }
 
 .syndication-artifact::before,
-.artifact::before {
+.artifact::before,
+.artifact-detail-html.preview.artifact--letter::before {
   display: inline-block;
   margin-bottom: 0.55rem;
   padding: 0.15rem 0.45rem;
@@ -1142,6 +1415,21 @@
   color: var(--amba-green);
 }
 
+.syndication-artifact--letter::before,
+.artifact--letter::before,
+.artifact-detail-html.preview.artifact--letter::before {
+  content: "Letter";
+  background: rgba(122, 72, 32, 0.16);
+  color: #6b3e18;
+}
+
+.syndication-artifact--checklist::before,
+.artifact--checklist::before {
+  content: "Checklist";
+  background: rgba(185, 137, 47, 0.15);
+  color: #765414;
+}
+
 .syndication-artifact--map::before,
 .artifact--map::before {
   content: "Map";
@@ -1160,6 +1448,13 @@
   content: "Trap";
   background: rgba(141, 56, 47, 0.12);
   color: var(--amba-red);
+}
+
+.syndication-artifact--challenge::before,
+.artifact--challenge::before {
+  content: "Challenge";
+  background: rgba(92, 71, 120, 0.13);
+  color: var(--amba-purple);
 }
 
 .syndication-artifact--treasure::before,
@@ -1194,9 +1489,285 @@
   content: "Image";
 }
 
+.syndication-artifact--pdf::before,
+.artifact--pdf::before {
+  content: "PDF";
+}
+
 .syndication-artifact--narrative::before,
 .artifact--narrative::before {
   content: "Narrative";
+}
+
+.artifact-detail-html.preview.artifact--letter .artifact::before {
+  display: none;
+}
+
+.syndication-artifact--letter,
+.artifact.artifact--letter,
+.artifact-detail-html.preview.artifact--letter {
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(139, 90, 43, 0.12), transparent 42%),
+    radial-gradient(ellipse at 88% 92%, rgba(92, 58, 32, 0.14), transparent 48%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(92, 58, 32, 0.035) 0,
+      rgba(92, 58, 32, 0.035) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    linear-gradient(165deg, #f4e4c1 0%, #ead2a0 48%, #e0c089 100%);
+  color: #4a2c12;
+  border: 1px solid #c4a574;
+  border-radius: 2px 14px 3px 12px;
+  box-shadow:
+    inset 0 0 40px rgba(120, 72, 28, 0.12),
+    0 10px 28px rgba(70, 42, 16, 0.22);
+  font-family: var(--amba-script);
+  font-size: 1.85rem;
+  line-height: 1.5;
+  padding: 1.35rem 1.5rem 1.55rem;
+}
+
+.syndication-artifact--letter h1,
+.syndication-artifact--letter h2,
+.syndication-artifact--letter h3,
+.artifact.artifact--letter h1,
+.artifact.artifact--letter h2,
+.artifact.artifact--letter h3,
+.artifact-detail-html.preview.artifact--letter h1,
+.artifact-detail-html.preview.artifact--letter h2,
+.artifact-detail-html.preview.artifact--letter h3 {
+  color: #5c3310;
+  font-family: var(--amba-letter-face, var(--amba-script-formal));
+  font-size: 1.4em;
+  font-weight: 700;
+  border: none;
+  padding: 0;
+}
+
+.letter-salutation {
+  font-family: var(--amba-letter-face, var(--amba-script-formal));
+  font-size: 1.4em;
+  margin: 0 0 0.75rem;
+}
+
+.letter-body {
+  font-family: var(--amba-letter-face, var(--amba-script));
+  font-size: inherit;
+}
+
+.letter-closing {
+  font-family: var(--amba-letter-face, var(--amba-script-formal));
+  font-size: 1.3em;
+  margin: 1.1rem 0 0;
+  text-align: right;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-size--s,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-size--s :is(.artifact.artifact--letter, .artifact--letter) {
+  font-size: 1.35rem;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-size--m,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-size--m :is(.artifact.artifact--letter, .artifact--letter) {
+  font-size: 1.85rem;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-size--l,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-size--l :is(.artifact.artifact--letter, .artifact--letter) {
+  font-size: 2.4rem;
+}
+
+/* Mail From / To / Subject: same face as the letter, smaller than the body, still stepped by S/M/L. */
+.mail-header {
+  margin: 0 0 0.85rem;
+  line-height: 1.35;
+  font-size: 1.2rem;
+  max-width: 100%;
+}
+.mail-header-line {
+  margin: 0.15rem 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.mail-header-label {
+  font-size: 0.72em;
+  margin-right: 0.35rem;
+}
+:is(
+  .artifact-detail-html,
+  .syndication-artifact--mail,
+  .syndication-artifact--letter
+).artifact-text-size--s .mail-header {
+  font-size: 1rem;
+}
+:is(
+  .artifact-detail-html,
+  .syndication-artifact--mail,
+  .syndication-artifact--letter
+).artifact-text-size--m .mail-header {
+  font-size: 1.2rem;
+}
+:is(
+  .artifact-detail-html,
+  .syndication-artifact--mail,
+  .syndication-artifact--letter
+).artifact-text-size--l .mail-header {
+  font-size: 1.45rem;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--caveat,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--caveat :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Caveat", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--casual,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--casual :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Cedarville Cursive", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--flourish,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--flourish :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Dancing Script", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--pacifico,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--pacifico :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Pacifico", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--satisfy,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--satisfy :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Satisfy", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--courgette,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--courgette :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Courgette", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--indie,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--indie :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Indie Flower", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--gloria,
+:is(
+  .syndication-artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+).artifact-text-font--gloria :is(.artifact.artifact--letter, .artifact--letter) {
+  --amba-letter-face: "Gloria Hallelujah", "Segoe Script", cursive;
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+):is(
+  .artifact-text-font--caveat,
+  .artifact-text-font--casual,
+  .artifact-text-font--flourish,
+  .artifact-text-font--pacifico,
+  .artifact-text-font--satisfy,
+  .artifact-text-font--courgette,
+  .artifact-text-font--indie,
+  .artifact-text-font--gloria
+) {
+  font-family: var(--amba-letter-face);
+}
+
+:is(
+  .syndication-artifact--letter,
+  .artifact.artifact--letter,
+  .artifact-detail-html.preview.artifact--letter
+):is(
+  .artifact-text-font--caveat,
+  .artifact-text-font--casual,
+  .artifact-text-font--flourish,
+  .artifact-text-font--pacifico,
+  .artifact-text-font--satisfy,
+  .artifact-text-font--courgette,
+  .artifact-text-font--indie,
+  .artifact-text-font--gloria
+)
+  :is(.artifact, .artifact--letter, h1, h2, h3, .letter-salutation, .letter-closing, .letter-body) {
+  font-family: inherit;
 }
 
 /* Preview/syndication headers and type pills. */
@@ -1377,7 +1948,6 @@ pre.ascii-map code {
   border: 1px solid var(--amba-line);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.56);
-  color: var(--amba-ink);
 }
 
 .timeline {
@@ -1454,4 +2024,105 @@ pre.ascii-map code {
   .preview-root h2 {
     font-size: 1.2rem;
   }
+}
+
+.wg-stat-block .wg-ability {
+  margin: 0.9rem 0 0;
+  padding: 0.15rem 0 0.2rem 0.75rem;
+  border-left: 3px solid var(--amba-gold, #c4a35a);
+}
+
+.wg-stat-block .wg-ability__name {
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.wg-stat-block .wg-ability__traits {
+  margin: 0.15rem 0 0.45rem;
+  color: var(--amba-muted);
+  font-size: 0.92rem;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.wg-stat-block .wg-ability__meta,
+.wg-stat-block .wg-ability__body {
+  margin: 0.2rem 0 0;
+}
+
+/*
+ * Editor-only purpose-card width sets. Explicit --full / --fixed win over body mode.
+ * Nested .skill-challenge inside another purpose card stays unboxed.
+ */
+.skill-challenge.skill-challenge--fixed,
+body.preview-root--width-fixed .skill-challenge:not(.skill-challenge--full) {
+  width: 100%;
+  max-width: min(920px, 100%);
+  margin: 0.85rem auto;
+  padding: 0.85rem 1.05rem;
+  border: 1px solid var(--amba-line);
+  border-top: 5px solid var(--amba-purple);
+  border-radius: var(--amba-radius);
+  background: var(--amba-page);
+  color: var(--amba-ink);
+  box-shadow: var(--amba-shadow);
+  box-sizing: border-box;
+}
+
+.trap-card.trap-card--full,
+.hazard-card.hazard-card--full,
+.affliction-card.affliction-card--full,
+.treasure-card.treasure-card--full,
+.npc-card.npc-card--full,
+.pc-card.pc-card--full,
+.skill-challenge.skill-challenge--full,
+body.preview-root--width-full .trap-card:not(.trap-card--fixed),
+body.preview-root--width-full .hazard-card:not(.hazard-card--fixed),
+body.preview-root--width-full .affliction-card:not(.affliction-card--fixed),
+body.preview-root--width-full .treasure-card:not(.treasure-card--fixed),
+body.preview-root--width-full .npc-card:not(.npc-card--fixed),
+body.preview-root--width-full .pc-card:not(.pc-card--fixed),
+body.preview-root--width-full .skill-challenge:not(.skill-challenge--fixed) {
+  width: 100%;
+  max-width: none;
+  margin: 1rem 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.trap-card .skill-challenge,
+.hazard-card .skill-challenge,
+.affliction-card .skill-challenge,
+.treasure-card .skill-challenge,
+.npc-card .skill-challenge,
+.pc-card .skill-challenge,
+.encounter-brief .skill-challenge,
+.module-section--encounter .skill-challenge,
+body.preview-root--width-fixed .trap-card .skill-challenge,
+body.preview-root--width-fixed .hazard-card .skill-challenge,
+body.preview-root--width-fixed .affliction-card .skill-challenge,
+body.preview-root--width-fixed .treasure-card .skill-challenge,
+body.preview-root--width-fixed .npc-card .skill-challenge,
+body.preview-root--width-fixed .pc-card .skill-challenge,
+body.preview-root--width-fixed .encounter-brief .skill-challenge,
+body.preview-root--width-fixed .module-section--encounter .skill-challenge,
+body.preview-root--width-full .trap-card .skill-challenge,
+body.preview-root--width-full .hazard-card .skill-challenge,
+body.preview-root--width-full .affliction-card .skill-challenge,
+body.preview-root--width-full .treasure-card .skill-challenge,
+body.preview-root--width-full .npc-card .skill-challenge,
+body.preview-root--width-full .pc-card .skill-challenge,
+body.preview-root--width-full .encounter-brief .skill-challenge,
+body.preview-root--width-full .module-section--encounter .skill-challenge {
+  width: auto;
+  max-width: none;
+  margin: var(--keyed-between, var(--enc-block-between, 0.45rem)) 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
