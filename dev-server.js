@@ -2,7 +2,8 @@
 // Usage: node dev-server.js   (env: PORT=8080, PF2E_API_BASE=http://localhost:3333)
 const http = require('http'), fs = require('fs'), path = require('path');
 const PORT = +process.env.PORT || 8080;
-const TARGET = new URL(process.env.PF2E_API_BASE || 'http://localhost:3333');
+const HOST = process.env.HOST || '0.0.0.0'; // prod: 127.0.0.1 behind nginx
+const TARGET = new URL((process.env.PF2E_API_BASE || process.env.PF2_API_BASE || 'http://localhost:3333').replace(/\/api\/?$/, ''));
 const ROOT = __dirname;
 // Load gitignored .env.local (KEY=VALUE lines) so PF2_ART_PASSWORD survives restarts. Shell env wins; values never logged.
 try {
@@ -193,4 +194,4 @@ http.createServer((req, res) => {
     if (err) { res.writeHead(404); return res.end('not found'); }
     res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-cache' }); res.end(buf);
   });
-}).listen(PORT, () => { console.log(`editor on http://localhost:${PORT}  /api/pf2 -> ${TARGET.origin}/api`); unlockArt(); });
+}).listen(PORT, HOST, () => { console.log(`editor on http://${HOST}:${PORT}  /api/pf2 -> ${TARGET.origin}/api`); unlockArt(); });
