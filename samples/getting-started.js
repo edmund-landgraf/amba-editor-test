@@ -13,11 +13,11 @@ window.ambaGettingStarted = function ambaGettingStarted() {
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">1 · Begin with the module outline</p>
+  <p class="kicker">1 \u00b7 Begin with the module outline</p>
   <h2 class="page-title">Create the outer structure first</h2>
   <p>Start with the module outline before adding acts. Think of the outline as the outer box that owns the adventure structure below it.</p>
   <div class="gm-note">
-    <strong>Before adding an Act:</strong> click somewhere <em>inside</em> the module outline. Then use <strong>AMBA Insert → Child nodes → Act</strong>.
+    <strong>Before adding an Act:</strong> click somewhere <em>inside</em> the module outline. Then use <strong>AMBA Insert \u2192 Child nodes \u2192 Act</strong>.
   </div>
 
   <section class="module-overview module-section module-section--overview" data-amba-node-kind="adventure">
@@ -48,8 +48,8 @@ window.ambaGettingStarted = function ambaGettingStarted() {
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">2 · Build downward one level at a time</p>
-  <h2>Act → Scene → Subscene → Encounter</h2>
+  <p class="kicker">2 \u00b7 Build downward one level at a time</p>
+  <h2>Act \u2192 Scene \u2192 Subscene \u2192 Encounter</h2>
   <p>The same rule repeats at every level. Select inside the intended parent before inserting the next child.</p>
   <ul class="key-list">
     <li><strong>To add a Scene:</strong> click inside the Act.</li>
@@ -85,7 +85,7 @@ window.ambaGettingStarted = function ambaGettingStarted() {
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">3 · Selection controls ownership</p>
+  <p class="kicker">3 \u00b7 Selection controls ownership</p>
   <h2>Where you click matters more than what is visually nearby</h2>
   <p>TinyMCE inserts at the current selection. Two blocks can appear one after another and still have completely different structural relationships.</p>
   <div class="rules-note">
@@ -97,7 +97,7 @@ window.ambaGettingStarted = function ambaGettingStarted() {
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">4 · Artifacts follow the same ownership rule</p>
+  <p class="kicker">4 \u00b7 Artifacts follow the same ownership rule</p>
   <h2>Put the cursor inside the container that owns the artifact</h2>
   <p>Artifacts are not just visual cards. In the HTML-first model, an explicit artifact wrapper tells the importer to create an artifact, while its location tells the importer which container owns it.</p>
 
@@ -131,12 +131,12 @@ window.ambaGettingStarted = function ambaGettingStarted() {
   </section>
 
   <div class="designer-note">
-    <strong>Semantic style is different from an artifact.</strong> A <code>gm-note</code>, <code>read-aloud</code>, or <code>warning-note</code> is presentation inside the current narrative. An <code>artifact artifact--trap</code> wrapper explicitly says “create a Trap artifact.”
+    <strong>Semantic style is different from an artifact.</strong> A <code>gm-note</code>, <code>read-aloud</code>, or <code>warning-note</code> is presentation inside the current narrative. An <code>artifact artifact--trap</code> wrapper explicitly says \u201ccreate a Trap artifact.\u201d
   </div>
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">5 · Styles do not change hierarchy</p>
+  <p class="kicker">5 \u00b7 Styles do not change hierarchy</p>
   <h2>Use AMBA Style freely inside the selected narrative</h2>
   <p>Read Aloud, GM Note, Sidebar, Rules Note, Warning, Danger, Map Note, Secret / GM Only, and Kicker change presentation. They do not create Acts, Scenes, Encounters, or artifacts.</p>
   <div class="read-aloud"><strong>Read Aloud.</strong> The bell rings again, but the rope does not move.</div>
@@ -146,7 +146,7 @@ window.ambaGettingStarted = function ambaGettingStarted() {
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">6 · A reliable authoring sequence</p>
+  <p class="kicker">6 \u00b7 A reliable authoring sequence</p>
   <h2>Build the skeleton before filling every detail</h2>
   <ol class="objective-list">
     <li><strong>Create the module outline.</strong></li>
@@ -163,7 +163,7 @@ window.ambaGettingStarted = function ambaGettingStarted() {
 </section>
 
 <section class="module-section module-section--overview">
-  <p class="kicker">7 · The target structure</p>
+  <p class="kicker">7 \u00b7 The target structure</p>
   <h2>What the HTML-first importer should eventually generate</h2>
   <ul class="key-list">
     <li><strong>Module</strong>

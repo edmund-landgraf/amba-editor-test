@@ -1,0 +1,5 @@
+﻿{
+  "name": "amba-editor-test",
+  "private": true,
+  "scripts": { "dev": "node dev-server.js" }
+}

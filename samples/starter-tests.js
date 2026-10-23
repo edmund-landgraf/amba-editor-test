@@ -32,12 +32,13 @@ window.ambaStarterTests = [
   <div class="read-aloud"><p>Three small figures leap from behind the barrels, curved blades flashing and voices shrieking a tuneless war song.</p></div>
   <div class="npc-card aon-stat-block" data-aon-url="https://2e.aonprd.com/Monsters.aspx?ID=232">
     <h4>Goblin Warrior <span>Creature -1</span></h4>
+    <p class="aon-stat-block-source">Source: Bestiary pg. 180 &middot; <a href="https://2e.aonprd.com/Monsters.aspx?ID=232" target="_blank" rel="noreferrer">AoN \u2197</a></p>
     <p class="tag-row"><span class="tag">Small</span> <span class="tag">Goblin</span> <span class="tag">Humanoid</span></p>
-    <p class="stat-line"><strong>Perception</strong> +2; darkvision · <strong>Languages</strong> Goblin</p>
+    <p class="stat-line"><strong>Perception</strong> +2; darkvision \u00b7 <strong>Languages</strong> Goblin</p>
     <p class="stat-line"><strong>Skills</strong> Acrobatics +5, Athletics +2, Nature +1, Stealth +5</p>
     <p class="stat-line"><strong>Str</strong> +0, <strong>Dex</strong> +3, <strong>Con</strong> +1, <strong>Int</strong> +0, <strong>Wis</strong> -1, <strong>Cha</strong> +1</p>
     <p class="stat-line"><strong>Items</strong> dogslicer, leather armor, shortbow (10 arrows)</p>
-    <p class="stat-line"><strong>AC</strong> 16; <strong>Fort</strong> +5, <strong>Ref</strong> +7, <strong>Will</strong> +3 · <strong>HP</strong> 6</p>
+    <p class="stat-line"><strong>AC</strong> 16; <strong>Fort</strong> +5, <strong>Ref</strong> +7, <strong>Will</strong> +3 \u00b7 <strong>HP</strong> 6</p>
     <p><strong>Goblin Scuttle</strong> [reaction] <strong>Trigger</strong> A goblin ally ends a move action adjacent to the warrior. <strong>Effect</strong> The goblin warrior Steps.</p>
     <p class="stat-line"><strong>Speed</strong> 25 feet</p>
     <p><strong>Melee</strong> [one-action] dogslicer +8 (agile, backstabber, finesse), <strong>Damage</strong> 1d6 slashing</p>
@@ -52,14 +53,14 @@ window.ambaStarterTests = [
 <section class="encounter-brief encounter-brief--social" data-amba-starter="social" data-amba-starter-v="1" data-amba-system="pf2e">
   <h3 class="encounter-title">Social: Winning Over Marta (placeholder NPC)</h3>
   <div class="npc-card">
-    <h4>Marta Vell <span>Innkeeper · Level 1 (placeholder)</span></h4>
-    <p><strong>Attitude</strong> indifferent · <strong>Wants</strong> the goblin raids on her cellar stopped · <strong>Secret</strong> she sold the goblins her spoiled ale</p>
+    <h4>Marta Vell <span>Innkeeper \u00b7 Level 1 (placeholder)</span></h4>
+    <p><strong>Attitude</strong> indifferent \u00b7 <strong>Wants</strong> the goblin raids on her cellar stopped \u00b7 <strong>Secret</strong> she sold the goblins her spoiled ale</p>
   </div>
   <div class="skill-challenge skill-challenge--pf2e">
     <h4>Influence: Marta Vell</h4>
     <p><strong>Discovery</strong> DC 15 Perception, DC 13 Society (placeholder DCs)</p>
     <p><strong>Influence Skills</strong> DC 15 Diplomacy, DC 17 Deception, DC 13 Intimidation (she is weak to threats)</p>
-    <p><strong>Thresholds</strong> 2: she shares rumors · 4: free room and board · 6: she confesses the ale sale</p>
+    <p><strong>Thresholds</strong> 2: she shares rumors \u00b7 4: free room and board \u00b7 6: she confesses the ale sale</p>
     <div class="check-result check-result--critical-success"><strong>Critical Success</strong> Gain 2 Influence Points.</div>
     <div class="check-result check-result--success"><strong>Success</strong> Gain 1 Influence Point.</div>
     <div class="check-result check-result--failure"><strong>Failure</strong> Gain no Influence Points.</div>
@@ -74,7 +75,7 @@ window.ambaStarterTests = [
 <section class="encounter-brief encounter-brief--treasure" data-amba-starter="treasure" data-amba-starter-v="1" data-amba-system="pf2e">
   <h3 class="encounter-title">Treasure: Centipede Nest Cache</h3>
   <div class="treasure-card">
-    <h4 class="treasure-title">Cache under the nest <span>Party level 1 · Moderate (budget 18 gp)</span></h4>
+    <h4 class="treasure-title">Cache under the nest <span>Party level 1 \u00b7 Moderate (budget 18 gp)</span></h4>
     <p><strong>Found</strong> wrapped in oilcloth beneath the nest (placeholder: DC 15 Perception)</p>
     <table>
       <thead><tr><th>Item</th><th>Lvl</th><th>Qty</th><th>Price</th><th>Bulk</th></tr></thead>
@@ -83,7 +84,7 @@ window.ambaStarterTests = [
         <tr><td><a href="#wg" data-wg-type="item" data-wg-id="0">Giant centipede venom</a></td><td>1</td><td>1</td><td>4 gp</td><td>L</td></tr>
       </tbody>
     </table>
-    <p><strong>Coins</strong> 5 gp, 5 sp · <strong>Valuables</strong> silver ring (1 gp, placeholder)</p>
+    <p><strong>Coins</strong> 5 gp, 5 sp \u00b7 <strong>Valuables</strong> silver ring (1 gp, placeholder)</p>
     <p><strong>Total</strong> 18.5 gp of 18 gp budget</p>
   </div>
 </section>`
@@ -98,6 +99,34 @@ window.ambaStarterTests = [
   <div class="map-note"><p>Placeholder: Area A3 connects to the sewer at B1 through a flooded crawlway (DC 15 Athletics to swim through).</p></div>
   <div class="warning-note"><p>Placeholder: this scene leads straight into a moderate encounter for level 1 PCs; let the party rest first if they are hurt.</p></div>
 </section>`
+  },
+  {
+    key: 'spell',
+    label: 'Spell: Fireball (aon-spell-block)',
+    html: `
+<article class="aon-spell-block"><header class="aon-spell-block-banner"><h4>Fireball</h4><span class="aon-level-badge">Spell 3</span></header><div class="aon-spell-block-body">
+<p class="aon-spell-block-meta">Source: Core Rulebook &middot; <a href="https://2e.aonprd.com/Spells.aspx?ID=119" target="_blank" rel="noreferrer">AoN</a></p>
+<div class="aon-traits"><span class="aon-trait">Fire</span><span class="aon-trait">Evocation</span></div>
+<div class="aon-stat-line aon-spell-traditions"><strong>Traditions</strong> Arcane, Primal</div>
+<div class="aon-stat-line"><strong>Cast</strong> Two Actions (somatic, verbal)</div>
+<div class="aon-stat-line"><strong>Range</strong> 500 feet</div>
+<div class="aon-stat-line"><strong>Area</strong> 20-foot burst</div>
+<div class="aon-stat-line"><strong>Defense</strong> basic Reflex</div>
+<p class="aon-spell-summary">A roaring blast of fire appears at a spot you designate, dealing 6d6 fire damage.</p>
+<p class="aon-spell-heightened"><strong>Heightened (+1)</strong> The damage increases by 2d6.</p>
+</div></article>`
+  },
+  {
+    key: 'item',
+    label: 'Item: Anylength Rope (aon-item-block)',
+    html: `
+<article class="aon-item-block"><header class="aon-item-block-banner"><h4>Anylength Rope</h4><span class="aon-level-badge">Item 3</span></header><div class="aon-item-block-body">
+<p class="aon-item-block-meta">Source: Firebrands &middot; <a href="https://2e.aonprd.com/Equipment.aspx?ID=2454" target="_blank" rel="noreferrer">AoN</a></p>
+<div class="aon-traits"><span class="aon-trait">Magical</span><span class="aon-trait">Transmutation</span></div>
+<div class="aon-stat-line"><strong>Category</strong> Held Items</div>
+<div class="aon-stat-line"><strong>Bulk</strong> L</div>
+<p class="aon-item-summary">This 50-foot length of silk rope is lightweight and inlaid with golden threads. It can hold up to 3,000 pounds.</p>
+</div></article>`
   }
 ];
 window.ambaStarterTestsAll = function () {

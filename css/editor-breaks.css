@@ -1,0 +1,31 @@
+/* Editor-only: AMBA Layout break markers. AMBA uses .page-break/.column-break only as
+ * Homebrewery export markers and ships no CSS, so they were plain text in the editor. */
+.page-break {
+  display: block; position: relative; clear: both;
+  margin: 1.5rem 0 !important; padding: 0 !important; height: 0;
+  border: 0; border-top: 2px dashed #8a6d3b;
+  font-size: 0; line-height: 0; color: transparent; overflow: visible;
+  break-after: page; page-break-after: always;
+}
+.page-break::after {
+  content: "Page break"; position: absolute; left: 50%; top: -0.7rem; transform: translateX(-50%);
+  padding: 0 .6rem; background: #eef0f3; color: #8a6d3b;
+  font: 700 11px/1.4rem system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+}
+.column-break {
+  display: block; clear: both;
+  margin: .75rem 0 !important; padding: 0 !important; height: 0;
+  border: 0; border-top: 2px dotted #6b7280;
+  font-size: 0; line-height: 0; color: transparent;
+  break-after: column; -webkit-column-break-after: always;
+}
+.column-break::after {
+  content: "Column break"; display: block; width: max-content; margin: .15rem auto 0;
+  color: #6b7280; font: 700 10px/1.2 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+}
+.amba-flow__col .column-break, [style*="column-count"] .column-break, [style*="columns:"] .column-break { break-after: column; }
+@media print {
+  .page-break { border: 0 !important; margin: 0 !important; height: 0 !important; visibility: hidden; break-after: page; page-break-after: always; }
+  .page-break::after, .column-break::after { content: none !important; display: none !important; }
+  .column-break { border: 0 !important; margin: 0 !important; visibility: hidden; break-after: column; }
+}

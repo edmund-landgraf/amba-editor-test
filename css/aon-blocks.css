@@ -1,0 +1,125 @@
+
+/* ===== AoN block family (shared: creature / item / spell / feat) =====
+   Structure: article.aon-{stat|item|spell|feat}-block > header.aon-*-banner (h4 + .aon-level-badge)
+   > div.aon-*-body (p.aon-*-meta, .aon-traits > .aon-trait, .aon-stat-line, .aon-*-summary). */
+.aon-stat-block,
+.aon-item-block,
+.aon-spell-block,
+.aon-feat-block {
+  margin: 1.25rem 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 2px solid var(--amba-red, #8d382f);
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--amba-ink, #211914);
+  break-inside: avoid;
+}
+.aon-item-block { border-color: var(--amba-gold, #a8792a); }
+.aon-stat-block-banner,
+.aon-item-block-banner,
+.aon-spell-block-banner,
+.aon-feat-block-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(141, 56, 47, 0.08);
+  border-bottom: 1px solid rgba(127, 127, 127, 0.35);
+}
+.aon-item-block-banner { background: rgba(168, 121, 42, 0.1); }
+.aon-feat-block-banner h4,
+.aon-stat-block-banner h4,
+.aon-item-block-banner h4,
+.aon-spell-block-banner h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.aon-level-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.aon-stat-block-body,
+.aon-item-block-body,
+.aon-spell-block-body,
+.aon-feat-block-body {
+  padding: 0.85rem;
+}
+.aon-stat-block-source,
+.aon-item-block-source,
+.aon-spell-block-source,
+.aon-feat-block-source,
+.aon-item-block-meta,
+.aon-spell-block-meta,
+.aon-feat-block-meta {
+  margin: 0 0 0.65rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+.aon-item-block .aon-stat-line,
+.aon-spell-block .aon-stat-line, .aon-feat-block .aon-stat-line { margin: 0.15rem 0; }
+.aon-item-summary,
+.aon-spell-summary,
+.aon-item-text,
+.aon-spell-text { margin: 0.6rem 0 0; }
+.aon-spell-heightened {
+  margin: 0.6rem 0 0;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(127, 127, 127, 0.35);
+}
+.aon-spell-traditions { font-style: italic; }
+.aon-stat-block a, .aon-item-block a, .aon-spell-block a, .aon-feat-block a { color: inherit; text-decoration: underline dotted; }
+/* Trait chips (PF2e style) */
+.aon-traits { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0 0 0.6rem; }
+.aon-trait {
+  display: inline-block; padding: 0.1rem 0.45rem;
+  border: 2px solid #d5c489; background: #5d0000; color: #fff;
+  font: 700 0.72rem/1.3 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.aon-trait--uncommon { background: #98513d; }
+.aon-trait--rare { background: #002664; }
+.aon-trait--unique { background: #54166e; }
+.aon-stat-block-art { float: right; width: 40%; max-width: 40%; height: auto; max-height: 340px; margin: 0 0 0.5rem 0.75rem; object-fit: contain; }
+.aon-stat-block-body::after { content: ""; display: block; clear: both; }
+/* Item card detail (full AoN record): activations, spell lists by rank, variants */
+.aon-action { font-family: system-ui, sans-serif; font-size: 0.8em; letter-spacing: -0.05em; margin: 0 0.15em; }
+.aon-item-activate, .aon-item-craft, .aon-item-heading { margin: 0.6rem 0 0; }
+.aon-item-craft { padding-top: 0.45rem; border-top: 1px solid rgba(127, 127, 127, 0.35); }
+.aon-item-list { list-style: none; margin: 0.45rem 0 0; padding: 0; }
+.aon-item-list li { margin: 0.15rem 0; padding-left: 1rem; text-indent: -1rem; }
+.aon-item-variants { margin-top: 0.75rem; border-top: 1px solid rgba(127, 127, 127, 0.35); }
+.aon-item-variant { padding: 0.5rem 0 0.1rem; border-bottom: 1px dashed rgba(127, 127, 127, 0.3); }
+.aon-item-variant:last-child { border-bottom: 0; }
+.aon-item-variant--selected { background: rgba(168, 121, 42, 0.08); margin: 0 -0.85rem; padding-left: 0.85rem; padding-right: 0.85rem; }
+.aon-item-variant-meta { margin-left: 0.4rem; font-size: 0.85rem; opacity: 0.8; }
+.aon-item-variant .aon-item-text, .aon-item-variant .aon-item-list { margin-top: 0.25rem; }
+
+/* Feat card (aon-feat-block): green accent */
+.aon-feat-block { border-color: var(--amba-green, #3d6b35); }
+.aon-feat-block-banner { background: rgba(61, 107, 53, 0.1); }
+.aon-stat-block-banner h4 .aon-action, .aon-item-block-banner h4 .aon-action, .aon-spell-block-banner h4 .aon-action, .aon-feat-block-banner h4 .aon-action { margin-left: 0.3rem; }
+.aon-feat-text { margin: 0.6rem 0 0; }
+.aon-feat-special { margin: 0.6rem 0 0; padding-top: 0.45rem; border-top: 1px solid rgba(127, 127, 127, 0.35); }
+/* Stat block with art, Paizo Bestiary style: transparent cutout floats right below the trait row,
+   stat text wraps around its alpha shape (shape-outside), no box/border/background. */
+.aon-stat-block .aon-stat-block-body img.aon-stat-block-cutout, .preview-root .aon-stat-block img.aon-stat-block-cutout { float: right; width: 40% !important; max-width: 40% !important; min-width: 0 !important; height: auto !important; max-height: 340px !important; object-fit: contain; object-position: top right;
+  margin: 0 -0.25rem 0.5rem 0.75rem; background: none !important; border: 0 !important; border-radius: 0; box-shadow: none !important; padding: 0;
+  shape-image-threshold: 0.2; shape-margin: 0.6rem; }
+.aon-stat-block:has(.aon-stat-block-cutout) .aon-stat-block-body::after { content: ""; display: block; clear: both; }
+@container (max-width: 520px) { .aon-stat-block .aon-stat-block-body img.aon-stat-block-cutout, .preview-root .aon-stat-block img.aon-stat-block-cutout { width: 40% !important; max-width: 40% !important; max-height: 240px !important; } }
+@media (max-width: 520px) { .aon-stat-block .aon-stat-block-body img.aon-stat-block-cutout, .preview-root .aon-stat-block img.aon-stat-block-cutout { width: 40% !important; max-width: 40% !important; max-height: 240px !important; } }
+@media (max-width: 360px) { .aon-stat-block .aon-stat-block-body img.aon-stat-block-cutout, .preview-root .aon-stat-block img.aon-stat-block-cutout { float: none !important; display: block; width: 40% !important; max-width: 40% !important; margin: 0.5rem auto !important; shape-outside: none !important; } }
+
+/* Opaque art fallback: framed box in the upper right, text wraps left/below. */
+.aon-stat-block .aon-stat-block-body img.aon-art--boxed, .preview-root .aon-stat-block img.aon-art--boxed { float: right; width: 35% !important; max-width: 35% !important; height: auto !important; max-height: 300px !important; object-fit: cover; object-position: center top;
+  margin: 0 0 0.6rem 0.9rem; padding: 3px; background: #fff !important; border: 2px solid var(--amba-red, #7a1f1f) !important; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.25) !important; shape-outside: none; }
+@media (max-width: 360px) { .aon-stat-block .aon-stat-block-body img.aon-art--boxed, .preview-root .aon-stat-block img.aon-art--boxed { float: none !important; display: block; width: 70% !important; max-width: 70% !important; margin: 0.5rem auto !important; } }
+
+/* Art starts right under the header: no body top gap above it */
+.aon-stat-block-body > img.aon-stat-block-cutout:first-child { margin-top: 0 !important; }

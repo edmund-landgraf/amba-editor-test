@@ -1,5 +1,5 @@
 window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-section module-section--overview" data-amba-node-kind="adventure">
-<p class="kicker">Short urban dungeon for levels 2–3</p>
+<p class="kicker">Short urban dungeon for levels 2\u20133</p>
 <h1 class="module-title">The Lantern Under Greyford</h1>
 <p class="read-aloud">Lord Aldren Greymark's summons arrives at dusk, sealed in blue wax and carried by an exhausted rider. Something is moving again beneath the old dungeon outside Greyford, and the lord wants quiet investigators before fear reaches the market.</p>
 <h2>Adventure Premise</h2>
@@ -10,12 +10,12 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 </section>${sp()}
 
 <section class="artifact artifact--handout player-handout" data-amba-node-kind="artifact" data-amba-artifact-type="handout">
-<p class="kicker">Player hook · No spoilers</p>
+<p class="kicker">Player hook \u00b7 No spoilers</p>
 <h2 class="handout-title">The Lantern Under Greyford</h2>
 <div class="handout-body">
 <p class="read-aloud">Every night, Greyford's lamplighters kindle three hundred flames along the river walls. The oldest songs say those lights do more than guide ferries home: they keep a promise made when the city was young. Now one lamp burns green beneath streets where no lamp should remain, and something in the dark has begun answering it.</p>
 <h3>A Lord's Plea</h3>
-<p>“I will not ask you to defend my name. I ask you to defend the people who live beneath it. Find my scouts. Learn what woke below Greyford. If my house bears blame, bring me the truth with the survivors.” — Lord Aldren Greymark</p>
+<p>\u201cI will not ask you to defend my name. I ask you to defend the people who live beneath it. Find my scouts. Learn what woke below Greyford. If my house bears blame, bring me the truth with the survivors.\u201d \u2014 Lord Aldren Greymark</p>
 <h3>Greyford Remembers</h3>
 <p>Greyford grew where two rivers meet beneath a black-stone castle. Its bridge bells mark floodwater, funerals, and invasion. Its ferrymen leave a lamp burning for anyone lost below the current. In Greyford, history is not dead; it has merely been mortared behind newer walls.</p>
 <h3>Bring a Hero Who...</h3>
@@ -32,7 +32,7 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 
 <section class="module-section module-section--scene scene-brief" data-amba-node-kind="scene">
 <p class="kicker">Scene 1</p><h1 class="scene-title">Greymark Castle</h1>
-<p class="read-aloud">Lord Greymark's hall smells of wet wool, lamp oil, and old stone. A city map lies open on the table, pinned at the bridge, the market, and a sealed road leading toward the abandoned dungeon. The lord does not rise when you enter, but his first words are direct: “Something below Greyford has started moving again.”</p>
+<p class="read-aloud">Lord Greymark's hall smells of wet wool, lamp oil, and old stone. A city map lies open on the table, pinned at the bridge, the market, and a sealed road leading toward the abandoned dungeon. The lord does not rise when you enter, but his first words are direct: \u201cSomething below Greyford has started moving again.\u201d</p>
 <h2>Scene Goals</h2><ul class="clue-list"><li>Introduce Lord Greymark as patron, pressure source, and information gate.</li><li>Use the city map to show Greyford, the old dungeon road, and the reported activity site.</li><li>Give the party a reason to investigate quietly before panic spreads.</li><li>Let the players negotiate payment, authority, supplies, and access to records.</li></ul>
 <h2>Running the Scene</h2><p>Keep this scene conversational. Lord Greymark wants discretion because the city remembers the old dungeon as a sealed civic failure. He can provide a map, a writ of authority, two lanterns, a sealed worker's key, and the name of the scout who saw green light at the entrance.</p>
 <div class="skill-challenge skill-challenge--pf2e"><h3>Skill Challenge: Reading the Room</h3>${st('Check','Perception, Society, or an equivalent social-reading skill.')}${st('DC','Moderate for the party level; lower it for noble, civic, or watch connections.')}<div class="check-result check-result--success"><strong>Success</strong><span>PC 1 notices Greymark fears public panic more than personal danger. He will pay extra for discretion or proof before dawn.</span></div><div class="check-result check-result--critical-success"><strong>Critical Success</strong><span>PC 1 also notices the worker's key is recently polished. Greymark handled it before the meeting and is withholding old family records.</span></div><div class="check-result check-result--failure"><strong>Failure</strong><span>The party still gets the job, map, writ, and supplies, but no leverage over Greymark's hidden guilt.</span></div></div>
@@ -102,7 +102,7 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 
 <section class="artifact artifact--trap" data-amba-node-kind="artifact" data-amba-artifact-type="trap"><section class="trap-card">
 <p class="kicker">Trap</p><h2>Pressure Sluice</h2><p>A brass plate in the sluice hall triggers when weight crosses the central channel without first turning the maintenance wheel. The trap is meant to flush debris, not kill intruders, but years of neglect have made it dangerous.</p>
-${st('Hazard','Level 1 simple mechanical trap')}${st('Stealth','DC 17 to notice the pressure plate, curved scrape marks, and gaps around the sluice valve.')}${st('Disable','Thievery DC 17, Crafting DC 16, or Athletics DC 18; two successes fully neutralize it.')}${st('Trigger','A Small or larger creature steps on the central plate or forces the valve door.')}${st('Reaction','Sluice Burst — creatures in a 15-foot line take 1d8 bludgeoning damage, DC 17 basic Reflex.')}${st('Push','On a failed save, push 10 feet; on a critical failure, push 20 feet and the creature falls prone.')}${st('Reset','The pressure plate resets after 1 minute unless the maintenance wheel is locked open.')}
+${st('Hazard','Level 1 simple mechanical trap')}${st('Stealth','DC 17 to notice the pressure plate, curved scrape marks, and gaps around the sluice valve.')}${st('Disable','Thievery DC 17, Crafting DC 16, or Athletics DC 18; two successes fully neutralize it.')}${st('Trigger','A Small or larger creature steps on the central plate or forces the valve door.')}${st('Reaction','Sluice Burst \u2014 creatures in a 15-foot line take 1d8 bludgeoning damage, DC 17 basic Reflex.')}${st('Push','On a failed save, push 10 feet; on a critical failure, push 20 feet and the creature falls prone.')}${st('Reset','The pressure plate resets after 1 minute unless the maintenance wheel is locked open.')}
 <div class="skill-challenge skill-challenge--pf2e"><h3>PF2e Play Notes</h3><div class="check-result check-result--success"><strong>Investigate</strong><span>Perception DC 17 reveals the scrape-marked safe route; a critical success also identifies the side drain.</span></div><div class="check-result check-result--failure"><strong>Disarm Failure</strong><span>The mechanism groans; on a critical failure, the trap triggers immediately.</span></div></div>
 </section></section>${sp()}
 
@@ -111,7 +111,7 @@ ${st('Hazard','Level 1 simple mechanical trap')}${st('Stealth','DC 17 to notice 
 </section></section>${sp()}
 
 <section class="artifact artifact--handout player-handout" data-amba-node-kind="artifact" data-amba-artifact-type="handout">
-<p class="kicker">Player Handout</p><h2 class="handout-title">Bridge Lantern Maintenance Diagram</h2><div class="handout-body"><p>The drawing is water-stained but readable. Three ink lines connect the lamp house, the market drain, and a round chamber marked <em>lower lantern — do not open during flood tide</em>.</p><ul class="key-list"><li><strong>Lamp house</strong> — shares the same flame path as the lantern well below.</li><li><strong>Valve chamber</strong> — marked with a brass key symbol.</li><li><strong>Side drain</strong> — safe bypass if the pressure wheel is turned first.</li></ul></div>
+<p class="kicker">Player Handout</p><h2 class="handout-title">Bridge Lantern Maintenance Diagram</h2><div class="handout-body"><p>The drawing is water-stained but readable. Three ink lines connect the lamp house, the market drain, and a round chamber marked <em>lower lantern \u2014 do not open during flood tide</em>.</p><ul class="key-list"><li><strong>Lamp house</strong> \u2014 shares the same flame path as the lantern well below.</li><li><strong>Valve chamber</strong> \u2014 marked with a brass key symbol.</li><li><strong>Side drain</strong> \u2014 safe bypass if the pressure wheel is turned first.</li></ul></div>
 </section>${sp()}
 
 <section class="npc-card" data-amba-node-kind="npc">
@@ -121,7 +121,7 @@ ${st('Hazard','Level 1 simple mechanical trap')}${st('Stealth','DC 17 to notice 
 </section>${sp()}
 
 <article class="character-page pc-card" data-amba-node-kind="pc">
-<p class="kicker">Pre-generated Player Character · Main Page</p><h1>Mira Vell</h1>
+<p class="kicker">Pre-generated Player Character \u00b7 Main Page</p><h1>Mira Vell</h1>
 <p class="read-aloud">Mira wears a Greyford watch cloak faded by river rain and keeps a battered brass whistle tied beside her sword. She knows which doors stick in winter, which alleys flood first, and which officials stop listening when a warning becomes inconvenient.</p>
 <h2>At a Glance</h2>${st('Ancestry and class','Human fighter 1; Skilled heritage; Guard background.')}${st('Party role','Durable front-line defender, accurate striker, Athletics controller, and emergency healer-in-training.')}${st('Best attributes','Strength +4, Dexterity +2, Constitution +2, Wisdom +1.')}${st('Signature gear','Longsword, steel shield, chain mail, shortbow, watch whistle, and Tomas Rill\'s spare whistle.')}${st('Core tension','Mira wants Greyford protected, but she no longer assumes protecting the city means protecting its rulers.')}
 <h2>Background</h2><p>Mira grew up above Vell's Rope and Ferry near the market bridge. Veteran scout Tomas Rill trained her to inspect hinges before kicking doors, listen for water behind stone, and write every irregularity into the public ledger. When Tomas vanished near the sealed dungeon road, Lord Greymark removed Mira from the search after she asked why his family records called the old cistern a warding site rather than a prison.</p>

@@ -1,0 +1,20 @@
+﻿/* Editor-only margin fixes. Loaded last by TinyMCE content_css.
+ * Fixed width: every top-level block shares one centered column (same as the
+ * 920px purpose cards), so handouts/maps/artifacts/paragraphs no longer run
+ * wider than GM Summary-style cards. Full width: everything spans the column.
+ * Both modes: nothing may exceed its container. */
+body.preview-root *, body.preview-root *::before, body.preview-root *::after { box-sizing: border-box; }
+body.preview-root > * { max-width: 100%; }
+body.preview-root--width-fixed > * {
+  max-width: min(920px, 100%);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+body.preview-root--width-fixed > .amba-flow,
+body.preview-root--width-fixed > [class*="two-column"] { max-width: min(920px, 100%); }
+body.preview-root img, body.preview-root video, body.preview-root svg, body.preview-root iframe { max-width: 100%; height: auto; }
+body.preview-root table { max-width: 100%; }
+body.preview-root pre { max-width: 100%; overflow-x: auto; white-space: pre-wrap; }
+body.preview-root p, body.preview-root li, body.preview-root td, body.preview-root th,
+body.preview-root h1, body.preview-root h2, body.preview-root h3, body.preview-root h4 { overflow-wrap: anywhere; }
+body.preview-root [style*="float"], body.preview-root .float-left, body.preview-root .float-right { max-width: 100%; }
