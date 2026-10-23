@@ -17,7 +17,10 @@
     const key = type + ':' + JSON.stringify(body);
     if (cache.has(key)) return cache.get(key);
     const p = (async () => {
-      if (LOOKUP.has(type)) { const r = await fetch('/api/wg-lookup?type=' + encodeURIComponent(type) + '&name=' + encodeURIComponent(body.name ?? body.id)); if (!r.ok) throw new Error('WG ' + r.status); return rowsOf((await r.json()).data); }
+      // Static drawers (imprecise, Acrobatics) and ability-block senses (Darkvision) share the type name.
+      // A numeric id is an ability block; drawer ids are words (IMPRECISE, SKILL_ACROBATICS).
+      const abilityId = ABILITY.has(type) && body.id != null && /^\d+$/.test(String(body.id));
+      if (LOOKUP.has(type) && !abilityId) { const r = await fetch('/api/wg-lookup?type=' + encodeURIComponent(type) + '&name=' + encodeURIComponent(body.name ?? body.id)); if (!r.ok) throw new Error('WG ' + r.status); return rowsOf((await r.json()).data); }
       if (proxyOk !== false) {
         try {
           const qs = 'id' in body ? 'id=' + encodeURIComponent(body.id) : 'name=' + encodeURIComponent(body.name);
@@ -59,7 +62,8 @@
     t = t.replace(/&lt;abbr\b[^&]*?cost=&quot;([A-Z-]+)&quot;[\s\S]*?&lt;\/abbr&gt;/gi, (_, c) => glyph(c));
     t = t.replace(/\[([^\]]+)\]\(link_([a-z0-9-]+)_([^)]+)\)/gi, (_, label, type, id) => fnFor(type) ? `<a href="#wg" data-wg-type="${type}" data-wg-id="${id.replace(/~/g, ' ')}">${label}</a>` : label);
     t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
-    return t.split(/\n{2,}/).map(p => p.trim()).filter(Boolean).map(p => p.startsWith('---') ? '<hr>' : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+    const paras = s => s.split(/\n{2,}/).map(p => p.trim()).filter(Boolean).map(p => p.startsWith('---') ? '<hr>' : (window.ambaWgMd && window.ambaWgMd.titleBlock(p)) || `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+    return window.ambaWgMd ? window.ambaWgMd.render(t, paras) : paras(t);
   }
   const kindOf = t => ABILITY.has(t) ? 'feat' : t === 'spell' ? 'spell' : t === 'creature' ? 'stat' : 'item';
   const LABEL = { 'weapon-group': 'Weapon Group', 'armor-group': 'Armor Group', ac: 'Armor Class', proficiency: 'Proficiency', resistance: 'Resistance', weakness: 'Weakness' };
@@ -70,7 +74,7 @@
   }
   function cardHtml(type, r) {
     if (type === 'creature-ability') return `<article class="aon-feat-block"><header class="aon-feat-block-banner"><h4>${esc(r.name)}${glyph(r.actions)}</h4><span class="aon-level-badge">Monster Ability</span></header><div class="aon-feat-block-body"><p class="aon-feat-block-source">Source: Wanderer's Guide (embedded in creature ${esc(r.creature)}, WG #${esc(r.creature_id)})</p>${r.requirements ? `<p><strong>Requirements</strong> ${esc(r.requirements)}</p>` : ''}${polish(r.description)}</div></article>`;
-    if (LOOKUP.has(type) && type !== 'condition') return staticCard(type, r);
+    if (LOOKUP.has(type) && type !== 'condition' && !(r && r.meta_data)) return staticCard(type, r);
     const k = kindOf(type), cls = k === 'stat' ? 'aon-stat-block stat-block' : 'aon-' + k + '-block';
     const lvl = type === 'condition' ? 'Condition' : type === 'spell' ? (r.rank === 0 ? 'Cantrip' : 'Spell ' + (r.rank ?? '?')) : type === 'creature' ? 'Creature ' + (r.level ?? '?') : (ABILITY.has(type) ? (r.type ? r.type.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Feat') : 'Item') + (r.level != null ? ' ' + r.level : '');
     const meta = [];
@@ -87,44 +91,75 @@
   }
   function priceText(p) { if (!p) return ''; if (typeof p === 'string') return p; const parts = []; ['pp', 'gp', 'sp', 'cp'].forEach(c => { if (p[c]) parts.push(p[c] + ' ' + c); }); return parts.join(', '); }
   // ---- popover inside the TinyMCE iframe (data-mce-bogus="all": never serialized into content) ----
-  const STYLE = '.wg-pop{position:absolute;z-index:9999;max-width:440px;width:min(440px,90vw);box-shadow:0 8px 28px rgba(0,0,0,.28);border-radius:6px;background:#fff}.wg-pop>article{margin:0!important;max-height:60vh;overflow:auto}.wg-pop-bar{display:flex;justify-content:space-between;align-items:center;font:12px system-ui,sans-serif;padding:3px 8px;background:#2b2b2b;color:#eee;border-radius:6px 6px 0 0}.wg-pop-bar button{font:inherit;cursor:pointer}.wg-pop-msg{padding:10px;font:13px system-ui,sans-serif}a[data-wg-type][data-wg-id]{text-decoration:underline dotted;cursor:help}';
+  const STYLE = '.wg-pop{position:absolute;z-index:9999;max-width:440px;width:min(440px,90vw);box-shadow:0 8px 28px rgba(0,0,0,.28);border-radius:6px;background:#fff}.wg-pop>article{margin:0!important;max-height:60vh;overflow:auto}.wg-pop article>div{overflow-x:auto}.wg-pop-bar{display:flex;justify-content:space-between;align-items:center;font:12px system-ui,sans-serif;padding:3px 8px;background:#2b2b2b;color:#eee;border-radius:6px 6px 0 0}.wg-pop-bar button{font:inherit;cursor:pointer}.wg-pop-msg{padding:10px;font:13px system-ui,sans-serif}a[data-wg-type][data-wg-id]{text-decoration:underline dotted;cursor:help}';
   function attach(editor) {
-    let pop = null, pinned = false, hoverA = null, timer = 0;
+    const stack = []; let timer = 0, escAt = 0;
     const doc = () => editor.getDoc();
-    function close() { if (pop) pop.remove(); pop = null; pinned = false; hoverA = null; }
-    function place(a) {
-      const d = doc(), r = a.getBoundingClientRect(), w = d.defaultView, sx = w.scrollX, sy = w.scrollY;
-      const width = Math.min(440, w.innerWidth * 0.9);
-      pop.style.left = Math.max(4, Math.min(r.left + sx, sx + w.innerWidth - width - 8)) + 'px';
-      pop.style.top = (r.bottom + sy + 4) + 'px';
+    const top = () => stack[stack.length - 1] || null;
+    function closeTop() { const t = stack.pop(); if (t) t.el.remove(); }
+    function closeAll() { while (stack.length) closeTop(); }
+    function closeFrom(entry) { const i = stack.indexOf(entry); if (i < 0) return; while (stack.length > i) closeTop(); }
+    function place(entry) {
+      const a = entry.anchor, d = doc(), r = a.getBoundingClientRect(), w = d.defaultView, sx = w.scrollX, sy = w.scrollY;
+      const width = Math.min(440, w.innerWidth * 0.9), depth = Math.max(0, stack.indexOf(entry));
+      entry.el.style.zIndex = String(9999 + depth);
+      entry.el.style.left = Math.max(4, Math.min(r.left + sx + depth * 16, sx + w.innerWidth - width - 8)) + 'px';
+      entry.el.style.top = (r.bottom + sy + 4 + depth * 12) + 'px';
     }
     async function open(a, pin) {
-      if (pop && hoverA === a) { if (pin && !pinned) { pinned = true; bar(); } return; }
-      close(); hoverA = a; pinned = !!pin;
-      const d = doc(); pop = d.createElement('div'); pop.className = 'wg-pop'; pop.setAttribute('data-mce-bogus', 'all'); pop.contentEditable = 'false';
-      pop.innerHTML = '<div class="wg-pop-msg">Loading Wanderer\'s Guide\u2026</div>'; d.body.appendChild(pop); place(a);
-      const type = a.getAttribute('data-wg-type') || '', id = a.getAttribute('data-wg-id') || '', mine = pop;
+      const parent = stack.findLast(s => s.el.contains(a));
+      if (!parent) { if (!pin && stack.some(s => s.pinned)) return; if (stack.length === 1 && stack[0].anchor === a) { if (pin && !stack[0].pinned) { stack[0].pinned = true; bar(stack[0]); } return; } closeAll(); }
+      else {
+        closeFrom(stack[stack.indexOf(parent) + 1]);
+        if (top() && top().anchor === a) { if (pin && !top().pinned) { top().pinned = true; bar(top()); } return; }
+      }
+      const d = doc(), el = d.createElement('div');
+      const entry = { el, anchor: a, pinned: !!pin };
+      el.className = 'wg-pop'; el.setAttribute('data-mce-bogus', 'all'); el.contentEditable = 'false'; el.tabIndex = -1;
+      el.innerHTML = '<div class="wg-pop-msg">Loading Wanderer\'s Guide\u2026</div>';
+      stack.push(entry); d.body.appendChild(el); place(entry);
+      const type = a.getAttribute('data-wg-type') || '', id = a.getAttribute('data-wg-id') || '';
       let html;
       try { const r = await fetchById(type, id); html = r ? cardHtml(type, r) : `<div class="wg-pop-msg">No Wanderer's Guide record for ${esc(type)} ${esc(id)}.</div>`; }
       catch (e) { html = `<div class="wg-pop-msg">Wanderer's Guide unreachable (${esc(e.message)}).</div>`; }
-      if (pop !== mine) return;
-      pop.innerHTML = html; bar(); place(a);
+      if (!stack.includes(entry)) return;
+      el.innerHTML = html; bar(entry); place(entry);
+      if (entry.pinned) { const btn = el.querySelector('.wg-pop-bar button'); if (btn) btn.focus(); }
     }
-    function bar() {
-      if (!pop || !pinned || pop.querySelector('.wg-pop-bar')) return;
+    function bar(entry) {
+      if (!entry.pinned || entry.el.querySelector('.wg-pop-bar')) return;
       const b = doc().createElement('div'); b.className = 'wg-pop-bar'; b.innerHTML = '<span>Wanderer\'s Guide</span><button type="button">Close</button>';
-      b.querySelector('button').addEventListener('click', e => { e.preventDefault(); close(); }); pop.insertBefore(b, pop.firstChild);
+      b.querySelector('button').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); closeFrom(entry); });
+      entry.el.insertBefore(b, entry.el.firstChild);
+    }
+    function onEsc(e) {
+      if (e.key !== 'Escape' || !stack.length) return;
+      const now = Date.now(); if (now - escAt < 30) return; escAt = now;
+      e.preventDefault(); e.stopPropagation(); closeTop();
     }
     const linkOf = t => t && t.closest ? t.closest('a[data-wg-type][data-wg-id]') : null;
     editor.on('init', () => {
-      const d = doc(), s = d.createElement('style'); s.setAttribute('data-mce-bogus', 'all'); s.textContent = STYLE; d.head.appendChild(s);
-      d.addEventListener('mouseover', e => { const a = linkOf(e.target); if (a && !pinned) { clearTimeout(timer); timer = setTimeout(() => open(a, false), 200); } else if (pop && pop.contains(e.target)) clearTimeout(timer); });
-      d.addEventListener('mouseout', e => { if (pinned || !pop) { clearTimeout(timer); return; } const to = e.relatedTarget; if (to && (pop.contains(to) || linkOf(to) === hoverA)) return; clearTimeout(timer); timer = setTimeout(() => { if (!pinned) close(); }, 250); });
-      d.addEventListener('click', e => { const a = linkOf(e.target); if (a) { e.preventDefault(); open(a, true); } else if (pop && !pop.contains(e.target)) close(); });
-      d.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+      const d = doc(), s = d.createElement('style'); s.setAttribute('data-mce-bogus', 'all'); s.textContent = STYLE + (window.ambaWgMd ? window.ambaWgMd.CSS : ''); d.head.appendChild(s);
+      d.addEventListener('mouseover', e => {
+        const a = linkOf(e.target), t = top();
+        const fromTop = t && t.el.contains(a);
+        if (a && (!stack.some(x => x.pinned) || fromTop) && !(t && t.anchor === a)) { clearTimeout(timer); timer = setTimeout(() => open(a, false), 200); }
+        else if (t && t.el.contains(e.target)) clearTimeout(timer);
+      });
+      d.addEventListener('mouseout', e => {
+        const t = top(); if (!t || t.pinned) { clearTimeout(timer); return; }
+        const to = e.relatedTarget; if (to && (t.el.contains(to) || linkOf(to) === t.anchor)) return;
+        clearTimeout(timer); timer = setTimeout(() => { if (top() && !top().pinned) closeTop(); }, 250);
+      });
+      d.addEventListener('click', e => {
+        const a = linkOf(e.target);
+        if (a) { e.preventDefault(); e.stopPropagation(); open(a, true); }
+        else if (stack.length && !stack.some(x => x.el.contains(e.target))) closeAll();
+      });
+      d.addEventListener('keydown', onEsc);
     });
-    editor.on('keydown', e => { if (e.key === 'Escape') close(); });
-    editor.on('GetContent BeforeSetContent remove', () => { if (pop && !pinned) close(); });
+    editor.on('keydown', onEsc);
+    editor.on('GetContent BeforeSetContent remove', () => { if (top() && !top().pinned) closeTop(); });
   }
   window.ambaWg = { find: fetchById, match, byAon, cardHtml, attach, fnFor, ready: metaReady };
   if (window.tinymce) tinymce.on('AddEditor', ev => attach(ev.editor));

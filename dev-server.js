@@ -1,6 +1,6 @@
 // Dev server: serves the editor statically and proxies /api/pf2/* -> PF2E_API_BASE/api/*.
 // Usage: node dev-server.js   (env: PORT=8080, PF2E_API_BASE=http://localhost:3333)
-const http = require('http'), fs = require('fs'), path = require('path');
+const http = require('http'), fs = require('fs'), path = require('path'), crypto = require('crypto');
 const PORT = +process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0'; // prod: 127.0.0.1 behind nginx
 const TARGET = new URL((process.env.PF2E_API_BASE || process.env.PF2_API_BASE || 'http://localhost:3333').replace(/\/api\/?$/, ''));
@@ -13,10 +13,51 @@ try {
   }
 } catch {}
 console.log('[art] PF2_ART_PASSWORD ' + (process.env.PF2_ART_PASSWORD ? 'set' : 'NOT set (add it to .env.local)'));
-// Optional art unlock: if PF2_ART_PASSWORD is set in the launching shell, unlock art server-side and keep
-// the art cookie in memory. It is attached ONLY to proxied GET image routes; browser cookies are never forwarded.
+// Art stays locked until a browser session posts the art password. The upstream unlock cookie is kept in
+// memory and attached ONLY to image GETs from a session that passed. Browser cookies are never forwarded upstream.
 const IMAGE_ROUTE = /^\/api\/pf2\/(monsters|user-monsters)\/-?\d+\/image(\/thumb)?$/;
 let artCookie = null, unlocking = null;
+const artSessions = new Map(); // token -> expiry ms
+const ART_SESSION_MS = 12 * 60 * 60 * 1000;
+const artAttempts = new Map(); // ip -> timestamps
+const ART_WINDOW_MS = 15 * 60 * 1000, ART_MAX_TRIES = 5;
+function clientIp(req) { return String(req.socket.remoteAddress || 'unknown'); }
+function artLimited(ip) {
+  const now = Date.now(), times = (artAttempts.get(ip) || []).filter(t => now - t < ART_WINDOW_MS);
+  artAttempts.set(ip, times);
+  return times.length >= ART_MAX_TRIES ? Math.ceil((times[0] + ART_WINDOW_MS - now) / 1000) : 0;
+}
+function noteArtAttempt(ip) {
+  const now = Date.now(), times = (artAttempts.get(ip) || []).filter(t => now - t < ART_WINDOW_MS);
+  times.push(now); artAttempts.set(ip, times);
+}
+function artPassMatches(given) {
+  const want = process.env.PF2_ART_PASSWORD || '';
+  const ha = crypto.createHash('sha256').update(String(given), 'utf8').digest();
+  const hb = crypto.createHash('sha256').update(want, 'utf8').digest();
+  return !!want && crypto.timingSafeEqual(ha, hb);
+}
+function readBody(req, max) {
+  return new Promise((ok, no) => {
+    let n = 0, s = '';
+    req.on('data', c => { n += c.length; if (n > max) { req.destroy(); no(new Error('too large')); } else s += c; });
+    req.on('end', () => ok(s)); req.on('error', no);
+  });
+}
+function cookies(req) {
+  const o = {};
+  String(req.headers.cookie || '').split(';').forEach(p => { const i = p.indexOf('='); if (i > 0) o[p.slice(0, i).trim()] = decodeURIComponent(p.slice(i + 1).trim()); });
+  return o;
+}
+function artUnlocked(req) {
+  const t = cookies(req).pf2art; if (!t || !artSessions.has(t)) return false;
+  if (artSessions.get(t) < Date.now()) { artSessions.delete(t); return false; }
+  return true;
+}
+function json(res, code, obj, extra) {
+  res.writeHead(code, Object.assign({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }, extra));
+  res.end(JSON.stringify(obj));
+}
 function unlockArt() {
   if (!process.env.PF2_ART_PASSWORD) return Promise.resolve(null);
   if (unlocking) return unlocking;
@@ -35,13 +76,13 @@ function unlockArt() {
   }).finally(() => { unlocking = null; });
   return unlocking;
 }
-function proxy(u, res, isImage, retried) {
+function proxy(u, res, isImage, session, retried) {
   const headers = { accept: isImage ? 'image/*' : 'application/json' };
-  if (isImage && artCookie) headers.cookie = artCookie;
+  if (isImage && session && artCookie) headers.cookie = artCookie;
   const p = http.request({ hostname: TARGET.hostname, port: TARGET.port || 80, method: 'GET',
     path: '/api/' + u.pathname.slice('/api/pf2/'.length) + u.search, headers }, r => {
-    if (isImage && !retried && (r.statusCode === 401 || r.statusCode === 404) && process.env.PF2_ART_PASSWORD) {
-      r.resume(); return unlockArt().then(() => proxy(u, res, true, true));
+    if (isImage && session && !retried && (r.statusCode === 401 || r.statusCode === 404) && process.env.PF2_ART_PASSWORD) {
+      r.resume(); return unlockArt().then(() => proxy(u, res, true, session, true));
     }
     const h = { 'content-type': r.headers['content-type'] || 'application/json' };
     if (isImage && r.headers['cache-control']) h['cache-control'] = r.headers['cache-control'];
@@ -60,7 +101,7 @@ if (WG_SOURCE !== 'gateway') console.log('[wg] WG_SOURCE=' + WG_SOURCE + ' ignor
 function edge(fn, body) {
   return new Promise((ok, no) => {
     const b = JSON.stringify(body);
-    const p = http.request(new URL(fn, WG_BASE), { method: 'POST', headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(b), accept: 'application/json' } }, r => {
+    const p = (WG_BASE.protocol === 'https:' ? require('https') : http).request(new URL(fn, WG_BASE), { method: 'POST', headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(b), accept: 'application/json' } }, r => {
       let s = ''; r.setEncoding('utf8'); r.on('data', c => (s += c));
       r.on('end', () => { try { const j = JSON.parse(s); r.statusCode < 300 ? ok(j) : no(new Error(fn + ' HTTP ' + r.statusCode)); } catch { no(new Error(fn + ' bad JSON, HTTP ' + r.statusCode)); } });
     });
@@ -175,9 +216,25 @@ async function wgLookup(u, res) {
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.md': 'text/plain; charset=utf-8' };
 http.createServer((req, res) => {
   const u = new URL(req.url, 'http://x');
+  if (u.pathname === '/api/pf2/art-status' && req.method === 'GET') return json(res, 200, { unlocked: artUnlocked(req) });
+  if (u.pathname === '/api/pf2/art-pass' && req.method === 'POST') {
+    const ip = clientIp(req), wait = artLimited(ip);
+    if (wait) return json(res, 429, { error: 'Too many attempts. Try again in ' + wait + 's.' }, { 'retry-after': String(wait) });
+    return readBody(req, 512).then(raw => {
+      let password = ''; try { password = JSON.parse(raw).password; } catch { password = ''; }
+      if (!process.env.PF2_ART_PASSWORD) return json(res, 503, { error: 'Art pass is not configured on this server.' });
+      if (!artPassMatches(password)) { noteArtAttempt(ip); const left = ART_MAX_TRIES - (artAttempts.get(ip) || []).length; return json(res, 401, { error: 'That pass does not match.' + (left > 0 ? ' ' + left + ' ' + (left === 1 ? 'try' : 'tries') + ' left this window.' : '') }); }
+      const token = crypto.randomBytes(24).toString('hex');
+      artSessions.set(token, Date.now() + ART_SESSION_MS);
+      return unlockArt().then(ok => {
+        if (!ok) { artSessions.delete(token); return json(res, 502, { error: 'Pass matched, but the art service did not unlock.' }); }
+        json(res, 200, { unlocked: true }, { 'set-cookie': 'pf2art=' + token + '; HttpOnly; SameSite=Lax; Path=/; Max-Age=' + (ART_SESSION_MS / 1000) });
+      });
+    }).catch(() => json(res, 400, { error: 'Bad request.' }));
+  }
   if (u.pathname.startsWith('/api/pf2/')) {
     if (req.method !== 'GET') { res.writeHead(405); return res.end('read-only proxy'); }
-    return proxy(u, res, IMAGE_ROUTE.test(u.pathname), false);
+    return proxy(u, res, IMAGE_ROUTE.test(u.pathname), artUnlocked(req), false);
   }
   if (u.pathname === '/api/wg-lookup') {
     if (req.method !== 'GET') { res.writeHead(405); return res.end('read-only'); }
@@ -194,4 +251,4 @@ http.createServer((req, res) => {
     if (err) { res.writeHead(404); return res.end('not found'); }
     res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-cache' }); res.end(buf);
   });
-}).listen(PORT, HOST, () => { console.log(`editor on http://${HOST}:${PORT}  /api/pf2 -> ${TARGET.origin}/api`); unlockArt(); });
+}).listen(PORT, HOST, () => { console.log(`editor on http://${HOST}:${PORT}  /api/pf2 -> ${TARGET.origin}/api`); });

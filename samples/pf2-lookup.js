@@ -22,8 +22,6 @@
   const wgOf = m => { const id = txt(m.WgId ?? m.WanderersGuideId ?? m.WgItemId ?? m.WgSpellId ?? m.WgFeatId ?? m.WgCreatureId); if (!id) return null; const k = Object.keys(WG_TYPE).find(k => m[k] !== undefined); return k ? { type: WG_TYPE[k], id } : null; };
   const srcLink = (m, label) => { const wg = label && preferWg() && wgOf(m); /* card source line always keeps AoN/Demiplane; WG only for inline-link mode */ if (wg) return `<a href="#wg" data-wg-type="${esc(wg.type)}" data-wg-id="${esc(wg.id)}">${esc(label || 'WG \u2197')}</a>`; return txt(m.AonUrl) ? `<a href="${esc(m.AonUrl)}" target="_blank" rel="noreferrer">${esc(label || sourceLabel(m.AonUrl))}</a>` : ''; };
   const chip = t => { const r = /^(uncommon|rare|unique)$/i.exec(t); return `<span class="aon-trait${r ? ' aon-trait--' + r[1].toLowerCase() : ''}">${esc(t)}</span>`; };
-  // Art: pf2 API returns ImageUrl (/api/monsters/:id/image/thumb) only for art-unlocked sessions; route via the proxy.
-  const artUrl = m => { const u = (txt(m.ImageUrl) || '').replace(/\/image\/thumb(\?|$)/, '/image$1'); if (u) return u.startsWith('/api/') ? '/api/pf2/' + u.slice(5) : u; const id = Number(m.MonsterId); return Number.isInteger(id) && id > 0 ? '/api/pf2/monsters/' + id + '/image' : null; };
   // Minimal markdown -> HTML for AoN RawMD: **bold**, [text](url) -> AoN links, paragraphs.
   function md(s) {
     let o = esc(s);
@@ -31,9 +29,10 @@
     return o.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\s*\n\s*/g, ' ').trim();
   }
   // Body sections of an AoN RawMD (after the first '---'): description, variants, heightened.
+  const pipeTable = (p, fmt) => { const W = window.ambaWgMd; if (!W || !/^\s*\|.*\|\s*$/m.test(p)) return null; return W.split(p).map(b => b.table ? W.tableHtml(b.table.map(r => r.map(fmt))) : b.text.trim() ? `<p class="aon-item-text">${fmt(b.text)}</p>` : '').join(''); };
   function mdSections(raw) {
     if (!txt(raw)) return [];
-    const parts = String(raw).replace(/\r/g, '').split(/^\s*---\s*$/m).slice(1);
+    const parts = String(raw).replace(/\r/g, '').replace(/\|\n\s*\n\|/g, '|\n|').split(/^\s*---\s*$/m).slice(1);
     return parts.flatMap(p => p.split(/\n\s*\n/)).map(s => s.trim()).filter(s => s && s !== '&nbsp;');
   }
   const KNOWN = /^(Perception|Languages|Skills|Str|Items|AC|HP|Speed|Immunities|Resistances|Weaknesses)$/i;
@@ -82,6 +81,129 @@
     const param = dist ? dist[1] + ' ft.' : /^\d*d\d+$/i.test(p) ? p.toLowerCase() : /^[bps](\W|$)/i.test(p) ? p.toUpperCase().replace(/\s*OR\s*/g, ' or ') : p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
     return { base, param, variants: [...new Set([base + ' ' + param, base + ' ' + p])] };
   }
+  // Stat-block prose often has no AoN anchors (Demiplane text, "Reflex save", "Strides", "agile").
+  // Link a term only when Wanderer's Guide has that exact record.
+  const STRUCT_LABEL = /^(Perception|Languages|Skills|Str|Dex|Con|Int|Wis|Cha|Items|AC|Fort|Ref|Will|HP|Speed|Immunities|Resistances|Weaknesses|Melee|Ranged|Abilities|Damage|Effect|Trigger|Requirements|Frequency|Critical Success|Success|Failure|Critical Failure|Area|Target|Defense|Duration|Range|Cast|Traditions|Price|Usage|Bulk|Hands|Activate|Special|Craft Requirements|Source|Heightened(?:\s*\([^)]*\))?)$/i;
+  const STOP = new Set('a an the to of or and on in by up at for with from that this they them their you your its it is be as if not do so than then into onto over under when while during against also have has had must each all any using trying based area target check save spell feet foot action move does doesn creature creatures someone anyone'.split(' '));
+  const actionStems = word => {
+    const out = [word];
+    if (word.length >= 6 && /ing$/i.test(word)) out.push(word.slice(0, -3));
+    if (word.length >= 5 && /ies$/i.test(word)) out.push(word.slice(0, -3) + 'y');
+    if (word.length >= 5 && /es$/i.test(word)) out.push(word.slice(0, -2));
+    if (word.length >= 5 && /s$/i.test(word) && !/ss$/i.test(word)) out.push(word.slice(0, -1));
+    return [...new Set(out)];
+  };
+  let wgPend = 0; const wgWait = [], wgMemo = new Map();
+  const wgLimit = fn => new Promise((ok, no) => { const start = () => { wgPend++; fn().then(ok, no).finally(() => { wgPend--; const n = wgWait.shift(); if (n) n(); }); }; if (wgPend < 3) start(); else wgWait.push(start); });
+  const memoMatch = async (t, cand) => { const k = t + '\0' + String(cand).toLowerCase(); if (wgMemo.has(k)) return wgMemo.get(k); const id = await wgLimit(() => window.ambaWg.match(t, cand, null)).catch(() => null); wgMemo.set(k, id); return id; };
+  async function wgHit(types, name, inflect) {
+    const stems = inflect && types.includes('action') ? actionStems(name) : [name];
+    const pv = types.includes('trait') ? traitVariant(name) : null;
+    if (pv) for (const cand of pv.variants) { const id = await memoMatch('trait', cand); if (id) return { t: 'trait', id }; }
+    for (const t of types) for (const cand of (t === 'action' ? stems : [t === 'trait' && pv ? pv.base : name])) {
+      const id = await memoMatch(t, cand); if (id) return { t, id };
+    }
+    // Drawer lookup owns type "sense" (precise/imprecise/vague). Darkvision and the like are ability blocks.
+    if (types.includes('sense')) {
+      const k = 'sense-ability\0' + name.toLowerCase();
+      if (wgMemo.has(k)) { const id = wgMemo.get(k); if (id) return { t: 'sense', id }; }
+      else {
+        try {
+          const r = await wgLimit(() => fetch('/api/wg/sense?name=' + encodeURIComponent(name), { headers: { accept: 'application/json' } }));
+          const rows = r.ok ? [].concat((await r.json()).data || []) : [];
+          const hit = rows.find(row => String(row.name || '').toLowerCase() === name.toLowerCase());
+          const id = hit && hit.id != null ? String(hit.id) : null;
+          wgMemo.set(k, id);
+          if (id) return { t: 'sense', id };
+        } catch { wgMemo.set(k, null); }
+      }
+    }
+    return null;
+  }
+  const plainNodes = el => {
+    const out = [], w = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
+    while ((w.nextNode())) { n = w.currentNode; const p = n.parentElement; if (!p || !n.nodeValue || !n.nodeValue.trim()) continue; if (p.closest('a, .aon-stat-block-source, .aon-item-block-meta, .aon-spell-block-meta, .aon-feat-block-meta, .aon-stat-block-banner, .aon-spell-block-banner, .aon-item-block-banner, .aon-feat-block-banner, .aon-level-badge')) continue; if (p.tagName === 'STRONG' && STRUCT_LABEL.test(p.textContent.trim())) continue; out.push(n); }
+    return out;
+  };
+  function commaNames(text, types) {
+    const out = []; let i = 0;
+    for (const part of text.split(',')) {
+      const lead = /^\s*/.exec(part)[0].length, name = part.slice(lead).replace(/\s*\([^)]*\)\s*$/, '').trim();
+      if (name && /[a-z]/i.test(name)) out.push({ start: i + lead, end: i + lead + name.length, name, types });
+      i += part.length + 1;
+    }
+    return out;
+  }
+  function skillRanges(text) {
+    const out = []; let m; const re = /([A-Za-z][A-Za-z']*(?:\s+[A-Za-z][A-Za-z']*)*)\s+[+-]\d+/g;
+    while ((m = re.exec(text))) out.push({ start: m.index, end: m.index + m[1].trimEnd().length, name: m[1].trim(), types: ['skill'] });
+    return out;
+  }
+  function senseWordRanges(text) {
+    const out = []; let m; const re = /\b([A-Za-z][A-Za-z-]{2,})\b/g;
+    while ((m = re.exec(text))) { if (STOP.has(m[1].toLowerCase()) || /^(feet|foot)$/i.test(m[1])) continue; out.push({ start: m.index, end: m.index + m[1].length, name: m[1], types: ['sense'] }); }
+    return out;
+  }
+  function weaponRanges(text) {
+    const out = []; let m; const re = /([a-z][a-z' -]*[a-z])\s+[+-]\d+/g;
+    while ((m = re.exec(text))) out.push({ start: m.index, end: m.index + m[1].trimEnd().length, name: m[1].trim(), types: ['item'] });
+    return out;
+  }
+  function parenTraitRanges(text) {
+    const out = []; let m; const re = /\(([^)]+)\)/g;
+    while ((m = re.exec(text))) {
+      let p = 0;
+      for (const bit of m[1].split(',')) {
+        const lead = /^\s*/.exec(bit)[0].length, name = bit.slice(lead).trim();
+        if (name) out.push({ start: m.index + 1 + p + lead, end: m.index + 1 + p + lead + name.length, name, types: ['trait'] });
+        p += bit.length + 1;
+      }
+    }
+    return out;
+  }
+  function tokenRanges(text) {
+    const out = []; let m; const re = /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2}|[a-z][a-z-]{3,})\b/g;
+    while ((m = re.exec(text))) {
+      const name = m[1]; if (STOP.has(name.toLowerCase())) continue;
+      const after = text.slice(m.index + name.length, m.index + name.length + 14);
+      const types = /^\s+sav(?:e|ing)\b/i.test(after) ? ['save'] : /^\s+check\b/i.test(after) ? ['skill'] : /^[A-Z]/.test(name) ? ['action', 'creature-ability', 'skill', 'save'] : ['condition'];
+      out.push({ start: m.index, end: m.index + name.length, name, types, inflect: /^[A-Z]/.test(name) && !/\s/.test(name) });
+    }
+    return out;
+  }
+  async function applyRanges(node, ranges, stats) {
+    const hits = await Promise.all(ranges.map(async r => ({ ...r, hit: await wgHit(r.types, r.name, r.inflect) })));
+    const ok = []; let last = -1;
+    for (const r of hits.filter(r => r.hit).sort((a, b) => a.start - b.start || b.end - a.end)) { if (r.start < last) continue; ok.push(r); last = r.end; }
+    if (!ok.length) return;
+    const text = node.nodeValue, doc = node.ownerDocument, frag = doc.createDocumentFragment(); let i = 0;
+    for (const r of ok) {
+      if (r.start > i) frag.appendChild(doc.createTextNode(text.slice(i, r.start)));
+      const a = doc.createElement('a'); a.setAttribute('href', '#wg'); a.setAttribute('data-wg-type', r.hit.t); a.setAttribute('data-wg-id', r.hit.id); a.textContent = text.slice(r.start, r.end);
+      frag.appendChild(a); stats.links++; stats.wg++; i = r.end;
+    }
+    if (i < text.length) frag.appendChild(doc.createTextNode(text.slice(i)));
+    node.parentNode.replaceChild(frag, node);
+  }
+  async function linkPlain(root, stats) {
+    for (const chip of [...root.querySelectorAll('.aon-trait')]) {
+      if (chip.querySelector('a')) continue;
+      const name = chip.textContent.trim(); if (!name) continue;
+      const hit = await wgHit(['trait', 'ancestry'], name, false);
+      if (!hit) continue;
+      const a = chip.ownerDocument.createElement('a'); a.setAttribute('href', '#wg'); a.setAttribute('data-wg-type', hit.t); a.setAttribute('data-wg-id', hit.id); a.textContent = name;
+      chip.textContent = ''; chip.appendChild(a); stats.links++; stats.wg++;
+    }
+    for (const line of [...root.querySelectorAll('.aon-stat-line')]) {
+      const label = (line.querySelector('strong') && line.querySelector('strong').textContent || '').trim();
+      for (const node of plainNodes(line)) {
+        const text = node.nodeValue;
+        const ranges = /^items$/i.test(label) ? commaNames(text, ['item']) : /^languages$/i.test(label) ? commaNames(text, ['language']) : /^traditions$/i.test(label) ? commaNames(text, ['trait']) : /^skills$/i.test(label) ? skillRanges(text) : /^perception$/i.test(label) ? senseWordRanges(text) : /^(melee|ranged)$/i.test(label) ? [...weaponRanges(text), ...parenTraitRanges(text)] : [];
+        if (ranges.length) await applyRanges(node, ranges, stats);
+      }
+    }
+    for (const node of plainNodes(root)) { const ranges = tokenRanges(node.nodeValue); if (ranges.length) await applyRanges(node, ranges, stats); }
+  }
   async function wgify(html) {
     const stats = { links: 0, wg: 0, aon: 0, misses: [] };
     if (!preferWg() || !window.ambaWg) return { html, stats };
@@ -103,6 +225,7 @@
       if (!hit) { stats.aon++; stats.misses.push(name); return; }
       stats.wg++; a.setAttribute('href', '#wg'); a.removeAttribute('target'); a.removeAttribute('rel'); a.setAttribute('data-wg-type', hit.t); a.setAttribute('data-wg-id', hit.id);
     }));
+    await linkPlain(root, stats);
     return { html: root.innerHTML, stats };
   }
   window.ambaPf2Wgify = wgify;
@@ -134,10 +257,11 @@
       .replace(/\s+[-\u2013\u2014]\s+(<strong>(?:Effect|Trigger|Requirements|Frequency|Critical Success|Success|Failure|Critical Failure)<\/strong>)/g, '; $1');
   }
   function statBlockHtml(m, opts) {
-    const full = opts && opts.art && Number(m.MonsterId) > 0 ? '/api/pf2/monsters/' + Number(m.MonsterId) + '/image' : null;
+    const art = !!(opts && opts.art);
+    const full = art && Number(m.MonsterId) > 0 ? '/api/pf2/monsters/' + Number(m.MonsterId) + '/image' : null;
     const link = srcLink(m);
     const src = txt(m.SourceBook) ? `<p class="aon-stat-block-source">Source: ${esc(m.SourceBook)}${txt(m.SourcePage) ? ' pg. ' + esc(m.SourcePage) : ''}${link ? ' &middot; ' + link : ''}</p>` : link ? `<p class="aon-stat-block-source">Source: unknown &middot; ${link}</p>` : `<p class="aon-stat-block-source">Source: unknown</p>`;
-    return `<article class="aon-stat-block stat-block${variant(m.Name)}"><header class="aon-stat-block-banner"><h4 class="encounter-title">${esc(m.Name)}</h4><span class="aon-level-badge">Creature ${esc(m.Level)}</span></header><div class="aon-stat-block-body">${!full && artUrl(m) ? `<img class="aon-stat-block-cutout aon-stat-block-art" src="${esc(artUrl(m))}" alt="${esc(m.Name)}" loading="lazy" onerror="this.remove()">` : ''}${full ? withCutout(src + structured(m), full, m.Name, opts && opts.boxed) : src + structured(m)}</div></article>`;
+    return `<article class="aon-stat-block stat-block${variant(m.Name)}"><header class="aon-stat-block-banner"><h4 class="encounter-title">${esc(m.Name)}</h4><span class="aon-level-badge">Creature ${esc(m.Level)}</span></header><div class="aon-stat-block-body">${full ? withCutout(src + structured(m), full, m.Name, opts && opts.boxed) : src + structured(m)}</div></article>`;
   }
   const traitsHtml = list => { const seen = new Set(); const t = list.flat().map(txt).filter(Boolean).flatMap(s => s.split(/\s*,\s*/)).filter(Boolean).filter(x => { const k = x.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }); return t.length ? `<div class="aon-traits">${t.map(chip).join(' ')}</div>` : ''; };
   const srcText = m => { const J = rawJson(m); const raw = [].concat(J.primary_source_raw || J.source_raw || [])[0]; const book = txt(m.SourceBook) || txt([].concat(J.primary_source || J.source || [])[0]) || (raw ? txt(String(raw).replace(/\s*pg\.?\s*\d+.*$/i, '')) : null); const pg = txt(m.SourcePage) || (raw && (/pg\.?\s*(\d+)/i.exec(raw) || [])[1]) || null; return book ? book + (pg ? ' pg. ' + pg : '') : null; };
@@ -186,8 +310,9 @@
     const out = []; let skip = false;
     b = b.replace(/<document\b[^>]*\/?>/gi, '').replace(/<\/?column\b[^>]*>/gi, '\n\n').replace(/<\/?row\b[^>]*>/gi, ' ')
       .replace(/<ul>([\s\S]*?)<\/ul>/gi, (_, l) => '\n\n\u0005' + [...l.matchAll(/<li>([\s\S]*?)<\/li>/gi)].map(x => x[1].replace(/\n/g, ' ')).join('\u0006') + '\n\n');
-    for (let p of b.split(/\n\s*\n/)) {
+    for (let p of b.replace(/\|\n\s*\n\|/g, '|\n|').split(/\n\s*\n/)) {
       p = p.trim(); if (!p || p === '&nbsp;') continue;
+      const tb = pipeTable(p, imd); if (tb) { out.push(tb); continue; }
       if (p.startsWith('\u0005')) { out.push(`<ul class="aon-item-list">${p.slice(1).split('\u0006').map(li => `<li>${imd(li)}</li>`).join('')}</ul>`); continue; }
       if (/^[-*]\s/.test(p)) { out.push(`<ul class="aon-item-list">${p.split(/\n(?=[-*]\s)/).map(li => `<li>${imd(li.replace(/^[-*]\s+/, ''))}</li>`).join('')}</ul>`); continue; }
       const h = /^#{1,6}\s+([\s\S]*)$/.exec(p) || /^<title\b[^>]*>([\s\S]*?)<\/title>$/i.exec(p);
@@ -266,7 +391,7 @@
       line('Requirements', reqs), line('Trigger', txt(m.TriggerText) || txt(J.trigger) || grab('Trigger')), line('Range', txt(m.RangeText) || grab('Range')),
       line('Area', area),
       line('Targets', txt(m.Target) || grab('Targets')), line('Defense', txt(m.Defense) || grab('Defense')), line('Duration', duration || grab('Duration')),
-      ...(mdSections(smd).length ? mdSections(smd).map(s => /^\*\*Heightened/.test(s) ? `<p class="aon-spell-heightened">${md(s)}</p>` : `<p class="aon-spell-text">${md(s)}</p>`) : [
+      ...(mdSections(smd).length ? mdSections(smd).map(s => pipeTable(s, md) || (/^\*\*Heightened/.test(s) ? `<p class="aon-spell-heightened">${md(s)}</p>` : `<p class="aon-spell-text">${md(s)}</p>`)) : [
         txt(m.Summary) ? `<p class="aon-spell-summary">${esc(m.Summary)}</p>` : '',
         txt(m.Heighten) ? `<p class="aon-spell-heightened"><strong>Heightened (${esc(m.Heighten)})</strong> See source for heightened effects.</p>` : ''])
     ].filter(Boolean).join('\n');
@@ -329,7 +454,7 @@
       body: { type: 'panel', items: [
         { type: 'htmlpanel', html: `<p style="margin:0 0 6px">Showing <b>${offset + 1}\u2013${last}</b> of <b>${total}</b> (best match first on this page)</p>` },
         { type: 'listbox', name: 'idx', label: T.label, items: rows.map((m, i) => ({ text: `${m.Name} - ${T.desc(m)}${m.SourceBook ? ' (' + m.SourceBook + ')' : ''}${m.ContentType && m.ContentType !== 'canon' ? ' [' + m.ContentType + ']' : ''}`, value: String(i) })) },
-        { type: 'listbox', name: 'mode', label: 'Insert as', items: [{ text: 'Card / stat block', value: 'block' }, ...(type === 'monsters' ? [{ text: 'Stat block with art', value: 'art' }] : []), { text: 'Inline link', value: 'link' }] }
+        { type: 'listbox', name: 'mode', label: 'Insert as', items: [{ text: 'Card / stat block', value: 'block' }, { text: 'Inline link', value: 'link' }] }
       ] },
       initialData: { idx: '0', mode: 'block' },
       buttons: [
@@ -342,11 +467,12 @@
         if (preferWg() && window.ambaWg && !wgOf(row)) { api.block('Matching Wanderer\u2019s Guide\u2026'); const wid = await window.ambaWg.match(WG_TYPE[T.id], row.Name, row.AonUrl); if (wid) row.WgId = wid; }
         if (d.mode === 'link') { api.close(); return editor.insertContent(linkHtml(row)); }
         api.block('Loading full record\u2026'); const m = await detail(type, row); if (row.WgId && !m.WgId) m.WgId = row.WgId; api.close();
-        const boxed = d.mode === 'art' && type === 'monsters' && Number(m.MonsterId) > 0 ? !(await artIsTransparent('/api/pf2/monsters/' + Number(m.MonsterId) + '/image')) : false;
-        let out = actGlyphs(T.html(m, { art: d.mode === 'art', boxed }));
+        const withArt = type === 'monsters' && await artOn();
+        const boxed = withArt && Number(m.MonsterId) > 0 ? !(await artIsTransparent('/api/pf2/monsters/' + Number(m.MonsterId) + '/image')) : false;
+        let out = actGlyphs(T.html(m, { art: withArt, boxed }));
         if (preferWg()) out = (await wgify(out)).html;
         insert(editor, out);
-        if (d.mode === 'art' && type === 'monsters') { const ok = await fetch('/api/pf2/monsters/' + Number(m.MonsterId) + '/image/thumb').then(r => r.ok).catch(() => false); if (!ok) editor.notificationManager.open({ text: m.Name + ' has no art in the pf2 database, so the card has no picture.', type: 'warning', timeout: 5000 }); }
+        if (withArt) { const ok = await fetch('/api/pf2/monsters/' + Number(m.MonsterId) + '/image/thumb').then(r => r.ok).catch(() => false); if (!ok) editor.notificationManager.open({ text: m.Name + ' has no art in the pf2 database, so the card has no picture.', type: 'warning', timeout: 5000 }); }
       }
     });
   }
@@ -376,6 +502,32 @@
     });
     const dlg = editor.windowManager.open(spec({ type: presetType || window.ambaPf2LastType || 'monsters', q: '', wg: preferWg() }));
     setTimeout(() => dlg.focus('q'), 0);
+  };
+  let artKnown = null;
+  async function artOn() {
+    if (artKnown != null) return artKnown;
+    try { artKnown = !!(await fetch('/api/pf2/art-status', { headers: { accept: 'application/json' }, credentials: 'same-origin' }).then(r => r.json())).unlocked; } catch { artKnown = false; }
+    return artKnown;
+  }
+  window.ambaPf2Pass = function (editor) {
+    editor.windowManager.open({
+      title: 'PF2 pass',
+      body: { type: 'panel', items: [{ type: 'input', name: 'pass', label: 'Art password', placeholder: 'Checked only against the art password' }] },
+      initialData: { pass: '' },
+      buttons: [{ type: 'cancel', text: 'Cancel' }, { type: 'submit', text: 'Confirm', primary: true }],
+      async onSubmit(api) {
+        const pass = api.getData().pass;
+        api.block('Checking\u2026');
+        try {
+          const r = await fetch('/api/pf2/art-pass', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify({ password: pass }) });
+          const j = await r.json().catch(() => ({}));
+          api.unblock();
+          if (!r.ok) return editor.notificationManager.open({ text: j.error || ('Pass was not accepted (HTTP ' + r.status + '). Restart dev-server.js if this server is still the old one.'), type: r.status === 429 ? 'warning' : 'error', timeout: 6000 });
+          artKnown = true; api.close();
+          editor.notificationManager.open({ text: 'Art pass accepted. Monster cards will include art for this browser session.', type: 'success', timeout: 5000 });
+        } catch (e) { api.unblock(); editor.notificationManager.open({ text: e.message, type: 'error', timeout: 5000 }); }
+      }
+    });
   };
   window.ambaPf2PreferWg = preferWg; window.ambaPf2SetPreferWg = setPreferWg;
   document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('input[data-amba-prefer-wg]').forEach(i => { i.checked = preferWg(); i.addEventListener('change', () => setPreferWg(i.checked)); }));

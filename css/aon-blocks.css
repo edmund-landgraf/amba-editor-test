@@ -123,3 +123,13 @@
 
 /* Art starts right under the header: no body top gap above it */
 .aon-stat-block-body > img.aon-stat-block-cutout:first-child { margin-top: 0 !important; }
+
+/* WG/PF2 markdown tables (WanderersGuideUI phase1.css .ability-prose table) */
+.table-wrap.wg-table-wrap{overflow-x:auto;margin:1rem 0;border:1px solid rgb(40 38 32 / .22);background:#f4f1ea}
+table.wg-md-table{width:100%;margin:0;border-collapse:collapse;font-size:.75rem;font-variant-numeric:tabular-nums;text-align:center;border:0}
+table.wg-md-table thead th{border:0;border-bottom:1px solid rgb(40 38 32 / .22);padding:.4rem .45rem;color:#1a365d;font-size:.65rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;background:none;text-align:center}
+table.wg-md-table thead th:first-child,table.wg-md-table tbody td:first-child{text-align:left;font-weight:600}
+table.wg-md-table tbody td{border:0;border-bottom:1px solid rgb(40 38 32 / .22);padding:.35rem .45rem;vertical-align:middle;white-space:nowrap;text-align:center}
+table.wg-md-table tbody tr:nth-child(even),table.wg-md-table tbody tr:hover{background:rgb(40 38 32 / .1)}
+p.wg-title-block{margin:1rem 0;border-left:2px solid color-mix(in srgb,#0e3470 65%,transparent);background:rgb(40 38 32 / .1);padding:.7rem .9rem .75rem}
+p.wg-title-block>strong:first-child{display:block;margin-bottom:.25rem;color:#1a365d;font-size:.7rem;font-weight:600;line-height:1.2;text-transform:uppercase}
