@@ -68,10 +68,32 @@
       return part.replace(re, m => `<a href="#wg" data-wg-type="condition" data-wg-id="${esc(m)}">${m}</a>`);
     }).join('');
   }
+  // @Check[fortitude|dc:22] / @Check[type:fortitude|dc:22|basic:true] -> "DC 22 Fortitude" / "basic DC 22 Fortitude".
+  function foundryCheck(inner) {
+    let type = '', dc = '', basic = false;
+    for (const b of String(inner).replace(/\\/g, '').split('|').map(s => s.trim()).filter(Boolean)) {
+      const kv = /^([a-z]+):(.*)$/i.exec(b);
+      if (!kv) { if (!type) type = b; continue; }
+      const k = kv[1].toLowerCase();
+      if (k === 'type' || k === 'statistic') type = kv[2];
+      else if (k === 'dc') dc = kv[2];
+      else if (k === 'basic' && kv[2] !== 'false') basic = true;
+    }
+    const name = type.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return (basic ? 'basic ' : '') + (dc ? 'DC ' + dc + ' ' : '') + name;
+  }
   function polish(raw) {
     let t = esc(String(raw || '').replace(/[\u2217\uFF0A\u204E]/g, '*').replace(/\$\{convertToHardcodedLink\('([a-z-]+)',\s*'([^']+)'(?:,\s*'([^']+)')?\)\}/g, (_, type, name, disp) => '[' + (disp || name) + '](link_' + type + '_' + name.replace(/ /g, '~') + ')'));
     t = t.replace(/&lt;abbr\b[^&]*?cost=&quot;([A-Z-]+)&quot;[\s\S]*?&lt;\/abbr&gt;/gi, (_, c) => glyph(c));
     t = t.replace(/\[([^\]]+)\]\(link_([a-z0-9-]+)_([^)]+)\)/gi, (_, label, type, id) => fnFor(type) ? `<a href="#wg" data-wg-type="${type}" data-wg-id="${id.replace(/~/g, ' ')}">${label}</a>` : label);
+    // Foundry inline rolls and compendium refs, stored with escaped brackets: @Check\[fortitude|dc:22\], \[\[Sickened\]\](Sickened 1), \[\[Concealed\]\].
+    t = t.replace(/@Check\\\[(.+?)\\\]|@Check\[([^\]]+)\]/gi, (_, a, b) => foundryCheck(a || b));
+    t = t.replace(/\\\[\\\[([^\]]+)\\\]\\\](?:\(([^)]*)\))?/g, (_, name, disp) => disp && /^https?:/i.test(disp) ? `<a href="${esc(disp)}" target="_blank" rel="noreferrer">${name}</a>` : (disp || name));
+    // \[[+22/+17](url)\] and [deadly 1d10](url). Label cannot contain a bracket, so the outer \[ stays a literal bracket.
+    t = t.replace(/\[([^\[\]]+)\]\(([^)\s]+)\)/g, (full, label, u) => { u = u.replace(/&amp;/g, '&'); if (!/^https?:/i.test(u) && !u.startsWith('/') && !/\.aspx/i.test(u)) return full; const abs = /^https?:/i.test(u) ? u : 'https://2e.aonprd.com' + (u.startsWith('/') ? '' : '/') + u; return `<a href="${esc(abs)}" target="_blank" rel="noreferrer">${label}</a>`; });
+    // AoN writes multiple-attack penalties as \[[+22/+17](url)\] so the visible link text is [+22/+17].
+    t = t.replace(/\\\[(<a\b[^>]*>)([\s\S]*?)<\/a>\\\]/g, '$1[$2]</a>');
+    t = t.replace(/\\\[/g, '[').replace(/\\\]/g, ']');
     t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
     t = linkConditions(t);
     const paras = s => window.ambaWgMd && window.ambaWgMd.prose ? window.ambaWgMd.prose(s) : s.split(/\n{2,}/).map(p => p.trim()).filter(Boolean).map(p => p.startsWith('---') ? '<hr>' : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
@@ -121,48 +143,63 @@
       entry.el.remove();
     }
     function place(entry) {
-      const w = doc().defaultView, margin = 8;
+      // Sit against the source word. Other cards may cover each other; only the word itself stays clear.
+      const w = doc().defaultView, margin = 8, gap = 4;
       const vw = w.innerWidth, vh = w.innerHeight;
       entry.el.style.zIndex = String(entry.z);
       const width = Math.min(entry.el.offsetWidth || 440, vw - margin * 2);
       const height = Math.min(entry.el.offsetHeight || 120, vh - margin * 2);
       const maxX = Math.max(margin, vw - width - margin);
       const maxY = Math.max(margin, vh - height - margin);
-      const others = [...pinned, hover].filter(e => e && e !== entry && e.el.isConnected).map(e => e.el.getBoundingClientRect());
       const link = entry.anchor.getBoundingClientRect();
-      const gap = 18;
-      const src = { left: link.left - gap, right: link.right + gap, top: link.top - gap, bottom: link.bottom + gap };
-      const coversLink = (x, y) => x < src.right && x + width > src.left && y < src.bottom && y + height > src.top;
-      const hit = (x, y) => coversLink(x, y) || others.some(o => x < o.right - 4 && x + width > o.left + 4 && y < o.bottom - 4 && y + height > o.top + 4);
-      const overlap = (x, y) => others.reduce((sum, o) => {
-        const iw = Math.min(x + width, o.right) - Math.max(x, o.left);
-        const ih = Math.min(y + height, o.bottom) - Math.max(y, o.top);
-        return sum + (iw > 0 && ih > 0 ? iw * ih : 0);
-      }, 0);
+      const links = [...pinned, hover].filter(e => e && e.anchor && e.anchor.isConnected).map(e => e.anchor.getBoundingClientRect());
+      const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      const covers = (x, y) => links.some(box => x < box.right && x + width > box.left && y < box.bottom && y + height > box.top);
+      const dist = (x, y) => {
+        const dx = Math.max(link.left - (x + width), x - link.right, 0);
+        const dy = Math.max(link.top - (y + height), y - link.bottom, 0);
+        return Math.hypot(dx, dy);
+      };
       const saved = entry.spot;
-      if (saved && saved.x <= maxX && saved.y <= maxY && !hit(saved.x, saved.y)) {
+      if (saved && saved.x >= margin && saved.y >= margin && saved.x <= maxX && saved.y <= maxY && !covers(saved.x, saved.y)) {
         entry.el.style.left = saved.x + 'px';
         entry.el.style.top = saved.y + 'px';
         return;
       }
-      let spot = null;
-      for (let i = 0; i < 30; i++) {
-        const x = margin + Math.random() * (maxX - margin);
-        const y = margin + Math.random() * (maxY - margin);
-        if (!hit(x, y)) { spot = { x, y }; break; }
+      const raw = [
+        { x: link.right + gap, y: link.top },
+        { x: link.left - width - gap, y: link.top },
+        { x: link.left, y: link.bottom + gap },
+        { x: link.right - width, y: link.bottom + gap },
+        { x: link.left, y: link.top - height - gap },
+        { x: link.right - width, y: link.top - height - gap },
+        { x: link.right + gap, y: link.bottom + gap },
+        { x: link.left - width - gap, y: link.bottom + gap }
+      ];
+      let best = null, bestScore = Infinity;
+      const consider = (x, y) => {
+        if (covers(x, y)) return;
+        const score = dist(x, y);
+        if (score < bestScore) { bestScore = score; best = { x, y }; }
+      };
+      for (const c of raw) consider(clamp(c.x, margin, maxX), clamp(c.y, margin, maxY));
+      if (!best) {
+        for (let y = link.bottom + gap; y <= maxY; y += 8) consider(clamp(link.left, margin, maxX), y);
+        for (let y = link.top - height - gap; y >= margin; y -= 8) consider(clamp(link.left, margin, maxX), y);
+        for (let x = link.right + gap; x <= maxX; x += 8) consider(x, clamp(link.top, margin, maxY));
+        for (let x = link.left - width - gap; x >= margin; x -= 8) consider(x, clamp(link.top, margin, maxY));
       }
-      if (!spot) {
-        let best = Infinity;
-        for (let i = 0; i < 20; i++) {
-          const x = margin + Math.random() * (maxX - margin);
-          const y = margin + Math.random() * (maxY - margin);
-          const area = overlap(x, y) + (coversLink(x, y) ? width * height : 0);
-          if (area < best) { best = area; spot = { x, y }; if (!area) break; }
-        }
-      }
+      const spot = best || { x: clamp(link.left, margin, maxX), y: clamp(link.bottom + gap, margin, maxY) };
       entry.spot = spot;
       entry.el.style.left = spot.x + 'px';
       entry.el.style.top = spot.y + 'px';
+    }
+    function layoutAll() {
+      for (const entry of [...pinned, hover]) {
+        if (!entry || !entry.el.isConnected) continue;
+        entry.spot = null;
+        place(entry);
+      }
     }
     async function open(a, pin) {
       if (pin && hover) close(hover);
@@ -178,7 +215,7 @@
       }, true);
       el.innerHTML = '<div class="wg-pop-msg">Loading Wanderer\'s Guide\u2026</div>';
       if (pin) pinned.push(entry); else hover = entry;
-      d.body.appendChild(el); place(entry); if (pin) bar(entry);
+      d.body.appendChild(el); layoutAll(); if (pin) bar(entry);
       const type = a.getAttribute('data-wg-type') || '', id = a.getAttribute('data-wg-id') || '';
       let html;
       try { const r = await fetchById(type, id); entry.type = type; entry.record = r; html = r ? cardHtml(type, r) : `<div class="wg-pop-msg">No Wanderer's Guide record for ${esc(type)} ${esc(id)}.</div>`; }
@@ -187,16 +224,17 @@
       entry.view = () => html;
       const paint = () => {
         const barEl = el.querySelector('.wg-pop-bar');
-        el.innerHTML = entry.view(); if (barEl) el.insertBefore(barEl, el.firstChild); place(entry);
+        el.innerHTML = entry.view(); if (barEl) el.insertBefore(barEl, el.firstChild); layoutAll();
       };
       paint();
+      if (window.ambaPf2Wgify) window.ambaPf2Wgify(html).then(r => { if (el.isConnected && r && r.html) { html = r.html; entry.view = () => html; paint(); } }).catch(() => {});
     }
     document.addEventListener('amba-render-tables', () => {
       for (const entry of [...pinned, hover]) {
         if (!entry || !entry.view || !entry.el.isConnected) continue;
         if (entry.record) entry.view = () => cardHtml(entry.type, entry.record);
         const barEl = entry.el.querySelector('.wg-pop-bar');
-        entry.el.innerHTML = entry.view(); if (barEl) entry.el.insertBefore(barEl, entry.el.firstChild); place(entry);
+        entry.el.innerHTML = entry.view(); if (barEl) entry.el.insertBefore(barEl, entry.el.firstChild); layoutAll();
       }
     });
     function bar(entry) {

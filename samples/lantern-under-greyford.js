@@ -124,7 +124,24 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 </section>${sp()}
 
 <section class="artifact artifact--monster_block artifact--monster-block" data-amba-node-kind="artifact" data-amba-artifact-type="monster_block">
-<p class="kicker">Monster Block Placeholder</p><h2>Gatehouse Crawlers</h2><p><strong>Replace this placeholder with the real AoN Giant Maggots x4 block when running the adventure.</strong></p>${st('Role','Low-level scavengers guarding the dungeon threshold.')}${st('Senses','No vision; they track vibration, blood scent, and movement through wet stone.')}${st('Weakness','Slow and vulnerable to being controlled before they can isolate a PC.')}${st('Special','Use four giant maggots for the final encounter build.')}
+<article class="aon-stat-block stat-block">
+<header class="aon-stat-block-banner"><h4 class="encounter-title">Gatehouse Crawler</h4><span class="aon-level-badge">Creature -1</span></header>
+<div class="aon-stat-block-body">
+<img class="aon-stat-block-cutout aon-art--cutout" src="/api/pf2/monsters/1643/image" alt="Giant slug" style="shape-outside: url('/api/pf2/monsters/1643/image');">
+<p class="aon-stat-block-source">Original creature for this sample. Run four of them at the gatehouse.</p>
+<div class="aon-traits"><span class="aon-trait">N</span><span class="aon-trait">Medium</span><span class="aon-trait">Animal</span></div>
+<div class="aon-stat-line"><strong>Perception</strong> +3; no vision, tremorsense 30 feet (imprecise)</div>
+<div class="aon-stat-line"><strong>Skills</strong> Athletics +5, Stealth +4 in water</div>
+<div class="aon-stat-row"><span class="aon-stat-line"><strong>Str</strong> +3</span> <span class="aon-stat-line"><strong>Dex</strong> +0</span> <span class="aon-stat-line"><strong>Con</strong> +2</span> <span class="aon-stat-line"><strong>Int</strong> -5</span> <span class="aon-stat-line"><strong>Wis</strong> +0</span> <span class="aon-stat-line"><strong>Cha</strong> -4</span></div>
+<div class="aon-stat-line"><strong>AC</strong> 13; <strong>Fort</strong> +6, <strong>Ref</strong> +3, <strong>Will</strong> +2</div>
+<div class="aon-stat-line"><strong>HP</strong> 11</div>
+<div class="aon-stat-line"><strong>Speed</strong> 15 feet, swim 15 feet</div>
+<div class="aon-stat-line"><strong>Melee</strong> <span class="aon-action" title="Single Action">\u25C6</span> mandibles +7, <strong>Damage</strong> 1d6+3 piercing</div>
+<div class="aon-stat-line"><strong>Silt Cough</strong> <span class="aon-action" title="Two Actions">\u25C6\u25C6</span> The crawler heaves cold lamp-oil silt in a 15-foot line. Each creature in the line takes 1d4 acid damage with a DC 16 basic Fortitude save. On a failure, the creature is exposed to silt cough.</div>
+<div class="aon-stat-line aon-stat-line--nested"><strong>Silt Cough</strong> (disease) <strong>Saving Throw</strong> DC 16 Fortitude; <strong>Onset</strong> 1 minute; <strong>Stage 1</strong> sickened 1 (1 hour); <strong>Stage 2</strong> sickened 1 and dazzled by green afterimages (1 hour). One successful save ends the disease. Clean water, or a lantern flame held close, grants a +2 circumstance bonus to the save.</div>
+<p class="aon-item-text">A crawler follows vibration through wet stone. It has no interest in the lantern. The green light only tells it that something nearby is moving.</p>
+</div>
+</article>
 </section>${sp()}
 
 <section class="module-section module-section--encounter encounter-brief encounter-brief--puzzle" data-amba-node-kind="encounter" data-amba-encounter-tag="puzzle">

@@ -34,7 +34,8 @@
         const label = /<strong\b/i.test(r[0]) ? r[0] : `<strong>${r[0]}</strong>`;
         return `<li>${label}${rest ? ' ' + rest : ''}</li>`;
       });
-      return `<ul class="wg-md-list">${items.join('')}</ul>`;
+      const rowsAttr = JSON.stringify(padded).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+      return `<ul class="wg-md-list" data-amba-rows="${rowsAttr}">${items.join('')}</ul>`;
     }
     return `<div class="table-wrap wg-table-wrap"><table class="wg-md-table"><thead><tr>${head.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
@@ -72,6 +73,51 @@
     }
     return bits.join('');
   }
-  w.ambaWgMd = { split, render, tableHtml, CSS, titleBlock: para, prose, asTables, setAsTables };
+  // Bold-lead paragraphs inside a card (Critical Success, Heightened). The checkbox adds or removes the box.
+  function outcomeLead(el) {
+    let n = el.firstChild;
+    while (n && n.nodeType === 3 && /^\s*$/.test(n.nodeValue)) n = n.nextSibling;
+    const dash = n && n.nodeType === 3 && /^\s*[-–—]\s+/.test(n.nodeValue) ? n : null;
+    if (dash) n = n.nextSibling;
+    while (n && n.nodeType === 3 && /^\s*$/.test(n.nodeValue)) n = n.nextSibling;
+    return n && n.nodeName === 'STRONG' && n.textContent.trim().length <= 80 ? { dash, strong: n } : null;
+  }
+  function applyIn(ed) {
+    const body = ed.getBody && ed.getBody(); if (!body) return;
+    const on = asTables();
+    const run = () => {
+      body.querySelectorAll('.aon-spell-block p, .aon-feat-block p, .aon-item-block p, .aon-stat-block p').forEach(p => {
+        if (p.closest('.wg-pop') || !outcomeLead(p)) return;
+        if (on) {
+          const hit = outcomeLead(p);
+          if (hit.dash) { const rest = hit.dash.nodeValue.replace(/^\s*[-–—]\s+/, ''); if (rest.trim()) hit.dash.nodeValue = rest; else hit.dash.remove(); }
+          p.classList.add('wg-title-block');
+        } else p.classList.remove('wg-title-block');
+      });
+      if (on) body.querySelectorAll('ul.wg-md-list').forEach(ul => {
+        let rows; try { rows = JSON.parse(ul.getAttribute('data-amba-rows') || ''); } catch { rows = null; }
+        if (!rows) rows = [...ul.children].map(li => { const s = li.querySelector(':scope > strong, :scope > b'); const label = s ? s.outerHTML : ''; const rest = li.textContent.replace(s ? s.textContent : '', '').trim(); return [label, rest]; });
+        const width = Math.max(...rows.map(r => r.length));
+        const pad = r => r.concat(Array(Math.max(0, width - r.length)).fill(''));
+        const [head, ...rest] = rows.map(pad);
+        const div = body.ownerDocument.createElement('div');
+        div.className = 'table-wrap wg-table-wrap';
+        div.innerHTML = `<table class="wg-md-table"><thead><tr>${head.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${rest.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+        ul.replaceWith(div);
+      });
+      else body.querySelectorAll('table.wg-md-table').forEach(table => {
+        const rows = [...table.querySelectorAll('tr')].map(tr => [...tr.children].map(c => c.innerHTML));
+        const ul = body.ownerDocument.createElement('ul');
+        ul.className = 'wg-md-list'; ul.setAttribute('data-amba-rows', JSON.stringify(rows));
+        ul.innerHTML = rows.map(r => { const rest = r.slice(1).filter(Boolean).join('; '); const label = /<strong\b/i.test(r[0]) ? r[0] : `<strong>${r[0]}</strong>`; return `<li>${label}${rest ? ' ' + rest : ''}</li>`; }).join('');
+        (table.closest('.wg-table-wrap') || table).replaceWith(ul);
+      });
+    };
+    if (ed.undoManager) ed.undoManager.transact(run); else run();
+  }
+  w.ambaWgMd = { split, render, tableHtml, CSS, titleBlock: para, prose, asTables, setAsTables, applyIn };
   document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('input[data-amba-render-tables]').forEach(i => { i.checked = asTables(); i.addEventListener('change', () => setAsTables(i.checked)); }));
+  const editors = () => { const t = w.tinymce; if (!t) return []; try { const all = typeof t.get === 'function' ? t.get() : null; if (Array.isArray(all) && all.length) return all; } catch {} return t.activeEditor ? [t.activeEditor] : []; };
+  document.addEventListener('amba-render-tables', () => editors().forEach(applyIn));
+  if (w.tinymce) w.tinymce.on('AddEditor', ev => ev.editor.on('init', () => applyIn(ev.editor)));
 })(window);

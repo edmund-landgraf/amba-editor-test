@@ -261,6 +261,7 @@
     return String(html).replace(ACT_RE, (_, pre, sp, a) => `${pre}${sp}<span class="aon-action" title="${a}">${ACT[a.toLowerCase()]}</span>`)
       .replace(/\s+[-\u2013\u2014]\s+(<strong>(?:Effect|Trigger|Requirements|Frequency|Critical Success|Success|Failure|Critical Failure)<\/strong>)/g, '; $1');
   }
+  // Twin of buildStatBlockHtml in AdventureMakerByAct src/server/services/aon/encounterService.ts.
   function statBlockHtml(m, opts) {
     const art = !!(opts && opts.art);
     const full = art && Number(m.MonsterId) > 0 ? '/api/pf2/monsters/' + Number(m.MonsterId) + '/image' : null;
@@ -380,6 +381,14 @@
   const humanSecs = v => { const n = Number(v); if (!Number.isFinite(n) || String(v ?? '').trim() === '') return txt(v); if (n <= 0) return null; const u = [[86400, 'day'], [3600, 'hour'], [60, 'minute'], [6, 'round']]; for (const [s, l] of u) if (n >= s && n % s === 0) { const k = n / s; return k + ' ' + l + (k === 1 ? '' : 's'); } return n + ' seconds'; };
   const TRADITIONS = ['arcane', 'divine', 'occult', 'primal'];
   const splitList = v => (Array.isArray(v) ? v : String(v ?? '').split(/\s*,\s*/)).map(txt).filter(Boolean);
+  function spellChunk(s) {
+    const table = pipeTable(s, md); if (table) return table;
+    const lines = s.split(/\n/).map(x => x.trim()).filter(Boolean);
+    const outcome = lines.length && lines.every(l => /^[-*]\s+\*\*[^*]{1,80}\*\*/.test(l) || /^\*\*[^*]{1,80}\*\*/.test(l));
+    const one = html => { const boxed = window.ambaWgMd && window.ambaWgMd.titleBlock && window.ambaWgMd.titleBlock(html); return boxed || `<p class="${/^\s*<strong>\s*Heightened/i.test(html) ? 'aon-spell-heightened' : 'aon-spell-text'}">${html}</p>`; };
+    if (outcome) return lines.map(l => one(md(l.replace(/^[-*]\s+/, '')))).join('');
+    return one(md(s));
+  }
   function spellHtml(m) {
     const J = rawJson(m), tradAll = splitList(J.tradition && J.tradition.length ? J.tradition : m.Traditions);
     const trads = tradAll.filter(t => TRADITIONS.includes(t.toLowerCase())), lists = tradAll.filter(t => !TRADITIONS.includes(t.toLowerCase()));
@@ -396,7 +405,7 @@
       line('Requirements', reqs), line('Trigger', txt(m.TriggerText) || txt(J.trigger) || grab('Trigger')), line('Range', txt(m.RangeText) || grab('Range')),
       line('Area', area),
       line('Targets', txt(m.Target) || grab('Targets')), line('Defense', txt(m.Defense) || grab('Defense')), line('Duration', duration || grab('Duration')),
-      ...(mdSections(smd).length ? mdSections(smd).map(s => pipeTable(s, md) || (/^\*\*Heightened/.test(s) ? `<p class="aon-spell-heightened">${md(s)}</p>` : `<p class="aon-spell-text">${md(s)}</p>`)) : [
+      ...(mdSections(smd).length ? mdSections(smd).map(spellChunk) : [
         txt(m.Summary) ? `<p class="aon-spell-summary">${esc(m.Summary)}</p>` : '',
         txt(m.Heighten) ? `<p class="aon-spell-heightened"><strong>Heightened (${esc(m.Heighten)})</strong> See source for heightened effects.</p>` : ''])
     ].filter(Boolean).join('\n');
