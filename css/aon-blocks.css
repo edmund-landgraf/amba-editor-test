@@ -62,6 +62,7 @@
   font-size: 0.85rem;
   opacity: 0.8;
 }
+.aon-stat-line--nested { padding-left: 1.25rem; }
 .aon-item-block .aon-stat-line,
 .aon-spell-block .aon-stat-line, .aon-feat-block .aon-stat-line { margin: 0.15rem 0; }
 .aon-item-summary,
@@ -74,7 +75,16 @@
   border-top: 1px solid rgba(127, 127, 127, 0.35);
 }
 .aon-spell-traditions { font-style: italic; }
-.aon-stat-block a, .aon-item-block a, .aon-spell-block a, .aon-feat-block a { color: inherit; text-decoration: underline dotted; }
+.aon-stat-block a, .aon-item-block a, .aon-spell-block a, .aon-feat-block a { color: inherit; text-decoration: underline solid; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+/* One light tight dash; skip text-decoration so a parent solid underline cannot stack. */
+a[data-wg-type][data-wg-id] {
+  text-decoration: none;
+  background-image: repeating-linear-gradient(to right, rgb(40 38 32 / .38) 0 2px, transparent 2px 3.5px);
+  background-size: auto 1px;
+  background-position: 0 100%;
+  background-repeat: repeat-x;
+  padding-bottom: 1px;
+}
 /* Trait chips (PF2e style) */
 .aon-traits { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0 0 0.6rem; }
 .aon-trait {
@@ -131,5 +141,5 @@ table.wg-md-table thead th{border:0;border-bottom:1px solid rgb(40 38 32 / .22);
 table.wg-md-table thead th:first-child,table.wg-md-table tbody td:first-child{text-align:left;font-weight:600}
 table.wg-md-table tbody td{border:0;border-bottom:1px solid rgb(40 38 32 / .22);padding:.35rem .45rem;vertical-align:middle;white-space:nowrap;text-align:center}
 table.wg-md-table tbody tr:nth-child(even),table.wg-md-table tbody tr:hover{background:rgb(40 38 32 / .1)}
-p.wg-title-block{margin:1rem 0;border-left:2px solid color-mix(in srgb,#0e3470 65%,transparent);background:rgb(40 38 32 / .1);padding:.7rem .9rem .75rem}
-p.wg-title-block>strong:first-child{display:block;margin-bottom:.25rem;color:#1a365d;font-size:.7rem;font-weight:600;line-height:1.2;text-transform:uppercase}
+p.wg-title-block{margin:.35rem 0;border-left:2px solid color-mix(in srgb,#0e3470 65%,transparent);background:rgb(40 38 32 / .1);padding:.28rem .55rem .32rem}
+p.wg-title-block>strong:first-child{display:block;margin-bottom:.05rem;color:#1a365d;font-size:.68rem;font-weight:600;line-height:1.15;text-transform:uppercase}

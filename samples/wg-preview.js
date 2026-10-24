@@ -6,8 +6,8 @@
 (function () {
   const WG_DIRECT = 'http://localhost:8000/functions/v1';
   // Live from WG DB via /api/wg-lookup?type=meta (ability_block types; static lookup types).
-  const ABILITY = new Set(), LOOKUP = new Set();
-  const metaReady = fetch('/api/wg-lookup?type=meta').then(r => r.ok ? r.json() : null).then(j => { if (j && j.data) { j.data.abilityTypes.forEach(t => ABILITY.add(t)); j.data.lookupTypes.forEach(t => LOOKUP.add(t)); } }).catch(() => {});
+  const ABILITY = new Set(), LOOKUP = new Set(), CONDS = [];
+  const metaReady = fetch('/api/wg-lookup?type=meta').then(r => r.ok ? r.json() : null).then(j => { if (j && j.data) { j.data.abilityTypes.forEach(t => ABILITY.add(t)); j.data.lookupTypes.forEach(t => LOOKUP.add(t)); (j.data.conditionNames || []).forEach(n => CONDS.push(n)); } }).catch(() => {});
   const fnFor = t => LOOKUP.has(t) ? 'wg-lookup' : ABILITY.has(t) ? 'find-ability-block' : t === 'inv-item' ? 'find-item' : 'find-' + t;
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const cache = new Map(); let proxyOk = null;
@@ -57,12 +57,24 @@
   // ---- rendering (AMBA links.ts polishWgDescription + wgLinksToHtml) ----
   const GLYPH = { 'ONE-ACTION': '\u25C6', 'TWO-ACTIONS': '\u25C6\u25C6', 'THREE-ACTIONS': '\u25C6\u25C6\u25C6', REACTION: '\u293E', 'FREE-ACTION': '\u25C7' };
   const glyph = c => c && GLYPH[String(c).toUpperCase()] ? `<span class="wg-action aon-action">${GLYPH[String(c).toUpperCase()]}</span>` : '';
+  // Same rule as Wanderer's Guide RichText: link condition names in prose, never inside an authored link.
+  function linkConditions(html) {
+    if (!CONDS.length) return html;
+    const re = new RegExp('\\b(' + [...CONDS].sort((a, b) => b.length - a.length).map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'gi');
+    let depth = 0;
+    return html.split(/(<[^>]+>)/).map(part => {
+      if (part.startsWith('<')) { if (/^<a\b/i.test(part)) depth++; else if (/^<\/a>/i.test(part)) depth = Math.max(0, depth - 1); return part; }
+      if (depth) return part;
+      return part.replace(re, m => `<a href="#wg" data-wg-type="condition" data-wg-id="${esc(m)}">${m}</a>`);
+    }).join('');
+  }
   function polish(raw) {
-    let t = esc(String(raw || '').replace(/[\u2217\uFF0A\u204E]/g, '*'));
+    let t = esc(String(raw || '').replace(/[\u2217\uFF0A\u204E]/g, '*').replace(/\$\{convertToHardcodedLink\('([a-z-]+)',\s*'([^']+)'(?:,\s*'([^']+)')?\)\}/g, (_, type, name, disp) => '[' + (disp || name) + '](link_' + type + '_' + name.replace(/ /g, '~') + ')'));
     t = t.replace(/&lt;abbr\b[^&]*?cost=&quot;([A-Z-]+)&quot;[\s\S]*?&lt;\/abbr&gt;/gi, (_, c) => glyph(c));
     t = t.replace(/\[([^\]]+)\]\(link_([a-z0-9-]+)_([^)]+)\)/gi, (_, label, type, id) => fnFor(type) ? `<a href="#wg" data-wg-type="${type}" data-wg-id="${id.replace(/~/g, ' ')}">${label}</a>` : label);
     t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
-    const paras = s => s.split(/\n{2,}/).map(p => p.trim()).filter(Boolean).map(p => p.startsWith('---') ? '<hr>' : (window.ambaWgMd && window.ambaWgMd.titleBlock(p)) || `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+    t = linkConditions(t);
+    const paras = s => window.ambaWgMd && window.ambaWgMd.prose ? window.ambaWgMd.prose(s) : s.split(/\n{2,}/).map(p => p.trim()).filter(Boolean).map(p => p.startsWith('---') ? '<hr>' : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
     return window.ambaWgMd ? window.ambaWgMd.render(t, paras) : paras(t);
   }
   const kindOf = t => ABILITY.has(t) ? 'feat' : t === 'spell' ? 'spell' : t === 'creature' ? 'stat' : 'item';
@@ -77,89 +89,150 @@
     if (LOOKUP.has(type) && type !== 'condition' && !(r && r.meta_data)) return staticCard(type, r);
     const k = kindOf(type), cls = k === 'stat' ? 'aon-stat-block stat-block' : 'aon-' + k + '-block';
     const lvl = type === 'condition' ? 'Condition' : type === 'spell' ? (r.rank === 0 ? 'Cantrip' : 'Spell ' + (r.rank ?? '?')) : type === 'creature' ? 'Creature ' + (r.level ?? '?') : (ABILITY.has(type) ? (r.type ? r.type.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Feat') : 'Item') + (r.level != null ? ' ' + r.level : '');
-    const meta = [];
-    const add = (l, v) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length)) meta.push(`<strong>${l}</strong> ${esc(Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : v)}`); };
+    const meta = [], leads = [];
+    const LEAD_LABELS = new Set(['Prerequisites', 'Frequency', 'Trigger', 'Requirements', 'Cost', 'Defense', 'Duration']);
+    const add = (l, v) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length)) { const html = `<strong>${l}</strong> ${esc(Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : v)}`; (LEAD_LABELS.has(l) ? leads : meta).push(html); } };
     if (type === 'spell') { add('Traditions', r.traditions); add('Range', r.range); add('Area', r.area); add('Targets', r.targets); add('Defense', r.defense); add('Duration', r.duration); add('Trigger', r.trigger); add('Requirements', r.requirements); }
     else if (ABILITY.has(type)) { add('Prerequisites', Array.isArray(r.prerequisites) ? r.prerequisites.map(p => p && (p.name || p.text || p)).filter(x => typeof x === 'string') : r.prerequisites); add('Frequency', r.frequency); add('Trigger', r.trigger); add('Requirements', r.requirements); add('Cost', r.cost); }
     else if (type !== 'creature') { add('Price', priceText(r.price)); add('Usage', r.usage); add('Bulk', r.bulk); add('Hands', r.hands); }
     const rar = r.rarity && r.rarity !== 'COMMON' ? `<div class="aon-traits"><span class="aon-trait aon-trait--${esc(r.rarity.toLowerCase())}">${esc(r.rarity.toLowerCase())}</span></div>` : '';
     const src = r.meta_data && r.meta_data.source || {};
     const srcLine = `<p class="aon-${k === 'stat' ? 'stat' : k}-block-source">Source: Wanderer's Guide${src.book ? ' \u00b7 ' + esc(src.book) + (src.page ? ' pg. ' + esc(src.page) : '') : ''} (${type === 'condition' ? 'WG condition' : 'WG #' + esc(r.id)})</p>`;
-    const body = r.description ? polish(r.description) + (r.special ? `<p><strong>Special</strong> ${esc(r.special)}</p>` : '') : '<p><em>No description on this record.</em></p>';
+    const heightened = r.heightened && Array.isArray(r.heightened.text) ? r.heightened.text.map(h => polish('**Heightened ' + (h.amount || '') + '** ' + (h.text || ''))).join('') : '';
+    const body = r.description ? polish(r.description) + heightened + (r.special ? `<p><strong>Special</strong> ${esc(r.special)}</p>` : '') : '<p><em>No description on this record.</em></p>';
     const banner = k === 'stat' ? `<header class="aon-stat-block-banner"><h4 class="encounter-title">${esc(r.name)}</h4><span class="aon-level-badge">${esc(lvl)}</span></header>` : `<header class="aon-${k}-block-banner"><h4>${esc(r.name)}${glyph(r.cast || r.actions)}</h4><span class="aon-level-badge">${esc(lvl)}</span></header>`;
-    return `<article class="${cls}">${banner}<div class="aon-${k === 'stat' ? 'stat' : k}-block-body">${srcLine}${rar}${meta.length ? `<p class="aon-${k}-block-meta">${meta.join('; ')}</p>` : ''}${body}</div></article>`;
+    const boxed = window.ambaWgMd && window.ambaWgMd.asTables();
+    const leadHtml = leads.map(h => boxed ? `<p class="wg-title-block">${h}</p>` : `<p>${h}</p>`).join('');
+    return `<article class="${cls}">${banner}<div class="aon-${k === 'stat' ? 'stat' : k}-block-body">${srcLine}${rar}${meta.length ? `<p class="aon-${k}-block-meta">${meta.join('; ')}</p>` : ''}${leadHtml}${body}</div></article>`;
   }
   function priceText(p) { if (!p) return ''; if (typeof p === 'string') return p; const parts = []; ['pp', 'gp', 'sp', 'cp'].forEach(c => { if (p[c]) parts.push(p[c] + ' ' + c); }); return parts.join(', '); }
   // ---- popover inside the TinyMCE iframe (data-mce-bogus="all": never serialized into content) ----
-  const STYLE = '.wg-pop{position:absolute;z-index:9999;max-width:440px;width:min(440px,90vw);box-shadow:0 8px 28px rgba(0,0,0,.28);border-radius:6px;background:#fff}.wg-pop>article{margin:0!important;max-height:60vh;overflow:auto}.wg-pop article>div{overflow-x:auto}.wg-pop-bar{display:flex;justify-content:space-between;align-items:center;font:12px system-ui,sans-serif;padding:3px 8px;background:#2b2b2b;color:#eee;border-radius:6px 6px 0 0}.wg-pop-bar button{font:inherit;cursor:pointer}.wg-pop-msg{padding:10px;font:13px system-ui,sans-serif}a[data-wg-type][data-wg-id]{text-decoration:underline dotted;cursor:help}';
+  // WG links use a dashed underline; AoN links stay solid (see aon-blocks.css).
+  const STYLE = '.wg-pop{position:fixed;z-index:9999;max-width:440px;width:min(440px,90vw);max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-shadow:0 8px 28px rgba(0,0,0,.28);border-radius:6px;background:#fff}.wg-pop>article{margin:0!important;min-height:0;overflow:auto}.wg-pop article>div{overflow-x:auto}.wg-pop-bar{display:flex;justify-content:space-between;align-items:center;flex:none;font:12px system-ui,sans-serif;padding:3px 8px;background:#2b2b2b;color:#eee;border-radius:6px 6px 0 0}.wg-pop-bar button{font:inherit;cursor:pointer}.wg-pop-msg{padding:10px;font:13px system-ui,sans-serif}a[data-wg-type][data-wg-id]{text-decoration:none;cursor:pointer;background-image:repeating-linear-gradient(to right,rgb(40 38 32 / .38) 0 2px,transparent 2px 3.5px);background-size:auto 1px;background-position:0 100%;background-repeat:repeat-x;padding-bottom:1px}';
   function attach(editor) {
-    const stack = []; let timer = 0, escAt = 0;
+    // Same model as the store script: one hover card, click pins another card offset on top, Escape closes only the top card.
+    const pinned = []; let hover = null, z = 9999, timer = 0, escAt = 0;
     const doc = () => editor.getDoc();
-    const top = () => stack[stack.length - 1] || null;
-    function closeTop() { const t = stack.pop(); if (t) t.el.remove(); }
-    function closeAll() { while (stack.length) closeTop(); }
-    function closeFrom(entry) { const i = stack.indexOf(entry); if (i < 0) return; while (stack.length > i) closeTop(); }
+    const top = () => pinned[pinned.length - 1] || hover;
+    function close(entry) {
+      if (!entry) return;
+      const i = pinned.indexOf(entry); if (i >= 0) pinned.splice(i, 1);
+      if (hover === entry) hover = null;
+      entry.el.remove();
+    }
     function place(entry) {
-      const a = entry.anchor, d = doc(), r = a.getBoundingClientRect(), w = d.defaultView, sx = w.scrollX, sy = w.scrollY;
-      const width = Math.min(440, w.innerWidth * 0.9), depth = Math.max(0, stack.indexOf(entry));
-      entry.el.style.zIndex = String(9999 + depth);
-      entry.el.style.left = Math.max(4, Math.min(r.left + sx + depth * 16, sx + w.innerWidth - width - 8)) + 'px';
-      entry.el.style.top = (r.bottom + sy + 4 + depth * 12) + 'px';
+      const w = doc().defaultView, margin = 8;
+      const vw = w.innerWidth, vh = w.innerHeight;
+      entry.el.style.zIndex = String(entry.z);
+      const width = Math.min(entry.el.offsetWidth || 440, vw - margin * 2);
+      const height = Math.min(entry.el.offsetHeight || 120, vh - margin * 2);
+      const maxX = Math.max(margin, vw - width - margin);
+      const maxY = Math.max(margin, vh - height - margin);
+      const others = [...pinned, hover].filter(e => e && e !== entry && e.el.isConnected).map(e => e.el.getBoundingClientRect());
+      const link = entry.anchor.getBoundingClientRect();
+      const gap = 18;
+      const src = { left: link.left - gap, right: link.right + gap, top: link.top - gap, bottom: link.bottom + gap };
+      const coversLink = (x, y) => x < src.right && x + width > src.left && y < src.bottom && y + height > src.top;
+      const hit = (x, y) => coversLink(x, y) || others.some(o => x < o.right - 4 && x + width > o.left + 4 && y < o.bottom - 4 && y + height > o.top + 4);
+      const overlap = (x, y) => others.reduce((sum, o) => {
+        const iw = Math.min(x + width, o.right) - Math.max(x, o.left);
+        const ih = Math.min(y + height, o.bottom) - Math.max(y, o.top);
+        return sum + (iw > 0 && ih > 0 ? iw * ih : 0);
+      }, 0);
+      const saved = entry.spot;
+      if (saved && saved.x <= maxX && saved.y <= maxY && !hit(saved.x, saved.y)) {
+        entry.el.style.left = saved.x + 'px';
+        entry.el.style.top = saved.y + 'px';
+        return;
+      }
+      let spot = null;
+      for (let i = 0; i < 30; i++) {
+        const x = margin + Math.random() * (maxX - margin);
+        const y = margin + Math.random() * (maxY - margin);
+        if (!hit(x, y)) { spot = { x, y }; break; }
+      }
+      if (!spot) {
+        let best = Infinity;
+        for (let i = 0; i < 20; i++) {
+          const x = margin + Math.random() * (maxX - margin);
+          const y = margin + Math.random() * (maxY - margin);
+          const area = overlap(x, y) + (coversLink(x, y) ? width * height : 0);
+          if (area < best) { best = area; spot = { x, y }; if (!area) break; }
+        }
+      }
+      entry.spot = spot;
+      entry.el.style.left = spot.x + 'px';
+      entry.el.style.top = spot.y + 'px';
     }
     async function open(a, pin) {
-      const parent = stack.findLast(s => s.el.contains(a));
-      if (!parent) { if (!pin && stack.some(s => s.pinned)) return; if (stack.length === 1 && stack[0].anchor === a) { if (pin && !stack[0].pinned) { stack[0].pinned = true; bar(stack[0]); } return; } closeAll(); }
-      else {
-        closeFrom(stack[stack.indexOf(parent) + 1]);
-        if (top() && top().anchor === a) { if (pin && !top().pinned) { top().pinned = true; bar(top()); } return; }
-      }
+      if (pin && hover) close(hover);
       const d = doc(), el = d.createElement('div');
-      const entry = { el, anchor: a, pinned: !!pin };
+      const entry = { el, anchor: a, pinned: !!pin, z: ++z };
       el.className = 'wg-pop'; el.setAttribute('data-mce-bogus', 'all'); el.contentEditable = 'false'; el.tabIndex = -1;
+      // TinyMCE treats a contenteditable=false island as one object: a click selects the whole card and never hits the link.
+      el.addEventListener('mousedown', e => {
+        e.preventDefault(); e.stopPropagation();
+        if (e.target.closest && e.target.closest('button')) { close(entry); return; }
+        const inner = linkOf(e.target); if (!inner) return;
+        clearTimeout(timer); open(inner, true);
+      }, true);
       el.innerHTML = '<div class="wg-pop-msg">Loading Wanderer\'s Guide\u2026</div>';
-      stack.push(entry); d.body.appendChild(el); place(entry);
+      if (pin) pinned.push(entry); else hover = entry;
+      d.body.appendChild(el); place(entry); if (pin) bar(entry);
       const type = a.getAttribute('data-wg-type') || '', id = a.getAttribute('data-wg-id') || '';
       let html;
-      try { const r = await fetchById(type, id); html = r ? cardHtml(type, r) : `<div class="wg-pop-msg">No Wanderer's Guide record for ${esc(type)} ${esc(id)}.</div>`; }
+      try { const r = await fetchById(type, id); entry.type = type; entry.record = r; html = r ? cardHtml(type, r) : `<div class="wg-pop-msg">No Wanderer's Guide record for ${esc(type)} ${esc(id)}.</div>`; }
       catch (e) { html = `<div class="wg-pop-msg">Wanderer's Guide unreachable (${esc(e.message)}).</div>`; }
-      if (!stack.includes(entry)) return;
-      el.innerHTML = html; bar(entry); place(entry);
-      if (entry.pinned) { const btn = el.querySelector('.wg-pop-bar button'); if (btn) btn.focus(); }
+      if (!el.isConnected) return;
+      entry.view = () => html;
+      const paint = () => {
+        const barEl = el.querySelector('.wg-pop-bar');
+        el.innerHTML = entry.view(); if (barEl) el.insertBefore(barEl, el.firstChild); place(entry);
+      };
+      paint();
     }
+    document.addEventListener('amba-render-tables', () => {
+      for (const entry of [...pinned, hover]) {
+        if (!entry || !entry.view || !entry.el.isConnected) continue;
+        if (entry.record) entry.view = () => cardHtml(entry.type, entry.record);
+        const barEl = entry.el.querySelector('.wg-pop-bar');
+        entry.el.innerHTML = entry.view(); if (barEl) entry.el.insertBefore(barEl, entry.el.firstChild); place(entry);
+      }
+    });
     function bar(entry) {
-      if (!entry.pinned || entry.el.querySelector('.wg-pop-bar')) return;
       const b = doc().createElement('div'); b.className = 'wg-pop-bar'; b.innerHTML = '<span>Wanderer\'s Guide</span><button type="button">Close</button>';
-      b.querySelector('button').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); closeFrom(entry); });
+      b.querySelector('button').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); close(entry); });
       entry.el.insertBefore(b, entry.el.firstChild);
     }
     function onEsc(e) {
-      if (e.key !== 'Escape' || !stack.length) return;
+      const t = top(); if (e.key !== 'Escape' || !t) return;
       const now = Date.now(); if (now - escAt < 30) return; escAt = now;
-      e.preventDefault(); e.stopPropagation(); closeTop();
+      e.preventDefault(); e.stopPropagation(); close(t);
     }
     const linkOf = t => t && t.closest ? t.closest('a[data-wg-type][data-wg-id]') : null;
     editor.on('init', () => {
       const d = doc(), s = d.createElement('style'); s.setAttribute('data-mce-bogus', 'all'); s.textContent = STYLE + (window.ambaWgMd ? window.ambaWgMd.CSS : ''); d.head.appendChild(s);
       d.addEventListener('mouseover', e => {
-        const a = linkOf(e.target), t = top();
-        const fromTop = t && t.el.contains(a);
-        if (a && (!stack.some(x => x.pinned) || fromTop) && !(t && t.anchor === a)) { clearTimeout(timer); timer = setTimeout(() => open(a, false), 200); }
-        else if (t && t.el.contains(e.target)) clearTimeout(timer);
+        const a = linkOf(e.target);
+        if (!a || a.closest('.wg-pop')) return; // links inside a card stack on click, same as the store
+        if (hover && hover.anchor === a) return;
+        clearTimeout(timer); timer = setTimeout(() => { if (hover) close(hover); open(a, false); }, 200);
       });
       d.addEventListener('mouseout', e => {
-        const t = top(); if (!t || t.pinned) { clearTimeout(timer); return; }
-        const to = e.relatedTarget; if (to && (t.el.contains(to) || linkOf(to) === t.anchor)) return;
-        clearTimeout(timer); timer = setTimeout(() => { if (top() && !top().pinned) closeTop(); }, 250);
+        if (!hover) { clearTimeout(timer); return; }
+        const to = e.relatedTarget;
+        if (to && (hover.el.contains(to) || linkOf(to) === hover.anchor)) return;
+        clearTimeout(timer); timer = setTimeout(() => { if (hover) close(hover); }, 250);
       });
       d.addEventListener('click', e => {
-        const a = linkOf(e.target);
-        if (a) { e.preventDefault(); e.stopPropagation(); open(a, true); }
-        else if (stack.length && !stack.some(x => x.el.contains(e.target))) closeAll();
-      });
-      d.addEventListener('keydown', onEsc);
+        const a = linkOf(e.target); if (!a || a.closest('.wg-pop')) return;
+        e.preventDefault(); e.stopPropagation();
+        clearTimeout(timer); open(a, true);
+      }, true);
+      d.addEventListener('keydown', onEsc, true);
     });
     editor.on('keydown', onEsc);
-    editor.on('GetContent BeforeSetContent remove', () => { if (top() && !top().pinned) closeTop(); });
+    editor.on('GetContent BeforeSetContent remove', () => { if (hover) close(hover); });
   }
   window.ambaWg = { find: fetchById, match, byAon, cardHtml, attach, fnFor, ready: metaReady };
   if (window.tinymce) tinymce.on('AddEditor', ev => attach(ev.editor));

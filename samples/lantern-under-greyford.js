@@ -1,12 +1,29 @@
 window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-section module-section--overview" data-amba-node-kind="adventure">
 <p class="kicker">Short urban dungeon for levels 2\u20133</p>
 <h1 class="module-title">The Lantern Under Greyford</h1>
+<p class="deck">A civic mystery in wet stone: follow green light from a lord's table to a failing ward under the city.</p>
+<div class="tag-row"><span class="tag">Levels 2–3</span><span class="tag">Urban</span><span class="tag">Investigation</span><span class="tag">One session</span></div>
 <p class="read-aloud">Lord Aldren Greymark's summons arrives at dusk, sealed in blue wax and carried by an exhausted rider. Something is moving again beneath the old dungeon outside Greyford, and the lord wants quiet investigators before fear reaches the market.</p>
 <h2>Adventure Premise</h2>
 <p class="body-text">The PCs meet Lord Greymark, learn that new lights and tracks have appeared around a sealed dungeon, and follow the trail from city rumor to the old entrance. The activity is tied to a neglected warding lantern beneath the ruin. If the party can reach it, recover the brass key, and relight the lower flame, the threat recedes.</p>
 <ul class="adventure-facts"><li><strong>Theme:</strong> civic mystery, wet stone, failing infrastructure, old promises.</li><li><strong>Primary location:</strong> Greyford, Lord Greymark's hall, and the old dungeon below the city.</li><li><strong>Expected length:</strong> one long session or two short sessions.</li><li><strong>Best party fit:</strong> investigators, protectors, troubleshooters, or hired problem-solvers.</li></ul>
 <h2>GM Summary</h2>
 <p>Lord Greymark hires the PCs after his scouts find fresh footprints, green lamp-glow, and broken masonry at the sealed dungeon entrance. The first scene is a non-combat briefing. The second scene is the dungeon investigation, beginning with trouble at the old gatehouse.</p>
+<div class="callout-grid">
+<aside class="sidebar"><p class="kicker">If you only remember three things</p><p>The dungeon was civic flood-works. The lantern is a damaged ward, not a villain. Greymark is hiding a family failure.</p></aside>
+<div class="warning-note"><strong>Spoiler boundary.</strong> The player hook ends before the gatehouse opens. Keep the brass key, the interior latch, and the erased family records off the table until the party earns them.</div>
+</div>
+<div class="amba-checklist amba-checklist--preparation"><h3>Before You Sit Down</h3>
+<div class="amba-checklist__grid"><section class="amba-checklist__section"><h4>Table</h4>
+<label class="amba-checklist__item"><input type="checkbox"> Read the player hook aloud, then stop.</label>
+<label class="amba-checklist__item"><input type="checkbox"> Place the city map for the briefing and the cistern map only after the party leaves the castle.</label>
+<label class="amba-checklist__item"><input type="checkbox"> Have the giant maggot block ready; do not show it during Scene 1.</label>
+</section><section class="amba-checklist__section"><h4>Pressure</h4>
+<label class="amba-checklist__item"><input type="checkbox"> Greymark wants quiet, not a parade of guards.</label>
+<label class="amba-checklist__item"><input type="checkbox"> Tomas Rill is the personal hook for Mira, not a second adventure.</label>
+</section></div>
+<p class="amba-checklist__note">If the table is short on time, skip rumors in the city and start the gatehouse as soon as the writ is in hand.</p>
+</div>
 </section>${sp()}
 
 <section class="artifact artifact--handout player-handout" data-amba-node-kind="artifact" data-amba-artifact-type="handout">
@@ -37,6 +54,14 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 <h2>Running the Scene</h2><p>Keep this scene conversational. Lord Greymark wants discretion because the city remembers the old dungeon as a sealed civic failure. He can provide a map, a writ of authority, two lanterns, a sealed worker's key, and the name of the scout who saw green light at the entrance.</p>
 <div class="skill-challenge skill-challenge--pf2e"><h3>Skill Challenge: Reading the Room</h3>${st('Check','Perception, Society, or an equivalent social-reading skill.')}${st('DC','Moderate for the party level; lower it for noble, civic, or watch connections.')}<div class="check-result check-result--success"><strong>Success</strong><span>PC 1 notices Greymark fears public panic more than personal danger. He will pay extra for discretion or proof before dawn.</span></div><div class="check-result check-result--critical-success"><strong>Critical Success</strong><span>PC 1 also notices the worker's key is recently polished. Greymark handled it before the meeting and is withholding old family records.</span></div><div class="check-result check-result--failure"><strong>Failure</strong><span>The party still gets the job, map, writ, and supplies, but no leverage over Greymark's hidden guilt.</span></div></div>
 <div class="gm-note"><strong>GM note:</strong> do not start combat here. If the players push for action, end the meeting with a messenger reporting fresh movement at the dungeon entrance.</div>
+<div class="secret"><strong>Secret.</strong> Greymark already suspects the worker's key opens a maintenance door, not a prison. He will not say so unless a critical success names the polished key.</div>
+</section>
+
+<section class="module-section module-section--subscene scene-brief" data-amba-node-kind="scene">
+<p class="kicker">Subscene</p><h2>What the Writ Actually Buys</h2>
+<p class="body-text">Use this beat if the party lingers on payment, records, or watch cooperation before they leave the castle.</p>
+<ul class="objective-list"><li><strong>Minimum:</strong> a city writ, two hooded lanterns, and the worker's key.</li><li><strong>Negotiated:</strong> hazard pay, a second writ, or a promise of records after dawn.</li><li><strong>Refused:</strong> extra favors wait until the party returns with proof.</li></ul>
+<div class="rules-note"><strong>Social DCs.</strong> Treat a routine request as a moderate check for the party's level. Lower the DC by 2 if a PC has noble, civic, or watch connections. Do not gate the mission on a failed check.</div>
 </section>${sp()}
 
 <section class="artifact artifact--map" data-amba-node-kind="artifact" data-amba-artifact-type="map">
@@ -63,6 +88,8 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 <p class="read-aloud">The old dungeon road leaves Greyford through a leaning postern gate and climbs into cold fog. Ahead, the sealed gatehouse stands open for the first time in years. Green light breathes between the stones.</p>
 <h2>Scene Goals</h2><ul class="clue-list"><li>Move from briefing to exploration.</li><li>Use the dungeon map to orient the entrance, sluice hall, valve chamber, and lantern well.</li><li>Start with the Old Gatehouse Entrance encounter at the dungeon threshold.</li><li>Let clues point deeper toward the lower lantern and pressure valve.</li></ul>
 <div class="skill-challenge skill-challenge--pf2e"><h3>Skill Challenge: Old Stone and Green Light</h3>${st('Check','Survival to read tracks, Arcana or Religion to read the light, or Crafting to read the old works.')}<div class="check-result check-result--success"><strong>Success</strong><span>PC 1 notices the tracks are not raiders leaving the dungeon; something came out, circled the gatehouse, then returned below.</span></div><div class="check-result check-result--critical-success"><strong>Critical Success</strong><span>PC 1 also spots dry scratch marks above the wet ones, proving the door opened from an interior maintenance latch.</span></div><div class="check-result check-result--failure"><strong>Failure</strong><span>The clue is delayed, not lost. Reveal it after the entrance encounter when the party inspects the threshold.</span></div></div>
+<div class="boxed-text">The green light is not a spell waiting to be identified. Describe it as lamp oil that learned the wrong color: cold on broken stone, warmer where brass still remembers its job.</div>
+<div class="location-note"><strong>Threshold.</strong> Once the party can see the open gatehouse, stop travel montage and start the entrance encounter. They do not get a free map of the cistern yet.</div>
 <div class="gm-note"><strong>GM note:</strong> the first encounter should happen at the entrance before the party has fully mapped the dungeon. Use it to teach the dungeon's language: wet stone, old machinery, and hostile light.</div>
 </section>${sp()}
 
@@ -84,7 +111,16 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 <h3>Purpose</h3><p>This is the first dungeon encounter. It proves that the new activity is real, establishes the dungeon's tone, and gives the party a controlled threat before they move deeper.</p>
 <h3>Tactics</h3><ul class="clue-list"><li>Run this as a combat against <strong>4 giant maggots</strong>.</li><li>Two begin just inside the gatehouse, pressed against the wet threshold stones.</li><li>Two begin near the broken drain grate and surge forward when the party makes noise or crosses the doorway.</li><li>If reduced to one survivor, it retreats toward the sluice hall and leaves a wet trail.</li></ul>
 <h3>Clues Afterward</h3><ul class="clue-list"><li>The gatehouse was opened from inside by an old maintenance latch.</li><li>The green residue smells like lamp oil mixed with river silt.</li><li>Scraped stone points toward the lower lantern mechanism, not toward a normal lair.</li></ul>
-<div class="skill-challenge skill-challenge--pf2e"><h3>Skill Challenge: After the Threshold Fight</h3>${st('Check','Perception, Survival, Arcana, Religion, or Crafting after the encounter ends.')}<div class="check-result check-result--success"><strong>Success</strong><span>PC 1 notices the green residue burns colder near broken stone and warmer near old brass, pointing toward machinery below.</span></div><div class="check-result check-result--critical-success"><strong>Critical Success</strong><span>PC 1 also finds a clean drag mark where the missing brass key was pulled deeper into the cistern.</span></div><div class="check-result check-result--failure"><strong>Failure</strong><span>Give the basic clue anyway: the wet trail leads toward the sluice hall. Failure costs detail, not forward motion.</span></div></div>
+<div class="skill-challenge skill-challenge--pf2e"><h3>Skill Challenge: After the Threshold Fight</h3>${st('Check','Perception, Survival, Arcana, Religion, or Crafting after the encounter ends.')}<div class="check-result check-result--success"><strong>Success</strong><span>PC 1 notices the green residue burns colder near broken stone and warmer near old brass, pointing toward machinery below.</span></div><div class="check-result check-result--critical-success"><strong>Critical Success</strong><span>PC 1 also finds a clean drag mark where the missing brass key was pulled deeper into the cistern.</span></div><div class="check-result check-result--failure"><strong>Failure</strong><span>Give the basic clue anyway: the wet trail leads toward the sluice hall. Failure costs detail, not forward motion.</span></div>
+<div class="check-result check-result--critical-failure"><strong>Critical Failure</strong><span>PC 1 reads the residue as a nest marker and expects more maggots ahead. The wet trail still leads to the sluice hall.</span></div></div>
+<div class="designer-note"><strong>Why this fight is small.</strong> Four slow creatures teach the room. The real danger is the sluice and the lantern, not the scavengers.</div>
+</section>
+
+<section class="module-section module-section--encounter encounter-brief encounter-brief--haunt" data-amba-node-kind="encounter" data-amba-encounter-tag="haunt">
+<p class="kicker">Haunt</p><h2 class="encounter-title">The Answering Bell</h2>
+<p class="read-aloud">Somewhere above the drain, a bridge bell rings once with nobody pulling the rope. The green light brightens, then settles, as if something below mistook the sound for a flood warning.</p>
+<p>This is not a combat. If the party makes a loud noise in the gatehouse after the maggots fall, the bell answers. Use it to foreshadow the lantern well.</p>
+<div class="stat-ref"><strong>If they listen.</strong> A PC who has heard Greyford's flood bells knows this tone means "water rising," not "invasion" and not "funeral."</div>
 </section>${sp()}
 
 <section class="artifact artifact--monster_block artifact--monster-block" data-amba-node-kind="artifact" data-amba-artifact-type="monster_block">
@@ -97,7 +133,24 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 <h3>Setup</h3><p>The old lantern is both machine and ward. It is not evil, but it is damaged and overcorrecting. Each round, the chamber answers loud violence by releasing more pressure, spray, and echoing bell tones.</p>
 <h3>Ways to Resolve</h3><ul class="clue-list"><li><strong>Repair:</strong> recover the key, calm the pressure valves, and relight the flame.</li><li><strong>Combat:</strong> defeat or drive off the guardian spirit, then stabilize the lantern afterward.</li><li><strong>Bargain:</strong> promise renewed maintenance, public remembrance, or a restored river rite.</li></ul>
 <div class="skill-challenge skill-challenge--pf2e"><h3>Skill Challenge: Stabilize the Lantern</h3>${st('Goal','Achieve 3 successes before 3 failures to stabilize the lantern without breaking it.')}${st('Repair DC 15','Crafting resets a bent gear, steadies the chain housing, or seats the brass key.')}${st('Ward DC 15','Arcana or Religion calms the warding flame.')}${st('Bargain DC 16','Diplomacy, Performance, or a sincere vow pauses the pressure surge.')}${st('Brace DC 14','Athletics or Acrobatics steadies the chains or reaches the suspended key.')}<div class="check-result check-result--success"><strong>Success</strong><span>Each success reduces the pressure clock or creates an opening to recover the key.</span></div><div class="check-result check-result--failure"><strong>Failure</strong><span>Each failure raises the water, rings the bell, or improves the guardian's position.</span></div></div>
-<div class="danger-note"><strong>Escalation:</strong> if the PCs ignore the lantern and only fight, the water rises each round. At three escalations, the escape route begins flooding and the scene becomes a rescue problem.</div>
+<div class="danger-box"><strong>Escalation.</strong> If the PCs ignore the lantern and only fight, the water rises each round. At three escalations, the escape route begins flooding and the scene becomes a rescue problem.</div>
+<div class="dc-table"><h3>Lantern DCs at a Glance</h3>${st('Brace','DC 14 Athletics or Acrobatics')}${st('Repair / Ward','DC 15 Crafting, Arcana, or Religion')}${st('Bargain','DC 16 Diplomacy or Performance')}</div>
+</section>
+
+<section class="module-section module-section--encounter encounter-brief encounter-brief--story" data-amba-node-kind="encounter" data-amba-encounter-tag="story">
+<p class="kicker">Story beat</p><h2 class="encounter-title">If Tomas Is Here</h2>
+<p>Tomas Rill is pinned on a maintenance ledge above the well, alive but too cold to climb. He will confirm that the records called this place a warding site. He will not fight. Getting him out is part of the flooding clock, not a separate scene.</p>
+</section>
+
+<section class="artifact artifact--challenge" data-amba-node-kind="artifact" data-amba-artifact-type="challenge">
+<h2>Quiet the Surge</h2>
+<p>Use this when the party tries to stabilize the lantern without breaking the glass. Three successes before three failures. Any fitting skill can contribute once.</p>
+<div class="amba-checklist amba-checklist--subsystem"><h3>Subsystem Clock</h3>
+<label class="amba-checklist__item"><input type="checkbox"> Success 1 — pressure eases or the key dips within reach.</label>
+<label class="amba-checklist__item"><input type="checkbox"> Success 2 — the flame steadies enough to touch.</label>
+<label class="amba-checklist__item"><input type="checkbox"> Success 3 — the ward accepts the brass key and the green light dies back to gold.</label>
+<p class="amba-checklist__note">Three failures flood the ledge. Switch to rescue even if the guardian is already gone.</p>
+</div>
 </section>${sp()}
 
 <section class="artifact artifact--trap" data-amba-node-kind="artifact" data-amba-artifact-type="trap"><section class="trap-card">
@@ -105,6 +158,36 @@ window.ambaLanternSample=(st,sp)=>`<section class="module-overview module-sectio
 ${st('Hazard','Level 1 simple mechanical trap')}${st('Stealth','DC 17 to notice the pressure plate, curved scrape marks, and gaps around the sluice valve.')}${st('Disable','Thievery DC 17, Crafting DC 16, or Athletics DC 18; two successes fully neutralize it.')}${st('Trigger','A Small or larger creature steps on the central plate or forces the valve door.')}${st('Reaction','Sluice Burst \u2014 creatures in a 15-foot line take 1d8 bludgeoning damage, DC 17 basic Reflex.')}${st('Push','On a failed save, push 10 feet; on a critical failure, push 20 feet and the creature falls prone.')}${st('Reset','The pressure plate resets after 1 minute unless the maintenance wheel is locked open.')}
 <div class="skill-challenge skill-challenge--pf2e"><h3>PF2e Play Notes</h3><div class="check-result check-result--success"><strong>Investigate</strong><span>Perception DC 17 reveals the scrape-marked safe route; a critical success also identifies the side drain.</span></div><div class="check-result check-result--failure"><strong>Disarm Failure</strong><span>The mechanism groans; on a critical failure, the trap triggers immediately.</span></div></div>
 </section></section>${sp()}
+
+<section class="artifact artifact--trap" data-amba-node-kind="artifact" data-amba-artifact-type="trap"><section class="hazard-card">
+<p class="kicker">Hazard</p><h2>Knee-Deep Current</h2>
+<p>Channels between the sluice hall and the valve chamber are not a trap with a switch. They are neglected infrastructure that still moves.</p>
+${st('Hazard','Level 1 environmental hazard')}${st('Notice','Automatic; the water is visible.')}${st('Effect','Difficult terrain. A creature that runs or is pushed must succeed at a DC 15 Reflex save or fall prone.')}${st('Clear','Turning the maintenance wheel upstream reduces the current to ordinary difficult terrain.')}
+</section></section>${sp()}
+
+<section class="artifact artifact--trap" data-amba-node-kind="artifact" data-amba-artifact-type="trap"><section class="affliction-card">
+<p class="kicker">Affliction</p><h2>Silt Cough</h2>
+<p>A creature dunked in the lantern well or critically failing a save against the sluice inhales cold lamp-oil silt.</p>
+${st('Saving Throw','DC 16 Fortitude')}${st('Onset','1 minute')}${st('Stage 1','Sickened 1 (1 hour)')}${st('Stage 2','Sickened 1 and dazzled by green afterimages (1 hour)')}${st('Recovery','One save ends the cough. Clean water or a lantern flame held close grants a +2 circumstance bonus.')}
+</section></section>${sp()}
+
+<section class="artifact artifact--random_table" data-amba-node-kind="artifact" data-amba-artifact-type="random_table">
+<section class="rumor-table"><p class="kicker">Random table</p><h2>What the Green Light Does</h2>
+<p>Roll or choose when the party first studies the light, or when the bell answers.</p>
+<ol class="clue-list"><li><strong>1.</strong> It brightens when someone speaks a flood warning.</li><li><strong>2.</strong> It dims when a lantern is hooded, as if relieved.</li><li><strong>3.</strong> It pulses in time with dripping water, one beat late.</li><li><strong>4.</strong> It leans toward brass and away from bare iron.</li></ol>
+</section></section>${sp()}
+
+<section class="artifact artifact--letter" data-amba-node-kind="artifact" data-amba-artifact-type="letter">
+<p class="kicker">Found on Tomas, or in the cache</p>
+<h2>A Watch Note, Unsent</h2>
+<div class="handout-body"><p>Aldren — the cistern is not a jail. Your grandfather's ledger calls the lower flame a promise. Someone polished the worker's key and then stopped writing. If I do not come back up the drain stair, read this into the public book.</p><p>— T. Rill</p></div>
+</section>${sp()}
+
+<section class="module-section module-section--encounter encounter-brief encounter-brief--treasure" data-amba-node-kind="encounter" data-amba-encounter-tag="treasure">
+<p class="kicker">Treasure beat</p><h2 class="encounter-title">The Loose Brick</h2>
+<p>The cache sits in the valve chamber, not in the lantern well. A PC who searches after seating or seeing the brass key finds it without a check. If they never look, Tomas or the maintenance diagram can point at the brick on the way out.</p>
+<div class="reward-card"><strong>If they tell the truth.</strong> Greymark pays the agreed sum. The city adds lodging, ferry passage, or one civic favor. Lying about the lantern keeps the coin and loses the favor.</div>
+</section>${sp()}
 
 <section class="artifact artifact--treasure" data-amba-node-kind="artifact" data-amba-artifact-type="treasure"><section class="treasure-card">
 <p class="kicker">Treasure</p><h2>Lamplighter's Cache</h2><p>The cache is hidden behind a loose brick in the valve chamber. It belonged to generations of lamplighters who treated the cistern as a civic shrine.</p><ul class="clue-list"><li>A polished brass key stamped with Greyford's bridge mark.</li><li>A waterproof pouch of coins or level-appropriate currency.</li><li>One useful light-themed consumable or magic item.</li><li>A folded maintenance diagram showing the lamp house, bridge channel, and lantern well as one connected machine.</li></ul><p>If the PCs report honestly to Lord Greymark and restore the lantern, the city also grants free lodging, ferry passage, or a future civic favor.</p>
@@ -130,4 +213,12 @@ ${st('Hazard','Level 1 simple mechanical trap')}${st('Stealth','DC 17 to notice 
 <h2>PF2e Snapshot</h2>${st('HP','20')}${st('AC','18 in chain mail; 20 after Raise a Shield')}${st('Perception','+6 (expert)')}${st('Speed','25 feet')}${st('Longsword','+9; 1d8+4 slashing')}${st('Athletics','+7 trained')}${st('Crafting','+3 trained')}
 </article>${sp()}
 
-<section class="quest-card"><p class="kicker">Character Hook</p><h2>Finding Tomas</h2><p>Mira's personal stake points directly into the same mystery without changing the adventure's main spine. If Tomas survives, he can confirm who ordered the old records altered. If he died, his notes can still force Greyford to confront what it buried.</p></section>`;
+<div class="two-column">
+<section class="quest-card"><p class="kicker">Character Hook</p><h2>Finding Tomas</h2><p>Mira's personal stake points directly into the same mystery. If Tomas survives, he can confirm who ordered the old records altered. If he died, his notes can still force Greyford to confront what it buried.</p></section>
+<section class="faction-card"><p class="kicker">Faction</p><h2>The Greyford Watch</h2><p>Guards, lamplighters, and ferrymen share one loyalty: the city should keep working. They will help anyone with a writ, and they will remember who asked them to lie.</p></section>
+</div>
+<section class="timeline"><p class="kicker">Timeline</p><h2>How the Lantern Failed</h2>
+<ol class="clue-list"><li><strong>Two generations ago.</strong> The Greymarks seal the cistern and rewrite it as a prison.</li><li><strong>This season.</strong> A maintenance latch opens from inside. Green light returns.</li><li><strong>Three nights ago.</strong> Tomas follows the light and does not come back.</li><li><strong>Tonight.</strong> Greymark hires outsiders before the market hears.</li></ol>
+</section>
+<section class="downtime-card"><p class="kicker">After the adventure</p><h2>If the Flame Holds</h2><p>A restored lantern becomes a downtime favor: free ferry passage, a watch introduction, or one afternoon with the public ledger. A broken lantern leaves the rivers honest and the next flood worse.</p></section>
+<section class="villain-card"><p class="kicker">Not a villain</p><h2>The Ward Itself</h2><p>Do not give the lantern a scheme. It overcorrects because nobody maintained it. The pressure, the bell, and the green flame are the same machine asking to be put back.</p></section>`;

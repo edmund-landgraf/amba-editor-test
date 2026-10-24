@@ -46,11 +46,16 @@
       para = para.trim(); if (!para || /^#|^---$/.test(para)) continue;
       const lab = /^\*\*([^*]+)\*\*\s*([\s\S]*)$/.exec(para);
       if (lab && lab[1].trim() === 'Damage' && out.length && out[out.length - 1]) { out[out.length - 1][1] = out[out.length - 1][1].replace(/,\s*$/, '') + ', <strong>Damage</strong> ' + md(lab[2]); continue; }
-      if (!lab) { if (/^-\s/.test(para) && out.length && out[out.length - 1]) out[out.length - 1][1] = out[out.length - 1][1].replace(/[\s;,]+$/, '') + '; ' + md(para.replace(/^-\s*/, '')); continue; }
+      if (!lab) {
+        const bullets = para.split(/\n(?=-\s)/).map(s => s.trim()).filter(Boolean);
+        if (bullets.length && bullets.every(b => /^-\s+\*\*[^*]+\*\*/.test(b))) { for (const b of bullets) { const bl = /^-\s+\*\*([^*]+)\*\*\s*([\s\S]*)$/.exec(b); if (bl) out.push([bl[1].trim(), md(bl[2]), true]); } continue; }
+        if (/^-\s/.test(para) && out.length && out[out.length - 1]) out[out.length - 1][1] = out[out.length - 1][1].replace(/[\s;,]+$/, '') + '; ' + md(para.replace(/^-\s*/, ''));
+        continue;
+      }
       const k = lab[1].trim(); if (SKIP.test(k) || k.startsWith('[')) { out.push(null); continue; }
       out.push([k, md(lab[2])]);
     }
-    return out.filter(Boolean).filter(([k]) => !(k === 'Melee' && txt(m.Melee)) && !(k === 'Ranged' && txt(m.Ranged))).map(([k, v]) => `<div class="aon-stat-line"><strong>${esc(k)}</strong> ${v}</div>`).join('\n');
+    return out.filter(Boolean).filter(([k]) => !(k === 'Melee' && txt(m.Melee)) && !(k === 'Ranged' && txt(m.Ranged))).map(([k, v, nest]) => `<div class="aon-stat-line${nest ? ' aon-stat-line--nested' : ''}"><strong>${esc(k)}</strong> ${v}</div>`).join('\n');
   }
   // PF2 layout: "AC 19; Fort +14, Ref +11, Will +8" then "HP 65; Immunities ...; Weaknesses ...; Resistances ...".
   function defLine(m) {
@@ -483,24 +488,25 @@
         { type: 'listbox', name: 'type', label: 'Type', items: [{ text: 'Monsters', value: 'monsters' }, { text: 'Items', value: 'equipment' }, { text: 'Spells', value: 'spells' }, { text: 'Feats', value: 'feats' }] },
         { type: 'input', name: 'q', label: 'Name contains' },
         { type: 'checkbox', name: 'wg', label: 'Prefer WG links' },
+        { type: 'checkbox', name: 'tables', label: 'Render as tables' },
         ...(msg ? [{ type: 'htmlpanel', html: `<p class="amba-pf2-nomatch" role="status" style="margin:6px 0 0;color:#a33">${msg}</p>` }] : [])
       ] },
       initialData: data,
-      onChange(api, det) { if (det.name === 'wg') setPreferWg(api.getData().wg); },
+      onChange(api, det) { const d = api.getData(); if (det.name === 'wg') setPreferWg(d.wg); if (det.name === 'tables' && window.ambaWgMd) window.ambaWgMd.setAsTables(d.tables); },
       buttons: [{ type: 'cancel', text: 'Cancel' }, { type: 'submit', text: 'Search', primary: true }],
       async onSubmit(api) {
-        const d = api.getData(), q = d.q.trim(); setPreferWg(d.wg); if (!q) return api.focus('q');
+        const d = api.getData(), q = d.q.trim(); setPreferWg(d.wg); if (window.ambaWgMd) window.ambaWgMd.setAsTables(d.tables); if (!q) return api.focus('q');
         window.ambaPf2LastType = d.type;
         api.block('Searching\u2026');
         try {
           const res = await search(d.type, q, 0);
           // 0 results: keep the dialog open with type + name intact, inline message, focus back in the name box.
-          if (!res.rows.length) { api.unblock(); api.redial(spec({ type: d.type, q: d.q, wg: d.wg }, 'No matches for \u201c' + esc(q) + '\u201d in ' + TYPES[d.type].label.toLowerCase() + 's.')); return setTimeout(() => api.focus('q'), 0); }
+          if (!res.rows.length) { api.unblock(); api.redial(spec({ type: d.type, q: d.q, wg: d.wg, tables: d.tables }, 'No matches for \u201c' + esc(q) + '\u201d in ' + TYPES[d.type].label.toLowerCase() + 's.')); return setTimeout(() => api.focus('q'), 0); }
           api.close(); pick(editor, d.type, q, res, insert);
         } catch (e) { api.unblock(); editor.notificationManager.open({ text: e.message, type: 'error', timeout: 5000 }); }
       }
     });
-    const dlg = editor.windowManager.open(spec({ type: presetType || window.ambaPf2LastType || 'monsters', q: '', wg: preferWg() }));
+    const dlg = editor.windowManager.open(spec({ type: presetType || window.ambaPf2LastType || 'monsters', q: '', wg: preferWg(), tables: !window.ambaWgMd || window.ambaWgMd.asTables() }));
     setTimeout(() => dlg.focus('q'), 0);
   };
   let artKnown = null;

@@ -20,10 +20,22 @@
     flushRows(); flushText();
     return out;
   }
+  const TABLE_KEY = 'amba-render-tables';
+  const asTables = () => { try { return localStorage.getItem(TABLE_KEY) !== '0'; } catch { return true; } };
+  const setAsTables = v => { try { localStorage.setItem(TABLE_KEY, v ? '1' : '0'); } catch {} document.querySelectorAll('input[data-amba-render-tables]').forEach(i => { i.checked = !!v; }); document.dispatchEvent(new CustomEvent('amba-render-tables')); };
   function tableHtml(rows) {
     const width = Math.max(...rows.map(r => r.length));
     const pad = r => r.concat(Array(Math.max(0, width - r.length)).fill(''));
-    const [head, ...body] = rows.map(pad);
+    const padded = rows.map(pad);
+    const [head, ...body] = padded;
+    if (!asTables()) {
+      const items = padded.map(r => {
+        const rest = r.slice(1).filter(Boolean).join('; ');
+        const label = /<strong\b/i.test(r[0]) ? r[0] : `<strong>${r[0]}</strong>`;
+        return `<li>${label}${rest ? ' ' + rest : ''}</li>`;
+      });
+      return `<ul class="wg-md-list">${items.join('')}</ul>`;
+    }
     return `<div class="table-wrap wg-table-wrap"><table class="wg-md-table"><thead><tr>${head.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
   // Replace pipe-table blocks in already-inline-processed text; `para` renders the non-table text.
@@ -34,9 +46,32 @@
     + 'table.wg-md-table thead th:first-child,table.wg-md-table tbody td:first-child{text-align:left;font-weight:600}'
     + 'table.wg-md-table tbody td{border:0;border-bottom:1px solid rgb(40 38 32 / .22);padding:.35rem .45rem;vertical-align:middle;white-space:nowrap;text-align:center}'
     + 'table.wg-md-table tbody tr:nth-child(even),table.wg-md-table tbody tr:hover{background:rgb(40 38 32 / .1)}'
-    + 'p.wg-title-block{margin:1rem 0;border-left:2px solid color-mix(in srgb,#0e3470 65%,transparent);background:rgb(40 38 32 / .1);padding:.7rem .9rem .75rem}'
-    + 'p.wg-title-block>strong:first-child{display:block;margin-bottom:.25rem;color:#1a365d;font-size:.7rem;font-weight:600;line-height:1.2;text-transform:uppercase}';
-  // WGUI styles `p:has(> strong:first-child)` as a title block; mark short bold-only leads the same way (e.g. "**Counteract**" above its table).
-  const para = html => /^<strong>[^<]{1,45}<\/strong>\s*$/.test(html.trim()) ? `<p class="wg-title-block">${html.trim()}</p>` : null;
-  w.ambaWgMd = { split, render, tableHtml, CSS, titleBlock: para };
+    + 'ul.wg-md-list{margin:.35rem 0 .6rem;padding-left:1.25rem}ul.wg-md-list li{margin:.12rem 0}'
+    + 'p.wg-title-block{margin:.35rem 0;border-left:2px solid color-mix(in srgb,#0e3470 65%,transparent);background:rgb(40 38 32 / .1);padding:.28rem .55rem .32rem}'
+    + 'p.wg-title-block>strong:first-child{display:block;margin-bottom:.05rem;color:#1a365d;font-size:.68rem;font-weight:600;line-height:1.15;text-transform:uppercase}';
+  // WGUI styles `p:has(> strong:first-child)` as a title block: the lead <strong> is an uppercase label
+  // and the rest of the paragraph sits under it (Critical Success, Requirements, a lone "**Counteract**").
+  const LEAD = /^<strong>[^<]{1,80}<\/strong>/;
+  const para = html => asTables() && LEAD.test(html.trim()) ? `<p class="wg-title-block">${html.trim()}</p>` : null;
+  // A bold lead on its own line starts a new block even when the source used a single newline.
+  function prose(text) {
+    const bits = [];
+    for (const block of String(text || '').split(/\n{2,}/)) {
+      let buf = [];
+      const flush = () => {
+        if (!buf.length) return;
+        const html = buf.join('\n').trim();
+        bits.push(html.startsWith('---') ? '<hr>' : para(html) || `<p>${html.replace(/\n/g, '<br>')}</p>`);
+        buf = [];
+      };
+      for (const line of block.split('\n')) {
+        if (LEAD.test(line.trim()) && buf.length) flush();
+        if (line.trim()) buf.push(line);
+      }
+      flush();
+    }
+    return bits.join('');
+  }
+  w.ambaWgMd = { split, render, tableHtml, CSS, titleBlock: para, prose, asTables, setAsTables };
+  document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('input[data-amba-render-tables]').forEach(i => { i.checked = asTables(); i.addEventListener('change', () => setAsTables(i.checked)); }));
 })(window);

@@ -145,7 +145,7 @@ function loadConds() {
   const k = mkey(['frontend/src/process/conditions/condition-handler.ts']); if (wgConds && k === wgCondsKey) return wgConds; wgCondsKey = k;
   const src = fs.readFileSync(path.join(WG_REPO, 'frontend/src/process/conditions/condition-handler.ts'), 'utf8');
   wgConds = []; const re = /name:\s*'([^']+)',\s*description:\s*`([\s\S]*?)`,/g; let m;
-  while ((m = re.exec(src))) wgConds.push({ id: m[1].replace(/ /g, '~'), name: m[1], description: m[2].replace(/\n\s+/g, '\n\n'), type: 'condition' });
+  while ((m = re.exec(src))) wgConds.push({ id: m[1].replace(/ /g, '~'), name: m[1], description: hcl(m[2]).replace(/\n\s+/g, '\n\n'), type: 'condition' });
   return wgConds;
 }
 // Static WG descriptions (skills, attributes, saves, proficiencies, AC, Perception, senses, speed, resistance, weakness),
@@ -190,7 +190,7 @@ async function wgLookup(u, res) {
   const type = u.searchParams.get('type'), name = String(u.searchParams.get('name') || u.searchParams.get('id') || '').replace(/~/g, ' ').toLowerCase().trim();
   res.setHeader('content-type', 'application/json; charset=utf-8');
   const send = (c, o) => { res.writeHead(c); res.end(JSON.stringify(o)); };
-  if (type === 'meta') { try { return send(200, { data: { abilityTypes: abilityTypes(), lookupTypes: ['condition', ...STATIC_TYPES, ...EDGE_LOOKUPS], indexBuiltAt: wgIndex().builtAt || null } }); } catch (e) { return send(502, { error: e.message }); } }
+  if (type === 'meta') { try { return send(200, { data: { abilityTypes: abilityTypes(), conditionNames: loadConds().map(c => c.name), lookupTypes: ['condition', ...STATIC_TYPES, ...EDGE_LOOKUPS], indexBuiltAt: wgIndex().builtAt || null } }); } catch (e) { return send(502, { error: e.message }); } }
   if (type === 'aon') {
     const m = /^https?:\/\/2e\.aonprd\.com\/([A-Za-z]+)\.aspx\?ID=(\d+)/i.exec(u.searchParams.get('url') || '');
     if (!m) return send(400, { error: 'need url=https://2e.aonprd.com/<Page>.aspx?ID=<n>' });
