@@ -160,10 +160,10 @@
         const dy = Math.max(link.top - (y + height), y - link.bottom, 0);
         return Math.hypot(dx, dy);
       };
-      const saved = entry.spot;
-      if (saved && saved.x >= margin && saved.y >= margin && saved.x <= maxX && saved.y <= maxY && !covers(saved.x, saved.y)) {
-        entry.el.style.left = saved.x + 'px';
-        entry.el.style.top = saved.y + 'px';
+      // A card is placed once. Later cards, content growth, and link avoidance never move it.
+      if (entry.spot) {
+        entry.el.style.left = entry.spot.x + 'px';
+        entry.el.style.top = entry.spot.y + 'px';
         return;
       }
       const raw = [
@@ -197,7 +197,6 @@
     function layoutAll() {
       for (const entry of [...pinned, hover]) {
         if (!entry || !entry.el.isConnected) continue;
-        entry.spot = null;
         place(entry);
       }
     }
