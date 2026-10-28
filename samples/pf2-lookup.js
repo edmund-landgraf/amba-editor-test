@@ -519,11 +519,26 @@
     setTimeout(() => dlg.focus('q'), 0);
   };
   let artKnown = null;
-  async function artOn() {
-    if (artKnown != null) return artKnown;
-    try { artKnown = !!(await fetch('/api/pf2/art-status', { headers: { accept: 'application/json' }, credentials: 'same-origin' }).then(r => r.json())).unlocked; } catch { artKnown = false; }
+  function paintArt(unlocked) {
+    artKnown = !!unlocked;
+    document.dispatchEvent(new CustomEvent('amba-art', { detail: artKnown }));
+    document.querySelectorAll('[data-amba-art-status]').forEach(el => {
+      el.textContent = artKnown ? 'Art unlocked' : 'Art locked';
+      el.classList.toggle('ok', artKnown);
+      el.classList.toggle('bad', !artKnown);
+      el.title = artKnown ? 'Monster art is unlocked for this browser session.' : 'Monster art is locked. Use PF2 pass to unlock it for this browser session.';
+    });
+  }
+  async function refreshArt() {
+    try { paintArt(!!(await fetch('/api/pf2/art-status', { headers: { accept: 'application/json' }, credentials: 'same-origin' }).then(r => r.json())).unlocked); }
+    catch { paintArt(false); }
     return artKnown;
   }
+  async function artOn() {
+    if (artKnown != null) return artKnown;
+    return refreshArt();
+  }
+  window.ambaPf2ArtRefresh = refreshArt;
   window.ambaPf2Pass = function (editor) {
     editor.windowManager.open({
       title: 'PF2 pass',
@@ -538,14 +553,14 @@
           const j = await r.json().catch(() => ({}));
           api.unblock();
           if (!r.ok) return editor.notificationManager.open({ text: j.error || ('Pass was not accepted (HTTP ' + r.status + '). Restart dev-server.js if this server is still the old one.'), type: r.status === 429 ? 'warning' : 'error', timeout: 6000 });
-          artKnown = true; api.close();
+          paintArt(true); api.close();
           editor.notificationManager.open({ text: 'Art pass accepted. Monster cards will include art for this browser session.', type: 'success', timeout: 5000 });
         } catch (e) { api.unblock(); editor.notificationManager.open({ text: e.message, type: 'error', timeout: 5000 }); }
       }
     });
   };
   window.ambaPf2PreferWg = preferWg; window.ambaPf2SetPreferWg = setPreferWg;
-  document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('input[data-amba-prefer-wg]').forEach(i => { i.checked = preferWg(); i.addEventListener('change', () => setPreferWg(i.checked)); }));
+  document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('input[data-amba-prefer-wg]').forEach(i => { i.checked = preferWg(); i.addEventListener('change', () => setPreferWg(i.checked)); }); refreshArt(); });
   // Empty editable templates using the same markup/classes as the lookup cards.
   const L = (l, v) => `<div class="aon-stat-line"><strong>${l}</strong> ${v}</div>`;
   const D = '\u2014', TR = '<div class="aon-traits"><span class="aon-trait">[rarity]</span> <span class="aon-trait">[size]</span> <span class="aon-trait">[trait]</span></div>';
